@@ -21,7 +21,7 @@ export const Route = createFileRoute("/admin/categories")({
         { name: "name_ar", label: "Name (Arabic)", required: true },
         { name: "slug", label: "Slug", required: true, placeholder: "e.g. beverages" },
         { name: "description", label: "Description", type: "textarea" },
-        { name: "image_url", label: "Image URL" },
+        { name: "image_url", label: "Image", type: "image" },
         { name: "icon", label: "Icon name" },
         { name: "sort_order", label: "Sort order", type: "number" },
         { name: "is_active", label: "Active", type: "switch" },

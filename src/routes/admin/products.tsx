@@ -53,6 +53,7 @@ function ProductsAdmin() {
         { name: "is_active", label: "Active", type: "switch" },
         { name: "is_featured", label: "Featured", type: "switch" },
         { name: "is_offer", label: "On offer", type: "switch" },
+        { name: "images", label: "Images", type: "images" },
       ]}
     />
   );

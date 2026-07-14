@@ -1,12 +1,11 @@
-import { createFileRoute, Outlet, Link, redirect, useLocation } from "@tanstack/react-router";
+import { createFileRoute, Outlet, Link, useLocation } from "@tanstack/react-router";
 import { AuthProvider, useAuth } from "@/lib/auth-context";
+import { I18nProvider, useI18n } from "@/lib/i18n";
 import {
   LayoutDashboard, Package, FolderTree, BadgeCheck, Users, ShoppingBag, Image as ImageIcon,
-  Building2, Home as HomeIcon, LogOut, Settings, Layers,
+  Building2, Home as HomeIcon, LogOut, Settings, Layers, Globe,
 } from "lucide-react";
 import logoIcon from "@/assets/logo-icon.png";
-import { supabase } from "@/integrations/supabase/client";
-import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/admin")({
   component: () => (
@@ -16,21 +15,35 @@ export const Route = createFileRoute("/admin")({
   ),
 });
 
-const MENU = [
-  { to: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
-  { to: "/admin/products", label: "Products", icon: Package },
-  { to: "/admin/categories", label: "Categories", icon: FolderTree },
-  { to: "/admin/brands", label: "Brands", icon: BadgeCheck },
-  { to: "/admin/suppliers", label: "Suppliers", icon: Building2 },
-  { to: "/admin/orders", label: "Orders", icon: ShoppingBag },
-  { to: "/admin/users", label: "Users", icon: Users },
-  { to: "/admin/homepage", label: "Homepage CMS", icon: Layers },
-  { to: "/admin/banners", label: "Banners", icon: ImageIcon },
-  { to: "/admin/settings", label: "Settings", icon: Settings },
-];
+function useMenu() {
+  const { t } = useI18n();
+  return [
+    { to: "/admin", label: t("admin.dashboard"), icon: LayoutDashboard, exact: true },
+    { to: "/admin/products", label: t("admin.products"), icon: Package },
+    { to: "/admin/categories", label: t("admin.categories"), icon: FolderTree },
+    { to: "/admin/brands", label: t("admin.brands"), icon: BadgeCheck },
+    { to: "/admin/suppliers", label: t("admin.suppliers"), icon: Building2 },
+    { to: "/admin/orders", label: t("admin.orders"), icon: ShoppingBag },
+    { to: "/admin/users", label: t("admin.users"), icon: Users },
+    { to: "/admin/homepage", label: t("admin.homepage"), icon: Layers },
+    { to: "/admin/banners", label: t("admin.banners"), icon: ImageIcon },
+    { to: "/admin/media", label: t("admin.media"), icon: ImageIcon },
+    { to: "/admin/settings", label: t("admin.settings"), icon: Settings },
+  ] as const;
+}
 
 function AdminShell() {
+  return (
+    <I18nProvider>
+      <AdminShellInner />
+    </I18nProvider>
+  );
+}
+
+function AdminShellInner() {
   const { user, loading, isAdmin, signOut } = useAuth();
+  const { t, lang, setLang } = useI18n();
+  const MENU = useMenu();
   const location = useLocation();
 
   if (loading) {
@@ -71,7 +84,7 @@ function AdminShell() {
         </Link>
         <nav className="flex-1 overflow-y-auto p-3 space-y-1">
           {MENU.map((m) => {
-            const active = m.exact ? location.pathname === m.to : location.pathname.startsWith(m.to);
+            const active = (m as any).exact ? location.pathname === m.to : location.pathname.startsWith(m.to);
             const Icon = m.icon;
             return (
               <Link key={m.to} to={m.to} className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${active ? "bg-sidebar-accent text-primary" : "text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-foreground"}`}>
@@ -81,12 +94,15 @@ function AdminShell() {
             );
           })}
         </nav>
-        <div className="p-3 border-t border-sidebar-border">
+        <div className="p-3 border-t border-sidebar-border space-y-1">
+          <button onClick={() => setLang(lang === "en" ? "ar" : "en")} className="w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-sidebar-foreground/80 hover:bg-sidebar-accent">
+            <Globe className="h-4 w-4" /> {lang === "en" ? "العربية" : "English"}
+          </button>
           <Link to="/" className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-sidebar-foreground/80 hover:bg-sidebar-accent">
-            <HomeIcon className="h-4 w-4" /> Back to site
+            <HomeIcon className="h-4 w-4" /> {t("admin.back_to_site")}
           </Link>
           <button onClick={() => signOut()} className="w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-sidebar-foreground/80 hover:bg-sidebar-accent">
-            <LogOut className="h-4 w-4" /> Sign out
+            <LogOut className="h-4 w-4" /> {t("nav.signout")}
           </button>
         </div>
       </aside>

@@ -19,7 +19,7 @@ export const Route = createFileRoute("/admin/banners")({
         { name: "title_ar", label: "Title (AR)" },
         { name: "subtitle_en", label: "Subtitle (EN)" },
         { name: "subtitle_ar", label: "Subtitle (AR)" },
-        { name: "image_url", label: "Image URL", required: true },
+        { name: "image_url", label: "Image", type: "image", required: true },
         { name: "link_url", label: "Link URL" },
         { name: "position", label: "Position", type: "select", options: [
           { value: "hero", label: "Hero" }, { value: "middle", label: "Middle" }, { value: "footer", label: "Footer" },
