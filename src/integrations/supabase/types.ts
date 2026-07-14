@@ -477,6 +477,13 @@ export type Database = {
             foreignKeyName: "products_supplier_id_fkey"
             columns: ["supplier_id"]
             isOneToOne: false
+            referencedRelation: "public_suppliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "products_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
             referencedRelation: "suppliers"
             referencedColumns: ["id"]
           },
@@ -637,17 +644,48 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      public_suppliers: {
+        Row: {
+          brand_name: string | null
+          business_type: string | null
+          city: string | null
+          company_name: string | null
+          created_at: string | null
+          description: string | null
+          governorate: string | null
+          id: string | null
+          is_featured: boolean | null
+          logo_url: string | null
+        }
+        Insert: {
+          brand_name?: string | null
+          business_type?: string | null
+          city?: string | null
+          company_name?: string | null
+          created_at?: string | null
+          description?: string | null
+          governorate?: string | null
+          id?: string | null
+          is_featured?: boolean | null
+          logo_url?: string | null
+        }
+        Update: {
+          brand_name?: string | null
+          business_type?: string | null
+          city?: string | null
+          company_name?: string | null
+          created_at?: string | null
+          description?: string | null
+          governorate?: string | null
+          id?: string | null
+          is_featured?: boolean | null
+          logo_url?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
-      has_role: {
-        Args: {
-          _role: Database["public"]["Enums"]["app_role"]
-          _user_id: string
-        }
-        Returns: boolean
-      }
-      is_admin: { Args: { _user_id: string }; Returns: boolean }
+      [_ in never]: never
     }
     Enums: {
       account_type: "supplier" | "business_buyer" | "personal_buyer"
