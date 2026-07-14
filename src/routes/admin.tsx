@@ -1,12 +1,11 @@
-import { createFileRoute, Outlet, Link, redirect, useLocation } from "@tanstack/react-router";
+import { createFileRoute, Outlet, Link, useLocation } from "@tanstack/react-router";
 import { AuthProvider, useAuth } from "@/lib/auth-context";
+import { I18nProvider, useI18n } from "@/lib/i18n";
 import {
   LayoutDashboard, Package, FolderTree, BadgeCheck, Users, ShoppingBag, Image as ImageIcon,
-  Building2, Home as HomeIcon, LogOut, Settings, Layers,
+  Building2, Home as HomeIcon, LogOut, Settings, Layers, Globe,
 } from "lucide-react";
 import logoIcon from "@/assets/logo-icon.png";
-import { supabase } from "@/integrations/supabase/client";
-import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/admin")({
   component: () => (
@@ -16,18 +15,22 @@ export const Route = createFileRoute("/admin")({
   ),
 });
 
-const MENU = [
-  { to: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
-  { to: "/admin/products", label: "Products", icon: Package },
-  { to: "/admin/categories", label: "Categories", icon: FolderTree },
-  { to: "/admin/brands", label: "Brands", icon: BadgeCheck },
-  { to: "/admin/suppliers", label: "Suppliers", icon: Building2 },
-  { to: "/admin/orders", label: "Orders", icon: ShoppingBag },
-  { to: "/admin/users", label: "Users", icon: Users },
-  { to: "/admin/homepage", label: "Homepage CMS", icon: Layers },
-  { to: "/admin/banners", label: "Banners", icon: ImageIcon },
-  { to: "/admin/settings", label: "Settings", icon: Settings },
-];
+function useMenu() {
+  const { t } = useI18n();
+  return [
+    { to: "/admin", label: t("admin.dashboard"), icon: LayoutDashboard, exact: true },
+    { to: "/admin/products", label: t("admin.products"), icon: Package },
+    { to: "/admin/categories", label: t("admin.categories"), icon: FolderTree },
+    { to: "/admin/brands", label: t("admin.brands"), icon: BadgeCheck },
+    { to: "/admin/suppliers", label: t("admin.suppliers"), icon: Building2 },
+    { to: "/admin/orders", label: t("admin.orders"), icon: ShoppingBag },
+    { to: "/admin/users", label: t("admin.users"), icon: Users },
+    { to: "/admin/homepage", label: t("admin.homepage"), icon: Layers },
+    { to: "/admin/banners", label: t("admin.banners"), icon: ImageIcon },
+    { to: "/admin/media", label: t("admin.media"), icon: ImageIcon },
+    { to: "/admin/settings", label: t("admin.settings"), icon: Settings },
+  ] as const;
+}
 
 function AdminShell() {
   const { user, loading, isAdmin, signOut } = useAuth();
