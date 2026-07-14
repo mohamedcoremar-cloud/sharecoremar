@@ -205,6 +205,57 @@ export type Database = {
         }
         Relationships: []
       }
+      media_library: {
+        Row: {
+          alt_ar: string | null
+          alt_en: string | null
+          created_at: string
+          folder: string | null
+          height: number | null
+          id: string
+          mime_type: string | null
+          name: string
+          path: string
+          size_bytes: number | null
+          updated_at: string
+          uploaded_by: string | null
+          url: string
+          width: number | null
+        }
+        Insert: {
+          alt_ar?: string | null
+          alt_en?: string | null
+          created_at?: string
+          folder?: string | null
+          height?: number | null
+          id?: string
+          mime_type?: string | null
+          name: string
+          path: string
+          size_bytes?: number | null
+          updated_at?: string
+          uploaded_by?: string | null
+          url: string
+          width?: number | null
+        }
+        Update: {
+          alt_ar?: string | null
+          alt_en?: string | null
+          created_at?: string
+          folder?: string | null
+          height?: number | null
+          id?: string
+          mime_type?: string | null
+          name?: string
+          path?: string
+          size_bytes?: number | null
+          updated_at?: string
+          uploaded_by?: string | null
+          url?: string
+          width?: number | null
+        }
+        Relationships: []
+      }
       order_items: {
         Row: {
           created_at: string
@@ -464,6 +515,24 @@ export type Database = {
           language?: string | null
           phone?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      site_settings: {
+        Row: {
+          key: string
+          updated_at: string
+          value: Json
+        }
+        Insert: {
+          key: string
+          updated_at?: string
+          value?: Json
+        }
+        Update: {
+          key?: string
+          updated_at?: string
+          value?: Json
         }
         Relationships: []
       }
