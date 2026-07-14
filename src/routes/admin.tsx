@@ -33,7 +33,17 @@ function useMenu() {
 }
 
 function AdminShell() {
+  return (
+    <I18nProvider>
+      <AdminShellInner />
+    </I18nProvider>
+  );
+}
+
+function AdminShellInner() {
   const { user, loading, isAdmin, signOut } = useAuth();
+  const { t, lang, setLang } = useI18n();
+  const MENU = useMenu();
   const location = useLocation();
 
   if (loading) {
@@ -84,12 +94,15 @@ function AdminShell() {
             );
           })}
         </nav>
-        <div className="p-3 border-t border-sidebar-border">
+        <div className="p-3 border-t border-sidebar-border space-y-1">
+          <button onClick={() => setLang(lang === "en" ? "ar" : "en")} className="w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-sidebar-foreground/80 hover:bg-sidebar-accent">
+            <Globe className="h-4 w-4" /> {lang === "en" ? "العربية" : "English"}
+          </button>
           <Link to="/" className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-sidebar-foreground/80 hover:bg-sidebar-accent">
-            <HomeIcon className="h-4 w-4" /> Back to site
+            <HomeIcon className="h-4 w-4" /> {t("admin.back_to_site")}
           </Link>
           <button onClick={() => signOut()} className="w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-sidebar-foreground/80 hover:bg-sidebar-accent">
-            <LogOut className="h-4 w-4" /> Sign out
+            <LogOut className="h-4 w-4" /> {t("nav.signout")}
           </button>
         </div>
       </aside>
