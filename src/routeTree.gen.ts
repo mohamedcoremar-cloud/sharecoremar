@@ -23,6 +23,11 @@ import { Route as AdminHomepageRouteImport } from './routes/admin/homepage'
 import { Route as AdminCategoriesRouteImport } from './routes/admin/categories'
 import { Route as AdminBrandsRouteImport } from './routes/admin/brands'
 import { Route as AdminBannersRouteImport } from './routes/admin/banners'
+import { Route as PublicSuppliersRouteImport } from './routes/_public/suppliers'
+import { Route as PublicProductsRouteImport } from './routes/_public/products'
+import { Route as PublicCategoriesRouteImport } from './routes/_public/categories'
+import { Route as PublicBrandsRouteImport } from './routes/_public/brands'
+import { Route as PublicBecomeSupplierRouteImport } from './routes/_public/become-supplier'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -93,11 +98,41 @@ const AdminBannersRoute = AdminBannersRouteImport.update({
   path: '/banners',
   getParentRoute: () => AdminRoute,
 } as any)
+const PublicSuppliersRoute = PublicSuppliersRouteImport.update({
+  id: '/suppliers',
+  path: '/suppliers',
+  getParentRoute: () => PublicRoute,
+} as any)
+const PublicProductsRoute = PublicProductsRouteImport.update({
+  id: '/products',
+  path: '/products',
+  getParentRoute: () => PublicRoute,
+} as any)
+const PublicCategoriesRoute = PublicCategoriesRouteImport.update({
+  id: '/categories',
+  path: '/categories',
+  getParentRoute: () => PublicRoute,
+} as any)
+const PublicBrandsRoute = PublicBrandsRouteImport.update({
+  id: '/brands',
+  path: '/brands',
+  getParentRoute: () => PublicRoute,
+} as any)
+const PublicBecomeSupplierRoute = PublicBecomeSupplierRouteImport.update({
+  id: '/become-supplier',
+  path: '/become-supplier',
+  getParentRoute: () => PublicRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
+  '/become-supplier': typeof PublicBecomeSupplierRoute
+  '/brands': typeof PublicBrandsRoute
+  '/categories': typeof PublicCategoriesRoute
+  '/products': typeof PublicProductsRoute
+  '/suppliers': typeof PublicSuppliersRoute
   '/admin/banners': typeof AdminBannersRoute
   '/admin/brands': typeof AdminBrandsRoute
   '/admin/categories': typeof AdminCategoriesRoute
@@ -111,6 +146,11 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
+  '/become-supplier': typeof PublicBecomeSupplierRoute
+  '/brands': typeof PublicBrandsRoute
+  '/categories': typeof PublicCategoriesRoute
+  '/products': typeof PublicProductsRoute
+  '/suppliers': typeof PublicSuppliersRoute
   '/admin/banners': typeof AdminBannersRoute
   '/admin/brands': typeof AdminBrandsRoute
   '/admin/categories': typeof AdminCategoriesRoute
@@ -128,6 +168,11 @@ export interface FileRoutesById {
   '/_public': typeof PublicRouteWithChildren
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
+  '/_public/become-supplier': typeof PublicBecomeSupplierRoute
+  '/_public/brands': typeof PublicBrandsRoute
+  '/_public/categories': typeof PublicCategoriesRoute
+  '/_public/products': typeof PublicProductsRoute
+  '/_public/suppliers': typeof PublicSuppliersRoute
   '/admin/banners': typeof AdminBannersRoute
   '/admin/brands': typeof AdminBrandsRoute
   '/admin/categories': typeof AdminCategoriesRoute
@@ -146,6 +191,11 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/auth'
+    | '/become-supplier'
+    | '/brands'
+    | '/categories'
+    | '/products'
+    | '/suppliers'
     | '/admin/banners'
     | '/admin/brands'
     | '/admin/categories'
@@ -159,6 +209,11 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth'
+    | '/become-supplier'
+    | '/brands'
+    | '/categories'
+    | '/products'
+    | '/suppliers'
     | '/admin/banners'
     | '/admin/brands'
     | '/admin/categories'
@@ -175,6 +230,11 @@ export interface FileRouteTypes {
     | '/_public'
     | '/admin'
     | '/auth'
+    | '/_public/become-supplier'
+    | '/_public/brands'
+    | '/_public/categories'
+    | '/_public/products'
+    | '/_public/suppliers'
     | '/admin/banners'
     | '/admin/brands'
     | '/admin/categories'
@@ -294,14 +354,59 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminBannersRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/_public/suppliers': {
+      id: '/_public/suppliers'
+      path: '/suppliers'
+      fullPath: '/suppliers'
+      preLoaderRoute: typeof PublicSuppliersRouteImport
+      parentRoute: typeof PublicRoute
+    }
+    '/_public/products': {
+      id: '/_public/products'
+      path: '/products'
+      fullPath: '/products'
+      preLoaderRoute: typeof PublicProductsRouteImport
+      parentRoute: typeof PublicRoute
+    }
+    '/_public/categories': {
+      id: '/_public/categories'
+      path: '/categories'
+      fullPath: '/categories'
+      preLoaderRoute: typeof PublicCategoriesRouteImport
+      parentRoute: typeof PublicRoute
+    }
+    '/_public/brands': {
+      id: '/_public/brands'
+      path: '/brands'
+      fullPath: '/brands'
+      preLoaderRoute: typeof PublicBrandsRouteImport
+      parentRoute: typeof PublicRoute
+    }
+    '/_public/become-supplier': {
+      id: '/_public/become-supplier'
+      path: '/become-supplier'
+      fullPath: '/become-supplier'
+      preLoaderRoute: typeof PublicBecomeSupplierRouteImport
+      parentRoute: typeof PublicRoute
+    }
   }
 }
 
 interface PublicRouteChildren {
+  PublicBecomeSupplierRoute: typeof PublicBecomeSupplierRoute
+  PublicBrandsRoute: typeof PublicBrandsRoute
+  PublicCategoriesRoute: typeof PublicCategoriesRoute
+  PublicProductsRoute: typeof PublicProductsRoute
+  PublicSuppliersRoute: typeof PublicSuppliersRoute
   PublicIndexRoute: typeof PublicIndexRoute
 }
 
 const PublicRouteChildren: PublicRouteChildren = {
+  PublicBecomeSupplierRoute: PublicBecomeSupplierRoute,
+  PublicBrandsRoute: PublicBrandsRoute,
+  PublicCategoriesRoute: PublicCategoriesRoute,
+  PublicProductsRoute: PublicProductsRoute,
+  PublicSuppliersRoute: PublicSuppliersRoute,
   PublicIndexRoute: PublicIndexRoute,
 }
 
