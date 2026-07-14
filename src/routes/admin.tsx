@@ -84,7 +84,7 @@ function AdminShellInner() {
         </Link>
         <nav className="flex-1 overflow-y-auto p-3 space-y-1">
           {MENU.map((m) => {
-            const active = m.exact ? location.pathname === m.to : location.pathname.startsWith(m.to);
+            const active = (m as any).exact ? location.pathname === m.to : location.pathname.startsWith(m.to);
             const Icon = m.icon;
             return (
               <Link key={m.to} to={m.to} className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${active ? "bg-sidebar-accent text-primary" : "text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-foreground"}`}>
