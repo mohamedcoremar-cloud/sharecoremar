@@ -8,7 +8,7 @@ export const Route = createFileRoute("/_public/suppliers")({ component: Supplier
 function SuppliersPage() {
   const { data: suppliers = [] } = useQuery({
     queryKey: ["public-suppliers"],
-    queryFn: async () => (await supabase.from("suppliers").select("*").eq("status", "approved").order("is_featured", { ascending: false })).data ?? [],
+    queryFn: async () => (await (supabase as any).from("public_suppliers").select("*").order("is_featured", { ascending: false })).data ?? [],
   });
   return (
     <div className="mx-auto max-w-7xl px-4 py-10">
