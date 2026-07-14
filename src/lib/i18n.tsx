@@ -72,7 +72,7 @@ interface I18nCtx {
   dir: "ltr" | "rtl";
   setLang: (l: Lang) => void;
   t: (key: string) => string;
-  pick: <T extends Record<string, any>>(row: T, base: string) => any;
+  pick: (row: any, base: string) => any;
 }
 
 const Ctx = createContext<I18nCtx | undefined>(undefined);
@@ -98,7 +98,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   }
 
   const t = (key: string) => DICT[key]?.[lang] ?? key;
-  const pick = <T extends Record<string, any>>(row: T, base: string) => {
+  const pick = (row: any, base: string) => {
     if (!row) return "";
     return row[`${base}_${lang}`] ?? row[`${base}_en`] ?? row[base] ?? "";
   };
