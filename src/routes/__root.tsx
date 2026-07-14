@@ -55,9 +55,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { title: "Share CoreMar — Smart Market. Core Solutions." },
       { name: "description", content: "Share CoreMar — a premium unified commerce marketplace for suppliers, businesses, and personal buyers across Egypt." },
       { property: "og:title", content: "Share CoreMar — Smart Market. Core Solutions." },
-      { property: "og:description", content: "Premium unified commerce marketplace for suppliers, businesses, and personal buyers." },
+      { property: "og:description", content: "Share CoreMar — a premium unified commerce marketplace for suppliers, businesses, and personal buyers across Egypt." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Share CoreMar — Smart Market. Core Solutions." },
+      { name: "twitter:description", content: "Share CoreMar — a premium unified commerce marketplace for suppliers, businesses, and personal buyers across Egypt." },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
