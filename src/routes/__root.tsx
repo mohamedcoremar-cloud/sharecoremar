@@ -61,6 +61,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "Share CoreMar — Smart Market. Core Solutions." },
       { name: "twitter:description", content: "Share CoreMar — a premium unified commerce marketplace for suppliers, businesses, and personal buyers across Egypt." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/4de4e4bc-bced-46db-995f-3b1e7851cd0f/id-preview-b8c5429c--0f7c3750-872a-40ea-a0d5-c9268dba001e.lovable.app-1784008687895.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/4de4e4bc-bced-46db-995f-3b1e7851cd0f/id-preview-b8c5429c--0f7c3750-872a-40ea-a0d5-c9268dba001e.lovable.app-1784008687895.png" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
