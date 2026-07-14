@@ -111,10 +111,10 @@
   font-weight: 600;
   transition: all 200ms ease;
   box-shadow: var(--shadow-elegant);
-}
-@utility btn-gold:hover {
-  transform: translateY(-1px);
-  filter: brightness(1.05);
+  &:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.05);
+  }
 }
 @utility card-premium {
   background: var(--card);
@@ -122,8 +122,8 @@
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-card);
   transition: all 250ms ease;
-}
-@utility card-premium:hover {
-  box-shadow: var(--shadow-elegant);
-  transform: translateY(-2px);
+  &:hover {
+    box-shadow: var(--shadow-elegant);
+    transform: translateY(-2px);
+  }
 }
