@@ -29,19 +29,19 @@ function ProductsPage() {
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {products.map((p: any) => (
-            <div key={p.id} className="card-premium overflow-hidden">
-              <div className="aspect-square bg-muted flex items-center justify-center">
-                {p.images?.[0] ? <img src={p.images[0]} alt={p.name_en} className="h-full w-full object-cover" /> : <Sparkles className="h-10 w-10 text-muted-foreground" />}
+            <Link key={p.id} to="/product/$slug" params={{ slug: p.slug }} className="card-premium overflow-hidden group">
+              <div className="aspect-square bg-muted flex items-center justify-center overflow-hidden">
+                {p.images?.[0] ? <img src={p.images[0]} alt={p.name_en} className="h-full w-full object-cover group-hover:scale-105 transition-transform" /> : <Sparkles className="h-10 w-10 text-muted-foreground" />}
               </div>
               <div className="p-4">
                 <div className="text-xs text-muted-foreground mb-1">{p.brand?.name ?? p.category?.name_en}</div>
                 <h3 className="font-semibold text-sm line-clamp-2">{p.name_en}</h3>
                 <div className="mt-2 flex items-baseline gap-2">
-                  <span className="text-lg font-bold text-primary">{Number(p.retail_price).toFixed(2)}</span>
+                  <span className="text-lg font-bold text-primary">{Number(p.is_offer && p.offer_price ? p.offer_price : p.retail_price).toFixed(2)}</span>
                   <span className="text-xs text-muted-foreground">EGP</span>
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       )}

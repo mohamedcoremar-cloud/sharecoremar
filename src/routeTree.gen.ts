@@ -19,17 +19,27 @@ import { Route as AdminUsersRouteImport } from './routes/admin/users'
 import { Route as AdminSuppliersRouteImport } from './routes/admin/suppliers'
 import { Route as AdminSettingsRouteImport } from './routes/admin/settings'
 import { Route as AdminProductsRouteImport } from './routes/admin/products'
+import { Route as AdminPaymentsRouteImport } from './routes/admin/payments'
+import { Route as AdminPagesRouteImport } from './routes/admin/pages'
 import { Route as AdminOrdersRouteImport } from './routes/admin/orders'
 import { Route as AdminMediaRouteImport } from './routes/admin/media'
 import { Route as AdminHomepageRouteImport } from './routes/admin/homepage'
 import { Route as AdminCategoriesRouteImport } from './routes/admin/categories'
 import { Route as AdminBrandsRouteImport } from './routes/admin/brands'
 import { Route as AdminBannersRouteImport } from './routes/admin/banners'
+import { Route as PublicWishlistRouteImport } from './routes/_public/wishlist'
 import { Route as PublicSuppliersRouteImport } from './routes/_public/suppliers'
 import { Route as PublicProductsRouteImport } from './routes/_public/products'
+import { Route as PublicOrdersRouteImport } from './routes/_public/orders'
+import { Route as PublicCheckoutRouteImport } from './routes/_public/checkout'
 import { Route as PublicCategoriesRouteImport } from './routes/_public/categories'
+import { Route as PublicCartRouteImport } from './routes/_public/cart'
 import { Route as PublicBrandsRouteImport } from './routes/_public/brands'
 import { Route as PublicBecomeSupplierRouteImport } from './routes/_public/become-supplier'
+import { Route as PublicAccountRouteImport } from './routes/_public/account'
+import { Route as PublicProductSlugRouteImport } from './routes/_public/product.$slug'
+import { Route as PublicPSlugRouteImport } from './routes/_public/p.$slug'
+import { Route as PublicOrderIdRouteImport } from './routes/_public/order.$id'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -80,6 +90,16 @@ const AdminProductsRoute = AdminProductsRouteImport.update({
   path: '/products',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminPaymentsRoute = AdminPaymentsRouteImport.update({
+  id: '/payments',
+  path: '/payments',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminPagesRoute = AdminPagesRouteImport.update({
+  id: '/pages',
+  path: '/pages',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminOrdersRoute = AdminOrdersRouteImport.update({
   id: '/orders',
   path: '/orders',
@@ -110,6 +130,11 @@ const AdminBannersRoute = AdminBannersRouteImport.update({
   path: '/banners',
   getParentRoute: () => AdminRoute,
 } as any)
+const PublicWishlistRoute = PublicWishlistRouteImport.update({
+  id: '/wishlist',
+  path: '/wishlist',
+  getParentRoute: () => PublicRoute,
+} as any)
 const PublicSuppliersRoute = PublicSuppliersRouteImport.update({
   id: '/suppliers',
   path: '/suppliers',
@@ -120,9 +145,24 @@ const PublicProductsRoute = PublicProductsRouteImport.update({
   path: '/products',
   getParentRoute: () => PublicRoute,
 } as any)
+const PublicOrdersRoute = PublicOrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
+  getParentRoute: () => PublicRoute,
+} as any)
+const PublicCheckoutRoute = PublicCheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
+  getParentRoute: () => PublicRoute,
+} as any)
 const PublicCategoriesRoute = PublicCategoriesRouteImport.update({
   id: '/categories',
   path: '/categories',
+  getParentRoute: () => PublicRoute,
+} as any)
+const PublicCartRoute = PublicCartRouteImport.update({
+  id: '/cart',
+  path: '/cart',
   getParentRoute: () => PublicRoute,
 } as any)
 const PublicBrandsRoute = PublicBrandsRouteImport.update({
@@ -135,49 +175,89 @@ const PublicBecomeSupplierRoute = PublicBecomeSupplierRouteImport.update({
   path: '/become-supplier',
   getParentRoute: () => PublicRoute,
 } as any)
+const PublicAccountRoute = PublicAccountRouteImport.update({
+  id: '/account',
+  path: '/account',
+  getParentRoute: () => PublicRoute,
+} as any)
+const PublicProductSlugRoute = PublicProductSlugRouteImport.update({
+  id: '/product/$slug',
+  path: '/product/$slug',
+  getParentRoute: () => PublicRoute,
+} as any)
+const PublicPSlugRoute = PublicPSlugRouteImport.update({
+  id: '/p/$slug',
+  path: '/p/$slug',
+  getParentRoute: () => PublicRoute,
+} as any)
+const PublicOrderIdRoute = PublicOrderIdRouteImport.update({
+  id: '/order/$id',
+  path: '/order/$id',
+  getParentRoute: () => PublicRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/account': typeof PublicAccountRoute
   '/become-supplier': typeof PublicBecomeSupplierRoute
   '/brands': typeof PublicBrandsRoute
+  '/cart': typeof PublicCartRoute
   '/categories': typeof PublicCategoriesRoute
+  '/checkout': typeof PublicCheckoutRoute
+  '/orders': typeof PublicOrdersRoute
   '/products': typeof PublicProductsRoute
   '/suppliers': typeof PublicSuppliersRoute
+  '/wishlist': typeof PublicWishlistRoute
   '/admin/banners': typeof AdminBannersRoute
   '/admin/brands': typeof AdminBrandsRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/homepage': typeof AdminHomepageRoute
   '/admin/media': typeof AdminMediaRoute
   '/admin/orders': typeof AdminOrdersRoute
+  '/admin/pages': typeof AdminPagesRoute
+  '/admin/payments': typeof AdminPaymentsRoute
   '/admin/products': typeof AdminProductsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/suppliers': typeof AdminSuppliersRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/': typeof AdminIndexRoute
+  '/order/$id': typeof PublicOrderIdRoute
+  '/p/$slug': typeof PublicPSlugRoute
+  '/product/$slug': typeof PublicProductSlugRoute
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/account': typeof PublicAccountRoute
   '/become-supplier': typeof PublicBecomeSupplierRoute
   '/brands': typeof PublicBrandsRoute
+  '/cart': typeof PublicCartRoute
   '/categories': typeof PublicCategoriesRoute
+  '/checkout': typeof PublicCheckoutRoute
+  '/orders': typeof PublicOrdersRoute
   '/products': typeof PublicProductsRoute
   '/suppliers': typeof PublicSuppliersRoute
+  '/wishlist': typeof PublicWishlistRoute
   '/admin/banners': typeof AdminBannersRoute
   '/admin/brands': typeof AdminBrandsRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/homepage': typeof AdminHomepageRoute
   '/admin/media': typeof AdminMediaRoute
   '/admin/orders': typeof AdminOrdersRoute
+  '/admin/pages': typeof AdminPagesRoute
+  '/admin/payments': typeof AdminPaymentsRoute
   '/admin/products': typeof AdminProductsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/suppliers': typeof AdminSuppliersRoute
   '/admin/users': typeof AdminUsersRoute
   '/': typeof PublicIndexRoute
   '/admin': typeof AdminIndexRoute
+  '/order/$id': typeof PublicOrderIdRoute
+  '/p/$slug': typeof PublicPSlugRoute
+  '/product/$slug': typeof PublicProductSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -185,23 +265,33 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/_public/account': typeof PublicAccountRoute
   '/_public/become-supplier': typeof PublicBecomeSupplierRoute
   '/_public/brands': typeof PublicBrandsRoute
+  '/_public/cart': typeof PublicCartRoute
   '/_public/categories': typeof PublicCategoriesRoute
+  '/_public/checkout': typeof PublicCheckoutRoute
+  '/_public/orders': typeof PublicOrdersRoute
   '/_public/products': typeof PublicProductsRoute
   '/_public/suppliers': typeof PublicSuppliersRoute
+  '/_public/wishlist': typeof PublicWishlistRoute
   '/admin/banners': typeof AdminBannersRoute
   '/admin/brands': typeof AdminBrandsRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/homepage': typeof AdminHomepageRoute
   '/admin/media': typeof AdminMediaRoute
   '/admin/orders': typeof AdminOrdersRoute
+  '/admin/pages': typeof AdminPagesRoute
+  '/admin/payments': typeof AdminPaymentsRoute
   '/admin/products': typeof AdminProductsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/suppliers': typeof AdminSuppliersRoute
   '/admin/users': typeof AdminUsersRoute
   '/_public/': typeof PublicIndexRoute
   '/admin/': typeof AdminIndexRoute
+  '/_public/order/$id': typeof PublicOrderIdRoute
+  '/_public/p/$slug': typeof PublicPSlugRoute
+  '/_public/product/$slug': typeof PublicProductSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -210,66 +300,96 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/sitemap.xml'
+    | '/account'
     | '/become-supplier'
     | '/brands'
+    | '/cart'
     | '/categories'
+    | '/checkout'
+    | '/orders'
     | '/products'
     | '/suppliers'
+    | '/wishlist'
     | '/admin/banners'
     | '/admin/brands'
     | '/admin/categories'
     | '/admin/homepage'
     | '/admin/media'
     | '/admin/orders'
+    | '/admin/pages'
+    | '/admin/payments'
     | '/admin/products'
     | '/admin/settings'
     | '/admin/suppliers'
     | '/admin/users'
     | '/admin/'
+    | '/order/$id'
+    | '/p/$slug'
+    | '/product/$slug'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth'
     | '/sitemap.xml'
+    | '/account'
     | '/become-supplier'
     | '/brands'
+    | '/cart'
     | '/categories'
+    | '/checkout'
+    | '/orders'
     | '/products'
     | '/suppliers'
+    | '/wishlist'
     | '/admin/banners'
     | '/admin/brands'
     | '/admin/categories'
     | '/admin/homepage'
     | '/admin/media'
     | '/admin/orders'
+    | '/admin/pages'
+    | '/admin/payments'
     | '/admin/products'
     | '/admin/settings'
     | '/admin/suppliers'
     | '/admin/users'
     | '/'
     | '/admin'
+    | '/order/$id'
+    | '/p/$slug'
+    | '/product/$slug'
   id:
     | '__root__'
     | '/_public'
     | '/admin'
     | '/auth'
     | '/sitemap.xml'
+    | '/_public/account'
     | '/_public/become-supplier'
     | '/_public/brands'
+    | '/_public/cart'
     | '/_public/categories'
+    | '/_public/checkout'
+    | '/_public/orders'
     | '/_public/products'
     | '/_public/suppliers'
+    | '/_public/wishlist'
     | '/admin/banners'
     | '/admin/brands'
     | '/admin/categories'
     | '/admin/homepage'
     | '/admin/media'
     | '/admin/orders'
+    | '/admin/pages'
+    | '/admin/payments'
     | '/admin/products'
     | '/admin/settings'
     | '/admin/suppliers'
     | '/admin/users'
     | '/_public/'
     | '/admin/'
+    | '/_public/order/$id'
+    | '/_public/p/$slug'
+    | '/_public/product/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -351,6 +471,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminProductsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/payments': {
+      id: '/admin/payments'
+      path: '/payments'
+      fullPath: '/admin/payments'
+      preLoaderRoute: typeof AdminPaymentsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/pages': {
+      id: '/admin/pages'
+      path: '/pages'
+      fullPath: '/admin/pages'
+      preLoaderRoute: typeof AdminPagesRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/orders': {
       id: '/admin/orders'
       path: '/orders'
@@ -393,6 +527,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminBannersRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/_public/wishlist': {
+      id: '/_public/wishlist'
+      path: '/wishlist'
+      fullPath: '/wishlist'
+      preLoaderRoute: typeof PublicWishlistRouteImport
+      parentRoute: typeof PublicRoute
+    }
     '/_public/suppliers': {
       id: '/_public/suppliers'
       path: '/suppliers'
@@ -407,11 +548,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicProductsRouteImport
       parentRoute: typeof PublicRoute
     }
+    '/_public/orders': {
+      id: '/_public/orders'
+      path: '/orders'
+      fullPath: '/orders'
+      preLoaderRoute: typeof PublicOrdersRouteImport
+      parentRoute: typeof PublicRoute
+    }
+    '/_public/checkout': {
+      id: '/_public/checkout'
+      path: '/checkout'
+      fullPath: '/checkout'
+      preLoaderRoute: typeof PublicCheckoutRouteImport
+      parentRoute: typeof PublicRoute
+    }
     '/_public/categories': {
       id: '/_public/categories'
       path: '/categories'
       fullPath: '/categories'
       preLoaderRoute: typeof PublicCategoriesRouteImport
+      parentRoute: typeof PublicRoute
+    }
+    '/_public/cart': {
+      id: '/_public/cart'
+      path: '/cart'
+      fullPath: '/cart'
+      preLoaderRoute: typeof PublicCartRouteImport
       parentRoute: typeof PublicRoute
     }
     '/_public/brands': {
@@ -428,25 +590,69 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicBecomeSupplierRouteImport
       parentRoute: typeof PublicRoute
     }
+    '/_public/account': {
+      id: '/_public/account'
+      path: '/account'
+      fullPath: '/account'
+      preLoaderRoute: typeof PublicAccountRouteImport
+      parentRoute: typeof PublicRoute
+    }
+    '/_public/product/$slug': {
+      id: '/_public/product/$slug'
+      path: '/product/$slug'
+      fullPath: '/product/$slug'
+      preLoaderRoute: typeof PublicProductSlugRouteImport
+      parentRoute: typeof PublicRoute
+    }
+    '/_public/p/$slug': {
+      id: '/_public/p/$slug'
+      path: '/p/$slug'
+      fullPath: '/p/$slug'
+      preLoaderRoute: typeof PublicPSlugRouteImport
+      parentRoute: typeof PublicRoute
+    }
+    '/_public/order/$id': {
+      id: '/_public/order/$id'
+      path: '/order/$id'
+      fullPath: '/order/$id'
+      preLoaderRoute: typeof PublicOrderIdRouteImport
+      parentRoute: typeof PublicRoute
+    }
   }
 }
 
 interface PublicRouteChildren {
+  PublicAccountRoute: typeof PublicAccountRoute
   PublicBecomeSupplierRoute: typeof PublicBecomeSupplierRoute
   PublicBrandsRoute: typeof PublicBrandsRoute
+  PublicCartRoute: typeof PublicCartRoute
   PublicCategoriesRoute: typeof PublicCategoriesRoute
+  PublicCheckoutRoute: typeof PublicCheckoutRoute
+  PublicOrdersRoute: typeof PublicOrdersRoute
   PublicProductsRoute: typeof PublicProductsRoute
   PublicSuppliersRoute: typeof PublicSuppliersRoute
+  PublicWishlistRoute: typeof PublicWishlistRoute
   PublicIndexRoute: typeof PublicIndexRoute
+  PublicOrderIdRoute: typeof PublicOrderIdRoute
+  PublicPSlugRoute: typeof PublicPSlugRoute
+  PublicProductSlugRoute: typeof PublicProductSlugRoute
 }
 
 const PublicRouteChildren: PublicRouteChildren = {
+  PublicAccountRoute: PublicAccountRoute,
   PublicBecomeSupplierRoute: PublicBecomeSupplierRoute,
   PublicBrandsRoute: PublicBrandsRoute,
+  PublicCartRoute: PublicCartRoute,
   PublicCategoriesRoute: PublicCategoriesRoute,
+  PublicCheckoutRoute: PublicCheckoutRoute,
+  PublicOrdersRoute: PublicOrdersRoute,
   PublicProductsRoute: PublicProductsRoute,
   PublicSuppliersRoute: PublicSuppliersRoute,
+  PublicWishlistRoute: PublicWishlistRoute,
   PublicIndexRoute: PublicIndexRoute,
+  PublicOrderIdRoute: PublicOrderIdRoute,
+  PublicPSlugRoute: PublicPSlugRoute,
+  PublicProductSlugRoute: PublicProductSlugRoute,
 }
 
 const PublicRouteWithChildren =
@@ -459,6 +665,8 @@ interface AdminRouteChildren {
   AdminHomepageRoute: typeof AdminHomepageRoute
   AdminMediaRoute: typeof AdminMediaRoute
   AdminOrdersRoute: typeof AdminOrdersRoute
+  AdminPagesRoute: typeof AdminPagesRoute
+  AdminPaymentsRoute: typeof AdminPaymentsRoute
   AdminProductsRoute: typeof AdminProductsRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
   AdminSuppliersRoute: typeof AdminSuppliersRoute
@@ -473,6 +681,8 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminHomepageRoute: AdminHomepageRoute,
   AdminMediaRoute: AdminMediaRoute,
   AdminOrdersRoute: AdminOrdersRoute,
+  AdminPagesRoute: AdminPagesRoute,
+  AdminPaymentsRoute: AdminPaymentsRoute,
   AdminProductsRoute: AdminProductsRoute,
   AdminSettingsRoute: AdminSettingsRoute,
   AdminSuppliersRoute: AdminSuppliersRoute,
