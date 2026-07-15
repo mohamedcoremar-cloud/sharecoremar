@@ -49,9 +49,12 @@ export function SiteFooter() {
         <div>
           <h4 className="font-semibold mb-3 text-sm">{t("footer.support")}</h4>
           <ul className="space-y-2 text-sm text-muted-foreground">
-            <li>{t("footer.contact")}</li>
-            <li>{t("footer.help")}</li>
-            <li>{t("footer.terms")}</li>
+            <li><Link to="/p/$slug" params={{ slug: "about" }} className="hover:text-foreground">About Us</Link></li>
+            <li><Link to="/p/$slug" params={{ slug: "contact" }} className="hover:text-foreground">Contact</Link></li>
+            <li><Link to="/p/$slug" params={{ slug: "shipping" }} className="hover:text-foreground">Shipping</Link></li>
+            <li><Link to="/p/$slug" params={{ slug: "returns" }} className="hover:text-foreground">Returns</Link></li>
+            <li><Link to="/p/$slug" params={{ slug: "privacy" }} className="hover:text-foreground">Privacy</Link></li>
+            <li><Link to="/p/$slug" params={{ slug: "terms" }} className="hover:text-foreground">Terms</Link></li>
           </ul>
           {social && (
             <div className="flex gap-3 mt-4 text-xs">

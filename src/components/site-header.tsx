@@ -47,7 +47,12 @@ export function SiteHeader() {
             <Globe className="h-4 w-4" /> {lang === "en" ? "AR" : "EN"}
           </Button>
           <Button variant="ghost" size="icon" asChild><Link to="/wishlist"><Heart className="h-5 w-5" /></Link></Button>
-          <Button variant="ghost" size="icon" asChild><Link to="/cart"><ShoppingCart className="h-5 w-5" /></Link></Button>
+          <Button variant="ghost" size="icon" asChild className="relative">
+            <Link to="/cart">
+              <ShoppingCart className="h-5 w-5" />
+              {count > 0 && <span className="absolute -top-1 -right-1 h-4 min-w-4 px-1 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center">{count}</span>}
+            </Link>
+          </Button>
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

@@ -3,7 +3,7 @@ import { AuthProvider, useAuth } from "@/lib/auth-context";
 import { I18nProvider, useI18n } from "@/lib/i18n";
 import {
   LayoutDashboard, Package, FolderTree, BadgeCheck, Users, ShoppingBag, Image as ImageIcon,
-  Building2, Home as HomeIcon, LogOut, Settings, Layers, Globe,
+  Building2, Home as HomeIcon, LogOut, Settings, Layers, Globe, FileText, CreditCard,
 } from "lucide-react";
 import logoIcon from "@/assets/logo-icon.png";
 
@@ -28,6 +28,8 @@ function useMenu() {
     { to: "/admin/homepage", label: t("admin.homepage"), icon: Layers },
     { to: "/admin/banners", label: t("admin.banners"), icon: ImageIcon },
     { to: "/admin/media", label: t("admin.media"), icon: ImageIcon },
+    { to: "/admin/pages", label: "Pages", icon: FileText },
+    { to: "/admin/payments", label: "Payment Methods", icon: CreditCard },
     { to: "/admin/settings", label: t("admin.settings"), icon: Settings },
   ] as const;
 }
