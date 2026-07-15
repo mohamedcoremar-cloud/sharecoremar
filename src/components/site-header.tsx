@@ -3,6 +3,7 @@ import { ShoppingCart, Heart, Menu, Search, User, LogOut, LayoutDashboard, Globe
 import { useState } from "react";
 import logoIcon from "@/assets/logo-icon.png";
 import { useAuth } from "@/lib/auth-context";
+import { useCart } from "@/lib/cart-context";
 import { useI18n } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,6 +12,7 @@ import {
 
 export function SiteHeader() {
   const { user, isAdmin, signOut } = useAuth();
+  const { count } = useCart();
   const { t, lang, setLang } = useI18n();
   const [open, setOpen] = useState(false);
   const NAV = [
