@@ -7,6 +7,7 @@ export const Route = createFileRoute("/admin/payments")({
       title="Payment Methods"
       table="payment_methods"
       orderBy="sort_order"
+      activeKey="is_enabled"
       defaultValues={{ is_enabled: false, is_available_at_launch: false, environment: "sandbox", sort_order: 0, fees_percent: 0, fees_fixed: 0, config: {} }}
       columns={[
         { key: "code", label: "Code" },

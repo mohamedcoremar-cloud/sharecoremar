@@ -31,9 +31,10 @@ interface Props {
   defaultValues?: Record<string, any>;
   searchKeys?: string[];
   hasActive?: boolean;
+  activeKey?: string;
 }
 
-export function CrudPage({ title, table, columns, fields, orderBy = "created_at", defaultValues = {}, searchKeys = ["name", "name_en", "slug", "title_en"], hasActive = true }: Props) {
+export function CrudPage({ title, table, columns, fields, orderBy = "created_at", defaultValues = {}, searchKeys = ["name", "name_en", "slug", "title_en"], hasActive = true, activeKey = "is_active" }: Props) {
   const { t } = useI18n();
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
@@ -55,12 +56,12 @@ export function CrudPage({ title, table, columns, fields, orderBy = "created_at"
   const filtered = useMemo(() => {
     const ql = q.toLowerCase().trim();
     return (rows as any[]).filter((r) => {
-      if (filter === "active" && !r.is_active) return false;
-      if (filter === "inactive" && r.is_active) return false;
+      if (filter === "active" && !r[activeKey]) return false;
+      if (filter === "inactive" && r[activeKey]) return false;
       if (!ql) return true;
       return searchKeys.some((k) => String(r[k] ?? "").toLowerCase().includes(ql));
     });
-  }, [rows, q, filter, searchKeys]);
+  }, [rows, q, filter, searchKeys, activeKey]);
 
   const save = useMutation({
     mutationFn: async (payload: any) => {
@@ -87,7 +88,7 @@ export function CrudPage({ title, table, columns, fields, orderBy = "created_at"
 
   const bulkSet = useMutation({
     mutationFn: async ({ ids, active }: { ids: string[]; active: boolean }) => {
-      const { error } = await supabase.from(table as any).update({ is_active: active }).in("id", ids);
+      const { error } = await supabase.from(table as any).update({ [activeKey]: active } as any).in("id", ids);
       if (error) throw error;
     },
     onSuccess: () => { qc.invalidateQueries({ queryKey: [table] }); setSelected(new Set()); toast.success("Updated"); },

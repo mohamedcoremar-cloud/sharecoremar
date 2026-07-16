@@ -7,6 +7,7 @@ export const Route = createFileRoute("/admin/pages")({
       title="Pages (CMS)"
       table="pages"
       orderBy="sort_order"
+      activeKey="is_published"
       defaultValues={{ is_published: false, is_indexable: true, sort_order: 0 }}
       columns={[
         { key: "slug", label: "Slug" },
