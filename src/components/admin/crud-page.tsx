@@ -88,7 +88,7 @@ export function CrudPage({ title, table, columns, fields, orderBy = "created_at"
 
   const bulkSet = useMutation({
     mutationFn: async ({ ids, active }: { ids: string[]; active: boolean }) => {
-      const { error } = await supabase.from(table as any).update({ is_active: active }).in("id", ids);
+      const { error } = await supabase.from(table as any).update({ [activeKey]: active } as any).in("id", ids);
       if (error) throw error;
     },
     onSuccess: () => { qc.invalidateQueries({ queryKey: [table] }); setSelected(new Set()); toast.success("Updated"); },
