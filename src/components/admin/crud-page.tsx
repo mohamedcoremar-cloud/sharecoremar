@@ -56,12 +56,12 @@ export function CrudPage({ title, table, columns, fields, orderBy = "created_at"
   const filtered = useMemo(() => {
     const ql = q.toLowerCase().trim();
     return (rows as any[]).filter((r) => {
-      if (filter === "active" && !r.is_active) return false;
-      if (filter === "inactive" && r.is_active) return false;
+      if (filter === "active" && !r[activeKey]) return false;
+      if (filter === "inactive" && r[activeKey]) return false;
       if (!ql) return true;
       return searchKeys.some((k) => String(r[k] ?? "").toLowerCase().includes(ql));
     });
-  }, [rows, q, filter, searchKeys]);
+  }, [rows, q, filter, searchKeys, activeKey]);
 
   const save = useMutation({
     mutationFn: async (payload: any) => {
