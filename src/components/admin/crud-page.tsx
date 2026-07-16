@@ -31,9 +31,10 @@ interface Props {
   defaultValues?: Record<string, any>;
   searchKeys?: string[];
   hasActive?: boolean;
+  activeKey?: string;
 }
 
-export function CrudPage({ title, table, columns, fields, orderBy = "created_at", defaultValues = {}, searchKeys = ["name", "name_en", "slug", "title_en"], hasActive = true }: Props) {
+export function CrudPage({ title, table, columns, fields, orderBy = "created_at", defaultValues = {}, searchKeys = ["name", "name_en", "slug", "title_en"], hasActive = true, activeKey = "is_active" }: Props) {
   const { t } = useI18n();
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
