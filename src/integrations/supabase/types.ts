@@ -894,6 +894,69 @@ export type Database = {
         }
         Relationships: []
       }
+      theme_settings: {
+        Row: {
+          color_accent: string
+          color_accent_foreground: string
+          color_background: string
+          color_border: string
+          color_error: string
+          color_primary: string
+          color_primary_foreground: string
+          color_secondary: string
+          color_secondary_foreground: string
+          color_success: string
+          color_surface: string
+          color_text: string
+          color_warning: string
+          favicon_url: string | null
+          font_family: string
+          id: string
+          logo_url: string | null
+          updated_at: string
+        }
+        Insert: {
+          color_accent?: string
+          color_accent_foreground?: string
+          color_background?: string
+          color_border?: string
+          color_error?: string
+          color_primary?: string
+          color_primary_foreground?: string
+          color_secondary?: string
+          color_secondary_foreground?: string
+          color_success?: string
+          color_surface?: string
+          color_text?: string
+          color_warning?: string
+          favicon_url?: string | null
+          font_family?: string
+          id?: string
+          logo_url?: string | null
+          updated_at?: string
+        }
+        Update: {
+          color_accent?: string
+          color_accent_foreground?: string
+          color_background?: string
+          color_border?: string
+          color_error?: string
+          color_primary?: string
+          color_primary_foreground?: string
+          color_secondary?: string
+          color_secondary_foreground?: string
+          color_success?: string
+          color_surface?: string
+          color_text?: string
+          color_warning?: string
+          favicon_url?: string | null
+          font_family?: string
+          id?: string
+          logo_url?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
