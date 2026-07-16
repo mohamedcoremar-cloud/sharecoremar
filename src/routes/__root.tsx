@@ -106,6 +106,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <I18nProvider>
+        <ThemeTokensProvider />
         <Outlet />
         <Toaster position="top-center" richColors />
       </I18nProvider>
