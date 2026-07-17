@@ -258,6 +258,39 @@ export type Database = {
           },
         ]
       }
+      content_versions: {
+        Row: {
+          change_note: string | null
+          created_at: string
+          created_by: string | null
+          entity_id: string
+          entity_type: string
+          id: string
+          snapshot: Json
+          version_number: number
+        }
+        Insert: {
+          change_note?: string | null
+          created_at?: string
+          created_by?: string | null
+          entity_id: string
+          entity_type: string
+          id?: string
+          snapshot: Json
+          version_number: number
+        }
+        Update: {
+          change_note?: string | null
+          created_at?: string
+          created_by?: string | null
+          entity_id?: string
+          entity_type?: string
+          id?: string
+          snapshot?: Json
+          version_number?: number
+        }
+        Relationships: []
+      }
       homepage_sections: {
         Row: {
           content: Json | null
@@ -1050,7 +1083,14 @@ export type Database = {
       }
     }
     Functions: {
-      [_ in never]: never
+      rollback_content_version: {
+        Args: {
+          p_entity_id: string
+          p_entity_type: string
+          p_version_number: number
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       account_type: "supplier" | "business_buyer" | "personal_buyer"
