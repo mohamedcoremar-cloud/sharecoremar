@@ -160,33 +160,49 @@ export type Database = {
       }
       cart_items: {
         Row: {
+          cart_id: string | null
           created_at: string
           id: string
           product_id: string
           quantity: number
           saved_for_later: boolean
+          session_token: string | null
+          unit_price_snapshot: number | null
           updated_at: string
-          user_id: string
+          user_id: string | null
         }
         Insert: {
+          cart_id?: string | null
           created_at?: string
           id?: string
           product_id: string
           quantity?: number
           saved_for_later?: boolean
+          session_token?: string | null
+          unit_price_snapshot?: number | null
           updated_at?: string
-          user_id: string
+          user_id?: string | null
         }
         Update: {
+          cart_id?: string | null
           created_at?: string
           id?: string
           product_id?: string
           quantity?: number
           saved_for_later?: boolean
+          session_token?: string | null
+          unit_price_snapshot?: number | null
           updated_at?: string
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "cart_items_cart_id_fkey"
+            columns: ["cart_id"]
+            isOneToOne: false
+            referencedRelation: "carts"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "cart_items_product_id_fkey"
             columns: ["product_id"]
@@ -195,6 +211,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      carts: {
+        Row: {
+          created_at: string
+          currency: string
+          customer_id: string | null
+          deleted_at: string | null
+          id: string
+          session_token: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          currency?: string
+          customer_id?: string | null
+          deleted_at?: string | null
+          id?: string
+          session_token?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          currency?: string
+          customer_id?: string | null
+          deleted_at?: string | null
+          id?: string
+          session_token?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       categories: {
         Row: {
@@ -1083,6 +1132,10 @@ export type Database = {
       }
     }
     Functions: {
+      merge_guest_cart_on_login: {
+        Args: { p_session_token: string }
+        Returns: string
+      }
       rollback_content_version: {
         Args: {
           p_entity_id: string
