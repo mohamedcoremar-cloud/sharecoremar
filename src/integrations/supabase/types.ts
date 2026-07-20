@@ -716,6 +716,81 @@ export type Database = {
         }
         Relationships: []
       }
+      payments: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string
+          gateway_reference: string | null
+          id: string
+          metadata: Json
+          method: Database["public"]["Enums"]["payment_method"]
+          order_id: string
+          proof_media_id: string | null
+          proof_url: string | null
+          review_note: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          transfer_reference: string | null
+          transferred_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          currency?: string
+          gateway_reference?: string | null
+          id?: string
+          metadata?: Json
+          method: Database["public"]["Enums"]["payment_method"]
+          order_id: string
+          proof_media_id?: string | null
+          proof_url?: string | null
+          review_note?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          transfer_reference?: string | null
+          transferred_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          gateway_reference?: string | null
+          id?: string
+          metadata?: Json
+          method?: Database["public"]["Enums"]["payment_method"]
+          order_id?: string
+          proof_media_id?: string | null
+          proof_url?: string | null
+          review_note?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          transfer_reference?: string | null
+          transferred_at?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_proof_media_id_fkey"
+            columns: ["proof_media_id"]
+            isOneToOne: false
+            referencedRelation: "media_library"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
           barcode: string | null
@@ -1132,9 +1207,17 @@ export type Database = {
       }
     }
     Functions: {
+      approve_order_payment: {
+        Args: { p_note?: string; p_order_id: string }
+        Returns: Json
+      }
       merge_guest_cart_on_login: {
         Args: { p_session_token: string }
         Returns: string
+      }
+      reject_order_payment: {
+        Args: { p_order_id: string; p_reason: string }
+        Returns: Json
       }
       rollback_content_version: {
         Args: {
@@ -1155,6 +1238,7 @@ export type Database = {
         | "personal_buyer"
       order_status:
         | "pending"
+        | "pending_payment_review"
         | "confirmed"
         | "processing"
         | "shipped"
@@ -1301,6 +1385,7 @@ export const Constants = {
       ],
       order_status: [
         "pending",
+        "pending_payment_review",
         "confirmed",
         "processing",
         "shipped",
