@@ -25,12 +25,13 @@ function OrderPage() {
   const { data, isLoading } = useQuery({
     queryKey: ["order", id],
     queryFn: async () => {
-      const [{ data: order }, { data: items }, { data: history }] = await Promise.all([
+      const [{ data: order }, { data: items }, { data: history }, { data: payments }] = await Promise.all([
         supabase.from("orders").select("*").eq("id", id).maybeSingle(),
         supabase.from("order_items").select("*").eq("order_id", id),
         supabase.from("order_status_history").select("*").eq("order_id", id).eq("is_internal", false).order("created_at"),
+        supabase.from("payments").select("*").eq("order_id", id).order("created_at", { ascending: false }),
       ]);
-      return { order, items: items ?? [], history: history ?? [] };
+      return { order, items: items ?? [], history: history ?? [], payment: payments?.[0] ?? null };
     },
   });
 
