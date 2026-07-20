@@ -74,17 +74,22 @@ function CheckoutPage() {
 
   async function placeOrder() {
     if (!addressId) { toast.error("Please select or add a delivery address"); return; }
+    if (requiresProof && (!proof || !transferRef.trim())) {
+      toast.error("Please upload proof of transfer and enter the reference number");
+      return;
+    }
     setPlacing(true);
     try {
       const addr = addresses.find((a: any) => a.id === addressId);
       const orderNumber = `SC-${Date.now().toString().slice(-8)}`;
+      const initialStatus = requiresProof ? "pending_payment_review" : "pending";
       const { data: order, error } = await supabase.from("orders").insert({
         buyer_id: user!.id,
         order_number: orderNumber,
         subtotal, tax, shipping, discount: 0, total,
         payment_method: payment as any,
         payment_status: "pending",
-        status: "pending",
+        status: initialStatus as any,
         currency: "EGP",
         shipping_address: addr,
         address_id: addressId,
@@ -105,7 +110,26 @@ function CheckoutPage() {
       const { error: itemsErr } = await supabase.from("order_items").insert(itemsInsert);
       if (itemsErr) throw itemsErr;
 
-      await supabase.from("order_status_history").insert({ order_id: order.id, status: "pending", note: "Order placed", created_by: user!.id });
+      // Create payment record (source of truth)
+      const { error: payErr } = await supabase.from("payments").insert({
+        order_id: order.id,
+        method: payment as any,
+        amount: total,
+        currency: "EGP",
+        status: "pending",
+        transfer_reference: requiresProof ? transferRef.trim() : null,
+        proof_media_id: requiresProof ? proof?.id ?? null : null,
+        proof_url: requiresProof ? proof?.url ?? null : null,
+        transferred_at: requiresProof ? new Date().toISOString() : null,
+      });
+      if (payErr) throw payErr;
+
+      await supabase.from("order_status_history").insert({
+        order_id: order.id,
+        status: initialStatus,
+        note: requiresProof ? "Awaiting payment review" : "Order placed",
+        created_by: user!.id,
+      });
       await clearCart();
       nav({ to: "/order/$id", params: { id: order.id } });
     } catch (e: any) {
@@ -113,6 +137,14 @@ function CheckoutPage() {
     } finally {
       setPlacing(false);
     }
+  }
+
+  async function handleProofFile(f: File | null) {
+    if (!f) return;
+    setUploadingProof(true);
+    const res = await uploadFile(f);
+    setUploadingProof(false);
+    if (res) setProof({ id: res.id, url: res.url });
   }
 
   return (
