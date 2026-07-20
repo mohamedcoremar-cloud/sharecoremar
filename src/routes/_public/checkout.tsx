@@ -8,7 +8,8 @@ import { fmt, priceOf } from "@/lib/currency";
 import { useI18n } from "@/lib/i18n";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Loader2, CheckCircle2 } from "lucide-react";
+import { Loader2, CheckCircle2, Upload } from "lucide-react";
+import { uploadFile } from "@/components/admin/media-picker";
 
 export const Route = createFileRoute("/_public/checkout")({ component: CheckoutPage });
 
