@@ -16,15 +16,15 @@ export function useMediaList() {
   });
 }
 
-export async function uploadFile(file: File): Promise<{ url: string; path: string } | null> {
+export async function uploadFile(file: File): Promise<{ id: string | null; url: string; path: string } | null> {
   const ext = file.name.split(".").pop() ?? "bin";
   const path = `uploads/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
   const { error: upErr } = await supabase.storage.from(BUCKET).upload(path, file, { cacheControl: "31536000", contentType: file.type });
   if (upErr) { toast.error(upErr.message); return null; }
   const { data: signed } = await supabase.storage.from(BUCKET).createSignedUrl(path, 60 * 60 * 24 * 365 * 10);
   const url = signed?.signedUrl ?? "";
-  await supabase.from("media_library").insert({ path, url, name: file.name, mime_type: file.type, size_bytes: file.size });
-  return { url, path };
+  const { data: row } = await supabase.from("media_library").insert({ path, url, name: file.name, mime_type: file.type, size_bytes: file.size }).select("id").maybeSingle();
+  return { id: row?.id ?? null, url, path };
 }
 
 export function MediaPickerButton({ onPick, label = "Choose image" }: { onPick: (url: string) => void; label?: string }) {
