@@ -217,13 +217,39 @@ function CheckoutPage() {
                   </label>
                 ))}
               </div>
+
+              {requiresProof && (
+                <div className="rounded-xl border border-primary/40 bg-primary/5 p-4 space-y-3">
+                  <div className="text-sm font-semibold">Confirm your transfer</div>
+                  <div className="text-xs text-muted-foreground">Your order will be reviewed by our team after you upload the transfer proof. Stock is reserved only after approval.</div>
+                  <div>
+                    <label className="text-xs text-muted-foreground">Transfer / transaction reference *</label>
+                    <input value={transferRef} onChange={(e) => setTransferRef(e.target.value)} placeholder="e.g. INS-88291102" className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm" />
+                  </div>
+                  <div>
+                    <label className="text-xs text-muted-foreground">Proof of transfer (screenshot) *</label>
+                    <div className="mt-2 flex items-center gap-3">
+                      {proof?.url ? (
+                        <img src={proof.url} alt="proof" className="h-20 w-20 rounded-lg object-cover border" />
+                      ) : (
+                        <div className="h-20 w-20 rounded-lg border-2 border-dashed border-border flex items-center justify-center text-muted-foreground"><Upload className="h-5 w-5" /></div>
+                      )}
+                      <label className="inline-flex items-center gap-2 rounded-md bg-primary text-primary-foreground px-3 py-2 text-sm font-medium cursor-pointer">
+                        <Upload className="h-4 w-4" /> {uploadingProof ? "Uploading…" : proof ? "Replace" : "Upload"}
+                        <input type="file" accept="image/*" className="hidden" onChange={(e) => handleProofFile(e.target.files?.[0] ?? null)} />
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <div>
                 <label className="text-xs text-muted-foreground">Order notes</label>
                 <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm" />
               </div>
               <div className="flex gap-2">
                 <Button variant="outline" onClick={() => setStep(1)}>Back</Button>
-                <Button className="btn-gold" onClick={() => setStep(3)}>Review order</Button>
+                <Button className="btn-gold" disabled={requiresProof && (!proof || !transferRef.trim())} onClick={() => setStep(3)}>Review order</Button>
               </div>
             </div>
           )}
