@@ -25,18 +25,21 @@ function OrdersPage() {
         <div className="card-premium p-16 text-center"><Package className="h-10 w-10 mx-auto text-muted-foreground mb-3" /><p className="text-muted-foreground">No orders yet.</p></div>
       ) : (
         <div className="space-y-3">
-          {orders.map((o: any) => (
-            <Link key={o.id} to="/order/$id" params={{ id: o.id }} className="card-premium p-4 flex items-center justify-between hover:border-primary transition-colors">
-              <div>
-                <div className="font-semibold">{o.order_number}</div>
-                <div className="text-xs text-muted-foreground">{new Date(o.created_at).toLocaleString()} · {o.status}</div>
-              </div>
-              <div className="text-right">
-                <div className="font-bold text-primary">{fmt(o.total)}</div>
-                <div className="text-xs text-muted-foreground capitalize">{o.payment_status}</div>
-              </div>
-            </Link>
-          ))}
+          {orders.map((o: any) => {
+            const payStatus = o.payments?.[0]?.status ?? o.payment_status;
+            return (
+              <Link key={o.id} to="/order/$id" params={{ id: o.id }} className="card-premium p-4 flex items-center justify-between hover:border-primary transition-colors">
+                <div>
+                  <div className="font-semibold">{o.order_number}</div>
+                  <div className="text-xs text-muted-foreground">{new Date(o.created_at).toLocaleString()} · {o.status.replace(/_/g, " ")}</div>
+                </div>
+                <div className="text-right">
+                  <div className="font-bold text-primary">{fmt(o.total)}</div>
+                  <div className="text-xs text-muted-foreground capitalize">{payStatus}</div>
+                </div>
+              </Link>
+            );
+          })}
         </div>
       )}
     </div>
