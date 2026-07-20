@@ -9,6 +9,7 @@ export const Route = createFileRoute("/_public/order/$id")({ component: OrderPag
 
 const STATUS_META: Record<string, { label: string; icon: any; color: string }> = {
   pending: { label: "Pending", icon: Clock, color: "text-amber-500" },
+  pending_payment_review: { label: "Awaiting payment review", icon: Clock, color: "text-amber-500" },
   confirmed: { label: "Confirmed", icon: CheckCircle2, color: "text-blue-500" },
   processing: { label: "Preparing", icon: Package, color: "text-blue-500" },
   packed: { label: "Packed", icon: Package, color: "text-blue-500" },
