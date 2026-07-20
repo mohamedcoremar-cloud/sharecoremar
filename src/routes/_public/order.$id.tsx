@@ -38,10 +38,11 @@ function OrderPage() {
   if (isLoading) return <div className="mx-auto max-w-4xl px-4 py-16">Loading…</div>;
   if (!data?.order) return <div className="mx-auto max-w-4xl px-4 py-16 text-center">Order not found</div>;
 
-  const { order, items, history } = data;
+  const { order, items, history, payment } = data;
   const meta = STATUS_META[order.status] ?? STATUS_META.pending;
   const Icon = meta.icon;
   const addr: any = order.shipping_address;
+  const paymentStatus: string = payment?.status ?? order.payment_status;
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10">
@@ -49,6 +50,9 @@ function OrderPage() {
         <div className={`mx-auto h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mb-4 ${meta.color}`}><Icon className="h-8 w-8" /></div>
         <h1 className="text-2xl font-bold">Thank you — order {order.order_number}</h1>
         <p className="text-muted-foreground mt-1">Status: <span className={`font-semibold ${meta.color}`}>{meta.label}</span></p>
+        {order.status === "pending_payment_review" && (
+          <p className="text-xs text-muted-foreground mt-2">We received your transfer proof and will confirm within a few hours.</p>
+        )}
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
@@ -95,7 +99,8 @@ function OrderPage() {
             <div className="flex justify-between"><span className="text-muted-foreground">Shipping</span><span>{fmt(order.shipping)}</span></div>
             {Number(order.discount) > 0 && <div className="flex justify-between"><span className="text-muted-foreground">Discount</span><span>-{fmt(order.discount)}</span></div>}
             <div className="flex justify-between font-bold text-base pt-2 border-t border-border"><span>Total</span><span className="text-primary">{fmt(order.total)}</span></div>
-            <div className="pt-2 text-xs text-muted-foreground">Payment: {order.payment_method} · {order.payment_status}</div>
+            <div className="pt-2 text-xs text-muted-foreground capitalize">Payment: {order.payment_method} · {paymentStatus}</div>
+            {payment?.transfer_reference && <div className="text-xs text-muted-foreground">Ref: {payment.transfer_reference}</div>}
           </div>
           {addr && (
             <div className="card-premium p-6 text-sm">
