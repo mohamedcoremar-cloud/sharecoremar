@@ -8,7 +8,8 @@ import { fmt, priceOf } from "@/lib/currency";
 import { useI18n } from "@/lib/i18n";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Loader2, CheckCircle2 } from "lucide-react";
+import { Loader2, CheckCircle2, Upload } from "lucide-react";
+import { uploadFile } from "@/components/admin/media-picker";
 
 export const Route = createFileRoute("/_public/checkout")({ component: CheckoutPage });
 
@@ -30,6 +31,11 @@ function CheckoutPage() {
   const [payment, setPayment] = useState<string>("cod");
   const [placing, setPlacing] = useState(false);
   const [notes, setNotes] = useState("");
+  const [transferRef, setTransferRef] = useState("");
+  const [proof, setProof] = useState<{ id: string | null; url: string } | null>(null);
+  const [uploadingProof, setUploadingProof] = useState(false);
+
+  const requiresProof = payment === "instapay" || payment === "wallet";
 
   // Address form
   const [af, setAf] = useState({ label: "Home", full_name: "", phone: "", governorate: "Cairo", city: "", street: "", building: "", apartment: "", landmark: "" });
@@ -68,17 +74,22 @@ function CheckoutPage() {
 
   async function placeOrder() {
     if (!addressId) { toast.error("Please select or add a delivery address"); return; }
+    if (requiresProof && (!proof || !transferRef.trim())) {
+      toast.error("Please upload proof of transfer and enter the reference number");
+      return;
+    }
     setPlacing(true);
     try {
       const addr = addresses.find((a: any) => a.id === addressId);
       const orderNumber = `SC-${Date.now().toString().slice(-8)}`;
+      const initialStatus = requiresProof ? "pending_payment_review" : "pending";
       const { data: order, error } = await supabase.from("orders").insert({
         buyer_id: user!.id,
         order_number: orderNumber,
         subtotal, tax, shipping, discount: 0, total,
         payment_method: payment as any,
         payment_status: "pending",
-        status: "pending",
+        status: initialStatus as any,
         currency: "EGP",
         shipping_address: addr,
         address_id: addressId,
@@ -99,7 +110,26 @@ function CheckoutPage() {
       const { error: itemsErr } = await supabase.from("order_items").insert(itemsInsert);
       if (itemsErr) throw itemsErr;
 
-      await supabase.from("order_status_history").insert({ order_id: order.id, status: "pending", note: "Order placed", created_by: user!.id });
+      // Create payment record (source of truth)
+      const { error: payErr } = await supabase.from("payments").insert({
+        order_id: order.id,
+        method: payment as any,
+        amount: total,
+        currency: "EGP",
+        status: "pending",
+        transfer_reference: requiresProof ? transferRef.trim() : null,
+        proof_media_id: requiresProof ? proof?.id ?? null : null,
+        proof_url: requiresProof ? proof?.url ?? null : null,
+        transferred_at: requiresProof ? new Date().toISOString() : null,
+      });
+      if (payErr) throw payErr;
+
+      await supabase.from("order_status_history").insert({
+        order_id: order.id,
+        status: initialStatus,
+        note: requiresProof ? "Awaiting payment review" : "Order placed",
+        created_by: user!.id,
+      });
       await clearCart();
       nav({ to: "/order/$id", params: { id: order.id } });
     } catch (e: any) {
@@ -107,6 +137,14 @@ function CheckoutPage() {
     } finally {
       setPlacing(false);
     }
+  }
+
+  async function handleProofFile(f: File | null) {
+    if (!f) return;
+    setUploadingProof(true);
+    const res = await uploadFile(f);
+    setUploadingProof(false);
+    if (res) setProof({ id: res.id, url: res.url });
   }
 
   return (
@@ -179,13 +217,39 @@ function CheckoutPage() {
                   </label>
                 ))}
               </div>
+
+              {requiresProof && (
+                <div className="rounded-xl border border-primary/40 bg-primary/5 p-4 space-y-3">
+                  <div className="text-sm font-semibold">Confirm your transfer</div>
+                  <div className="text-xs text-muted-foreground">Your order will be reviewed by our team after you upload the transfer proof. Stock is reserved only after approval.</div>
+                  <div>
+                    <label className="text-xs text-muted-foreground">Transfer / transaction reference *</label>
+                    <input value={transferRef} onChange={(e) => setTransferRef(e.target.value)} placeholder="e.g. INS-88291102" className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm" />
+                  </div>
+                  <div>
+                    <label className="text-xs text-muted-foreground">Proof of transfer (screenshot) *</label>
+                    <div className="mt-2 flex items-center gap-3">
+                      {proof?.url ? (
+                        <img src={proof.url} alt="proof" className="h-20 w-20 rounded-lg object-cover border" />
+                      ) : (
+                        <div className="h-20 w-20 rounded-lg border-2 border-dashed border-border flex items-center justify-center text-muted-foreground"><Upload className="h-5 w-5" /></div>
+                      )}
+                      <label className="inline-flex items-center gap-2 rounded-md bg-primary text-primary-foreground px-3 py-2 text-sm font-medium cursor-pointer">
+                        <Upload className="h-4 w-4" /> {uploadingProof ? "Uploading…" : proof ? "Replace" : "Upload"}
+                        <input type="file" accept="image/*" className="hidden" onChange={(e) => handleProofFile(e.target.files?.[0] ?? null)} />
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <div>
                 <label className="text-xs text-muted-foreground">Order notes</label>
                 <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm" />
               </div>
               <div className="flex gap-2">
                 <Button variant="outline" onClick={() => setStep(1)}>Back</Button>
-                <Button className="btn-gold" onClick={() => setStep(3)}>Review order</Button>
+                <Button className="btn-gold" disabled={requiresProof && (!proof || !transferRef.trim())} onClick={() => setStep(3)}>Review order</Button>
               </div>
             </div>
           )}
