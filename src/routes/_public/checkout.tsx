@@ -31,6 +31,11 @@ function CheckoutPage() {
   const [payment, setPayment] = useState<string>("cod");
   const [placing, setPlacing] = useState(false);
   const [notes, setNotes] = useState("");
+  const [transferRef, setTransferRef] = useState("");
+  const [proof, setProof] = useState<{ id: string | null; url: string } | null>(null);
+  const [uploadingProof, setUploadingProof] = useState(false);
+
+  const requiresProof = payment === "instapay" || payment === "wallet";
 
   // Address form
   const [af, setAf] = useState({ label: "Home", full_name: "", phone: "", governorate: "Cairo", city: "", street: "", building: "", apartment: "", landmark: "" });
