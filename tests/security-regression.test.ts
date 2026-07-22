@@ -14,7 +14,7 @@
  * is designed to run inside the Lovable sandbox / CI where PG* is injected.
  */
 import { afterAll, describe, expect, it } from "vitest";
-import { Client } from "pg";
+import { Pool } from "pg";
 
 const hasPg = !!process.env.PGHOST;
 const d = hasPg ? describe : describe.skip;
