@@ -43,17 +43,14 @@ const ADMIN_RPCS: Array<{
 
 const FORBIDDEN_EXECUTORS = ["anon", "public", "PUBLIC"];
 
-let client: Client | null = null;
+const pool = hasPg ? new Pool({ ssl: { rejectUnauthorized: false }, max: 4 }) : null;
 async function getClient() {
-  if (!client) {
-    client = new Client({ ssl: { rejectUnauthorized: false } });
-    await client.connect();
-  }
-  return client;
+  if (!pool) throw new Error("PG env not configured");
+  return pool;
 }
 
 afterAll(async () => {
-  if (client) await client.end();
+  if (pool) await pool.end();
 });
 
 d("RLS is enabled on every public table", () => {
