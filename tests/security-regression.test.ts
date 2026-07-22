@@ -46,7 +46,7 @@ const FORBIDDEN_EXECUTORS = ["anon", "public", "PUBLIC"];
 let client: Client | null = null;
 async function getClient() {
   if (!client) {
-    client = new Client();
+    client = new Client({ ssl: { rejectUnauthorized: false } });
     await client.connect();
   }
   return client;
