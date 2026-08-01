@@ -106,6 +106,9 @@ function OrderPage() {
             <div className="pt-2 text-xs text-muted-foreground capitalize">Payment: {order.payment_method} · {paymentStatus}</div>
             {payment?.transfer_reference && <div className="text-xs text-muted-foreground">Ref: {payment.transfer_reference}</div>}
           </div>
+
+          {delivery && <DeliveryCard delivery={delivery} />}
+
           {addr && (
             <div className="card-premium p-6 text-sm">
               <h2 className="font-bold mb-2">Delivery to</h2>
