@@ -340,6 +340,229 @@ export type Database = {
         }
         Relationships: []
       }
+      deliveries: {
+        Row: {
+          attempts_count: number
+          created_at: string
+          delivered_at: string | null
+          delivery_partner_id: string | null
+          id: string
+          notes: string | null
+          order_id: string
+          scheduled_at: string | null
+          status_id: string
+          tracking_number: string | null
+          updated_at: string
+        }
+        Insert: {
+          attempts_count?: number
+          created_at?: string
+          delivered_at?: string | null
+          delivery_partner_id?: string | null
+          id?: string
+          notes?: string | null
+          order_id: string
+          scheduled_at?: string | null
+          status_id: string
+          tracking_number?: string | null
+          updated_at?: string
+        }
+        Update: {
+          attempts_count?: number
+          created_at?: string
+          delivered_at?: string | null
+          delivery_partner_id?: string | null
+          id?: string
+          notes?: string | null
+          order_id?: string
+          scheduled_at?: string | null
+          status_id?: string
+          tracking_number?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deliveries_delivery_partner_id_fkey"
+            columns: ["delivery_partner_id"]
+            isOneToOne: false
+            referencedRelation: "delivery_partners"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deliveries_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: true
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deliveries_status_id_fkey"
+            columns: ["status_id"]
+            isOneToOne: false
+            referencedRelation: "delivery_statuses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      delivery_attempts: {
+        Row: {
+          attempt_number: number
+          attempted_at: string
+          created_at: string
+          created_by: string | null
+          delivery_id: string
+          failure_reason_id: string | null
+          id: string
+          note: string | null
+          result: string
+        }
+        Insert: {
+          attempt_number?: number
+          attempted_at?: string
+          created_at?: string
+          created_by?: string | null
+          delivery_id: string
+          failure_reason_id?: string | null
+          id?: string
+          note?: string | null
+          result: string
+        }
+        Update: {
+          attempt_number?: number
+          attempted_at?: string
+          created_at?: string
+          created_by?: string | null
+          delivery_id?: string
+          failure_reason_id?: string | null
+          id?: string
+          note?: string | null
+          result?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "delivery_attempts_delivery_id_fkey"
+            columns: ["delivery_id"]
+            isOneToOne: false
+            referencedRelation: "deliveries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "delivery_attempts_failure_reason_id_fkey"
+            columns: ["failure_reason_id"]
+            isOneToOne: false
+            referencedRelation: "delivery_failure_reasons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      delivery_failure_reasons: {
+        Row: {
+          code: string
+          created_at: string
+          id: string
+          is_active: boolean
+          name_ar: string
+          name_en: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name_ar: string
+          name_en: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name_ar?: string
+          name_en?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      delivery_partners: {
+        Row: {
+          coverage_notes: string | null
+          created_at: string
+          email: string | null
+          id: string
+          is_active: boolean
+          name_ar: string
+          name_en: string
+          phone: string | null
+          sort_order: number
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          coverage_notes?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_active?: boolean
+          name_ar: string
+          name_en: string
+          phone?: string | null
+          sort_order?: number
+          type?: string
+          updated_at?: string
+        }
+        Update: {
+          coverage_notes?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_active?: boolean
+          name_ar?: string
+          name_en?: string
+          phone?: string | null
+          sort_order?: number
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      delivery_statuses: {
+        Row: {
+          code: string
+          created_at: string
+          id: string
+          is_terminal: boolean
+          name_ar: string
+          name_en: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          id?: string
+          is_terminal?: boolean
+          name_ar: string
+          name_en: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          id?: string
+          is_terminal?: boolean
+          name_ar?: string
+          name_en?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       homepage_sections: {
         Row: {
           content: Json | null
@@ -1226,6 +1449,16 @@ export type Database = {
           p_version_number: number
         }
         Returns: undefined
+      }
+      update_delivery_status: {
+        Args: {
+          p_delivery_id: string
+          p_failure_reason_code?: string
+          p_new_status_code: string
+          p_note?: string
+          p_reschedule_at?: string
+        }
+        Returns: Json
       }
     }
     Enums: {
