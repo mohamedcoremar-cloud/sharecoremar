@@ -3,7 +3,7 @@ import { AuthProvider, useAuth } from "@/lib/auth-context";
 import { I18nProvider, useI18n } from "@/lib/i18n";
 import {
   LayoutDashboard, Package, FolderTree, BadgeCheck, Users, ShoppingBag, Image as ImageIcon,
-  Building2, Home as HomeIcon, LogOut, Settings, Layers, Globe, FileText, CreditCard,
+  Building2, Home as HomeIcon, LogOut, Settings, Layers, Globe, FileText, CreditCard, Truck,
 } from "lucide-react";
 import logoIcon from "@/assets/logo-icon.png";
 
