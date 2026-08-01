@@ -4,6 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { CheckCircle2, Package, Truck, Home, Clock, XCircle } from "lucide-react";
 import { fmt } from "@/lib/currency";
 import { Button } from "@/components/ui/button";
+import { useI18n } from "@/lib/i18n";
+import { deliveryIcon } from "@/lib/delivery";
 
 export const Route = createFileRoute("/_public/order/$id")({ component: OrderPage });
 
