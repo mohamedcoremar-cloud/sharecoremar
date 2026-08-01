@@ -42,7 +42,7 @@ function OrderPage() {
   if (isLoading) return <div className="mx-auto max-w-4xl px-4 py-16">Loading…</div>;
   if (!data?.order) return <div className="mx-auto max-w-4xl px-4 py-16 text-center">Order not found</div>;
 
-  const { order, items, history, payment } = data;
+  const { order, items, history, payment, delivery } = data;
   const meta = STATUS_META[order.status] ?? STATUS_META.pending;
   const Icon = meta.icon;
   const addr: any = order.shipping_address;
