@@ -125,3 +125,45 @@ function OrderPage() {
     </div>
   );
 }
+
+function DeliveryCard({ delivery }: { delivery: any }) {
+  const { pick } = useI18n();
+  const code: string = delivery.delivery_statuses?.code ?? "assigned";
+  const { icon: Icon, color } = deliveryIcon(code);
+  const attempts = (delivery.delivery_attempts ?? []).slice().sort((a: any, b: any) => a.attempt_number - b.attempt_number);
+
+  return (
+    <div className="card-premium p-6 text-sm">
+      <h2 className="font-bold mb-3">Shipment</h2>
+      <div className={`flex items-center gap-2 font-semibold ${color}`}>
+        <Icon className="h-5 w-5" /> {pick(delivery.delivery_statuses ?? {}, "name")}
+      </div>
+      {delivery.delivery_partners && (
+        <div className="text-xs text-muted-foreground mt-2">Carrier: {pick(delivery.delivery_partners, "name")}</div>
+      )}
+      {delivery.tracking_number && <div className="text-xs text-muted-foreground">Tracking: {delivery.tracking_number}</div>}
+      {delivery.scheduled_at && (
+        <div className="text-xs text-muted-foreground">Scheduled: {new Date(delivery.scheduled_at).toLocaleString()}</div>
+      )}
+      {delivery.delivered_at && (
+        <div className="text-xs text-muted-foreground">Delivered: {new Date(delivery.delivered_at).toLocaleString()}</div>
+      )}
+      {code === "failed" && (
+        <p className="text-xs text-amber-500 mt-2">A delivery attempt failed. Your order is still active and will be rescheduled.</p>
+      )}
+      {attempts.length > 0 && (
+        <div className="mt-3 space-y-1">
+          <div className="text-xs text-muted-foreground">Delivery attempts</div>
+          {attempts.map((a: any) => (
+            <div key={a.id} className="text-xs">
+              #{a.attempt_number} ·{" "}
+              <span className={a.result === "delivered" ? "text-emerald-500" : "text-red-500"}>{a.result}</span>
+              {a.delivery_failure_reasons ? ` · ${pick(a.delivery_failure_reasons, "name")}` : ""} ·{" "}
+              {new Date(a.attempted_at).toLocaleString()}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}

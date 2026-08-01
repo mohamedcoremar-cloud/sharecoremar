@@ -31,11 +31,13 @@ const ADMIN_RPCS: Array<{
   { schema: "public", name: "approve_order_payment", allowedExecutors: ["authenticated", "service_role"] },
   { schema: "public", name: "reject_order_payment", allowedExecutors: ["authenticated", "service_role"] },
   { schema: "public", name: "rollback_content_version", allowedExecutors: ["authenticated", "service_role"] },
+  { schema: "public", name: "update_delivery_status", allowedExecutors: ["authenticated", "service_role"] },
   // Owner-scoped RPC — signed-in user acts on their own cart.
   { schema: "public", name: "merge_guest_cart_on_login", allowedExecutors: ["authenticated", "service_role"] },
   // Trigger-only helpers — must NOT be callable from the Data API.
   { schema: "public", name: "record_content_version", allowedExecutors: ["service_role"] },
   { schema: "public", name: "handle_new_user", allowedExecutors: ["service_role"] },
+  { schema: "public", name: "ensure_delivery_for_confirmed_order", allowedExecutors: ["service_role"] },
   // Private role-check helpers — never callable by anon/public.
   { schema: "private", name: "has_role", allowedExecutors: ["authenticated", "service_role"] },
   { schema: "private", name: "is_admin", allowedExecutors: ["authenticated", "service_role"] },
