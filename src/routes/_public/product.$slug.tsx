@@ -9,7 +9,19 @@ import { fmt, priceOf } from "@/lib/currency";
 import { toast } from "sonner";
 import { useI18n } from "@/lib/i18n";
 
-export const Route = createFileRoute("/_public/product/$slug")({ component: ProductPage });
+export const Route = createFileRoute("/_public/product/$slug")({
+  component: ProductPage,
+  head: () => ({
+    meta: [
+      { title: "Product Details — Share CoreMar" },
+      { name: "description", content: "See full product details on Share CoreMar — retail and wholesale pricing, stock, specifications and the verified supplier behind it." },
+      { property: "og:title", content: "Product Details — Share CoreMar" },
+      { property: "og:description", content: "Retail and wholesale pricing, stock, specifications and the verified supplier behind every product." },
+      { property: "og:type", content: "product" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
+});
 
 function ProductPage() {
   const { slug } = Route.useParams();
@@ -95,18 +107,37 @@ function ProductPage() {
           <h1 className="text-3xl font-bold mt-1">{name}</h1>
           <div className="mt-2 text-sm text-muted-foreground">SKU: {product.sku || "—"}</div>
 
-          <div className="mt-4 flex items-baseline gap-3">
-            <span className="text-3xl font-bold text-primary">{fmt(price)}</span>
-            {hasOffer && <span className="text-lg text-muted-foreground line-through">{fmt(product.retail_price)}</span>}
-          </div>
+          <div className="mt-5 rounded-2xl border border-border bg-muted/30 p-5">
+            <div className="flex flex-wrap items-baseline gap-3">
+              <span className="text-3xl font-bold tracking-tight text-primary">{fmt(price)}</span>
+              {hasOffer && <span className="text-lg text-muted-foreground line-through">{fmt(product.retail_price)}</span>}
+              {hasOffer && (
+                <span className="rounded-full bg-destructive px-2.5 py-0.5 text-xs font-bold text-destructive-foreground">
+                  −{Math.round((1 - Number(product.offer_price) / Number(product.retail_price)) * 100)}%
+                </span>
+              )}
+            </div>
+            <div className="mt-1 text-xs uppercase tracking-wider text-muted-foreground">Retail price · incl. unit {product.unit || "piece"}</div>
 
-          <div className="mt-3 flex items-center gap-2 text-sm">
-            {inStock ? (
-              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-2 py-1"><Package className="h-3.5 w-3.5" /> In stock ({stock})</span>
-            ) : (
-              <span className="inline-flex items-center gap-1 rounded-full bg-red-500/10 text-red-600 px-2 py-1"><Package className="h-3.5 w-3.5" /> Out of stock</span>
+            {product.wholesale_price && (
+              <div className="mt-4 flex flex-wrap items-baseline gap-2 border-t border-border pt-4">
+                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Wholesale</span>
+                <span className="text-xl font-bold">{fmt(product.wholesale_price)}</span>
+                {product.min_quantity ? (
+                  <span className="text-xs text-muted-foreground">· min {product.min_quantity} {product.unit || "pcs"}</span>
+                ) : null}
+              </div>
             )}
           </div>
+
+          <div className="mt-4 flex items-center gap-2 text-sm">
+            {inStock ? (
+              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-1 text-emerald-600 dark:text-emerald-400"><Package className="h-3.5 w-3.5" /> {stock <= 20 ? `Low stock · ${stock} left` : `In stock (${stock})`}</span>
+            ) : (
+              <span className="inline-flex items-center gap-1 rounded-full bg-destructive/10 px-2.5 py-1 text-destructive"><Package className="h-3.5 w-3.5" /> Out of stock</span>
+            )}
+          </div>
+
 
           {product.description && <p className="mt-5 text-muted-foreground leading-relaxed">{product.description}</p>}
 
