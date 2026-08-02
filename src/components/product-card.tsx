@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Heart, ShoppingCart, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -11,6 +12,7 @@ type Props = {
   ribbon?: string;
   compact?: boolean;
 };
+
 
 export function ProductCard({ product: p, ribbon, compact = false }: Props) {
   const { pick, t } = useI18n();
