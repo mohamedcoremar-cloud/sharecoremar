@@ -6,7 +6,19 @@ import { fmt } from "@/lib/currency";
 import { Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export const Route = createFileRoute("/_public/orders")({ component: OrdersPage });
+export const Route = createFileRoute("/_public/orders")({
+  component: OrdersPage,
+  head: () => ({
+    meta: [
+      { title: "My Orders — Share CoreMar" },
+      { name: "description", content: "Track your Share CoreMar orders — payment status, delivery progress and order history in one list." },
+      { property: "og:title", content: "My Orders — Share CoreMar" },
+      { property: "og:description", content: "Payment status, delivery progress and full order history." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
+});
 
 function OrdersPage() {
   const { user } = useAuth();
