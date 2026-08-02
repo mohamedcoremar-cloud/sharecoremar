@@ -26,6 +26,7 @@ export function ProductCard({ product: p, ribbon, compact = false }: Props) {
   const stock = Number(p.stock ?? 0);
   const lowStock = stock > 0 && stock <= 20;
   const inWishlist = wishlist?.includes(p.id);
+  const [imgFailed, setImgFailed] = useState(false);
   const name = pick(p, "name");
   const label = p.brand?.name ?? pick(p.category ?? {}, "name") ?? "";
 
