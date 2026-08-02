@@ -7,7 +7,19 @@ import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
 import { deliveryIcon } from "@/lib/delivery";
 
-export const Route = createFileRoute("/_public/order/$id")({ component: OrderPage });
+export const Route = createFileRoute("/_public/order/$id")({
+  component: OrderPage,
+  head: () => ({
+    meta: [
+      { title: "Order Details — Share CoreMar" },
+      { name: "description", content: "Follow one Share CoreMar order end to end — items, payment review status and live shipment progress." },
+      { property: "og:title", content: "Order Details — Share CoreMar" },
+      { property: "og:description", content: "Items, payment review status and live shipment progress for your order." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
+});
 
 const STATUS_META: Record<string, { label: string; icon: any; color: string }> = {
   pending: { label: "Pending", icon: Clock, color: "text-amber-500" },

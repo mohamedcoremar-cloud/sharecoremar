@@ -11,7 +11,19 @@ import { toast } from "sonner";
 import { Loader2, CheckCircle2, Upload } from "lucide-react";
 import { uploadFile } from "@/components/admin/media-picker";
 
-export const Route = createFileRoute("/_public/checkout")({ component: CheckoutPage });
+export const Route = createFileRoute("/_public/checkout")({
+  component: CheckoutPage,
+  head: () => ({
+    meta: [
+      { title: "Checkout — Share CoreMar" },
+      { name: "description", content: "Complete your Share CoreMar order — choose delivery details and pay with cash on delivery, wallet or InstaPay." },
+      { property: "og:title", content: "Checkout — Share CoreMar" },
+      { property: "og:description", content: "Choose delivery details and pay with cash on delivery, wallet or InstaPay." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
+});
 
 const EGY_GOV = [
   "Cairo","Giza","Alexandria","Qalyubia","Sharqia","Dakahlia","Beheira","Kafr El Sheikh","Gharbia","Monufia",

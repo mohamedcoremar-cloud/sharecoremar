@@ -6,7 +6,19 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/_public/account")({ component: AccountPage });
+export const Route = createFileRoute("/_public/account")({
+  component: AccountPage,
+  head: () => ({
+    meta: [
+      { title: "My Account — Share CoreMar" },
+      { name: "description", content: "Manage your Share CoreMar profile, delivery addresses and password in one place." },
+      { property: "og:title", content: "My Account — Share CoreMar" },
+      { property: "og:description", content: "Manage your profile, delivery addresses and password." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
+});
 
 function AccountPage() {
   const { user } = useAuth();

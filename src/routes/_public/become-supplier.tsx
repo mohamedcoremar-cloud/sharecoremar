@@ -8,7 +8,19 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth-context";
 
-export const Route = createFileRoute("/_public/become-supplier")({ component: BecomeSupplier });
+export const Route = createFileRoute("/_public/become-supplier")({
+  component: BecomeSupplier,
+  head: () => ({
+    meta: [
+      { title: "Become a Supplier — Share CoreMar" },
+      { name: "description", content: "Apply to sell your FMCG catalog on Share CoreMar and reach Egyptian businesses and personal buyers from one storefront." },
+      { property: "og:title", content: "Become a Supplier — Share CoreMar" },
+      { property: "og:description", content: "Sell your FMCG catalog on Share CoreMar and reach Egyptian businesses and personal buyers." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
+});
 
 function BecomeSupplier() {
   const { user } = useAuth();

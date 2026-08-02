@@ -8,7 +8,19 @@ import { useI18n } from "@/lib/i18n";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
 
-export const Route = createFileRoute("/_public/cart")({ component: CartPage });
+export const Route = createFileRoute("/_public/cart")({
+  component: CartPage,
+  head: () => ({
+    meta: [
+      { title: "Your Cart — Share CoreMar" },
+      { name: "description", content: "Review the FMCG products in your Share CoreMar cart, adjust quantities and continue to secure checkout." },
+      { property: "og:title", content: "Your Cart — Share CoreMar" },
+      { property: "og:description", content: "Review your cart, adjust quantities and continue to secure checkout." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
+});
 
 function CartPage() {
   const { user, loading: authLoading } = useAuth();

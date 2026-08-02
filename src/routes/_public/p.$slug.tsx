@@ -3,7 +3,19 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useI18n } from "@/lib/i18n";
 
-export const Route = createFileRoute("/_public/p/$slug")({ component: PagePage });
+export const Route = createFileRoute("/_public/p/$slug")({
+  component: PagePage,
+  head: () => ({
+    meta: [
+      { title: "Information — Share CoreMar" },
+      { name: "description", content: "Read Share CoreMar's policies and information pages, including terms, privacy and delivery details." },
+      { property: "og:title", content: "Information — Share CoreMar" },
+      { property: "og:description", content: "Share CoreMar policies and information pages: terms, privacy and delivery." },
+      { property: "og:type", content: "article" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
+});
 
 function PagePage() {
   const { slug } = Route.useParams();
