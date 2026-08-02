@@ -64,15 +64,16 @@ export function ProductCard({ product: p, ribbon, compact = false }: Props) {
         params={{ slug: p.slug }}
         className="block aspect-square overflow-hidden bg-muted"
       >
-        {p.images?.[0] ? (
+        {p.images?.[0] && !imgFailed ? (
           <img
             src={p.images[0]}
             alt={name}
             loading="lazy"
+            onError={() => setImgFailed(true)}
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.06]"
           />
         ) : (
-          <div className="grid h-full w-full place-items-center">
+          <div className="grid h-full w-full place-items-center bg-gradient-to-br from-muted to-secondary/40">
             <Sparkles className="h-9 w-9 text-muted-foreground/50" />
           </div>
         )}
