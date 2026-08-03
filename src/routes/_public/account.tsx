@@ -45,7 +45,7 @@ function AccountPage() {
           ))}
           <div className="pt-3 mt-3 border-t border-border">
             <Link to="/orders" className="w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-muted"><Package className="h-4 w-4" /> Orders</Link>
-            <Link to="/wishlist" className="w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-muted"><Heart className="h-4 w-4" /> Wishlist</Link>
+            <Link to="/account/wishlist" className="w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-muted"><Heart className="h-4 w-4" /> Wishlist</Link>
           </div>
         </aside>
         <div className="card-premium p-6">

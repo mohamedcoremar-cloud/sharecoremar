@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState, type ReactNode, useCall
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
 import { toast } from "sonner";
+import { useNavigate } from "@tanstack/react-router";
 
 export type CartRow = {
   id: string;
@@ -29,6 +30,7 @@ const Ctx = createContext<CartCtx | undefined>(undefined);
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [items, setItems] = useState<CartRow[]>([]);
   const [wishlist, setWishlist] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
@@ -48,7 +50,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
   useEffect(() => { refresh(); }, [refresh]);
 
   async function requireAuth() {
-    if (!user) { toast.error("Please sign in first"); return false; }
+    if (!user) {
+      toast.error("Please sign in first");
+      navigate({ to: "/auth" });
+      return false;
+    }
     return true;
   }
 
