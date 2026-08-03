@@ -46,7 +46,7 @@ export function SiteHeader() {
           <Button variant="ghost" size="sm" onClick={() => setLang(lang === "en" ? "ar" : "en")} className="gap-1 font-semibold">
             <Globe className="h-4 w-4" /> {lang === "en" ? "AR" : "EN"}
           </Button>
-          <Button variant="ghost" size="icon" asChild><Link to="/wishlist"><Heart className="h-5 w-5" /></Link></Button>
+          <Button variant="ghost" size="icon" asChild><Link to="/account/wishlist"><Heart className="h-5 w-5" /></Link></Button>
           <Button variant="ghost" size="icon" asChild className="relative">
             <Link to="/cart">
               <ShoppingCart className="h-5 w-5" />

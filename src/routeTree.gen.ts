@@ -28,6 +28,7 @@ import { Route as AdminDeliveriesRouteImport } from './routes/admin/deliveries'
 import { Route as AdminCategoriesRouteImport } from './routes/admin/categories'
 import { Route as AdminBrandsRouteImport } from './routes/admin/brands'
 import { Route as AdminBannersRouteImport } from './routes/admin/banners'
+import { Route as AdminAiAgentsRouteImport } from './routes/admin/ai-agents'
 import { Route as PublicWishlistRouteImport } from './routes/_public/wishlist'
 import { Route as PublicSuppliersRouteImport } from './routes/_public/suppliers'
 import { Route as PublicProductsRouteImport } from './routes/_public/products'
@@ -41,6 +42,7 @@ import { Route as PublicAccountRouteImport } from './routes/_public/account'
 import { Route as PublicProductSlugRouteImport } from './routes/_public/product.$slug'
 import { Route as PublicPSlugRouteImport } from './routes/_public/p.$slug'
 import { Route as PublicOrderIdRouteImport } from './routes/_public/order.$id'
+import { Route as PublicAccountWishlistRouteImport } from './routes/_public/account.wishlist'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -136,6 +138,11 @@ const AdminBannersRoute = AdminBannersRouteImport.update({
   path: '/banners',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminAiAgentsRoute = AdminAiAgentsRouteImport.update({
+  id: '/ai-agents',
+  path: '/ai-agents',
+  getParentRoute: () => AdminRoute,
+} as any)
 const PublicWishlistRoute = PublicWishlistRouteImport.update({
   id: '/wishlist',
   path: '/wishlist',
@@ -201,13 +208,18 @@ const PublicOrderIdRoute = PublicOrderIdRouteImport.update({
   path: '/order/$id',
   getParentRoute: () => PublicRoute,
 } as any)
+const PublicAccountWishlistRoute = PublicAccountWishlistRouteImport.update({
+  id: '/wishlist',
+  path: '/wishlist',
+  getParentRoute: () => PublicAccountRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/account': typeof PublicAccountRoute
+  '/account': typeof PublicAccountRouteWithChildren
   '/become-supplier': typeof PublicBecomeSupplierRoute
   '/brands': typeof PublicBrandsRoute
   '/cart': typeof PublicCartRoute
@@ -217,6 +229,7 @@ export interface FileRoutesByFullPath {
   '/products': typeof PublicProductsRoute
   '/suppliers': typeof PublicSuppliersRoute
   '/wishlist': typeof PublicWishlistRoute
+  '/admin/ai-agents': typeof AdminAiAgentsRoute
   '/admin/banners': typeof AdminBannersRoute
   '/admin/brands': typeof AdminBrandsRoute
   '/admin/categories': typeof AdminCategoriesRoute
@@ -231,6 +244,7 @@ export interface FileRoutesByFullPath {
   '/admin/suppliers': typeof AdminSuppliersRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/': typeof AdminIndexRoute
+  '/account/wishlist': typeof PublicAccountWishlistRoute
   '/order/$id': typeof PublicOrderIdRoute
   '/p/$slug': typeof PublicPSlugRoute
   '/product/$slug': typeof PublicProductSlugRoute
@@ -238,7 +252,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/account': typeof PublicAccountRoute
+  '/account': typeof PublicAccountRouteWithChildren
   '/become-supplier': typeof PublicBecomeSupplierRoute
   '/brands': typeof PublicBrandsRoute
   '/cart': typeof PublicCartRoute
@@ -248,6 +262,7 @@ export interface FileRoutesByTo {
   '/products': typeof PublicProductsRoute
   '/suppliers': typeof PublicSuppliersRoute
   '/wishlist': typeof PublicWishlistRoute
+  '/admin/ai-agents': typeof AdminAiAgentsRoute
   '/admin/banners': typeof AdminBannersRoute
   '/admin/brands': typeof AdminBrandsRoute
   '/admin/categories': typeof AdminCategoriesRoute
@@ -263,6 +278,7 @@ export interface FileRoutesByTo {
   '/admin/users': typeof AdminUsersRoute
   '/': typeof PublicIndexRoute
   '/admin': typeof AdminIndexRoute
+  '/account/wishlist': typeof PublicAccountWishlistRoute
   '/order/$id': typeof PublicOrderIdRoute
   '/p/$slug': typeof PublicPSlugRoute
   '/product/$slug': typeof PublicProductSlugRoute
@@ -273,7 +289,7 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/_public/account': typeof PublicAccountRoute
+  '/_public/account': typeof PublicAccountRouteWithChildren
   '/_public/become-supplier': typeof PublicBecomeSupplierRoute
   '/_public/brands': typeof PublicBrandsRoute
   '/_public/cart': typeof PublicCartRoute
@@ -283,6 +299,7 @@ export interface FileRoutesById {
   '/_public/products': typeof PublicProductsRoute
   '/_public/suppliers': typeof PublicSuppliersRoute
   '/_public/wishlist': typeof PublicWishlistRoute
+  '/admin/ai-agents': typeof AdminAiAgentsRoute
   '/admin/banners': typeof AdminBannersRoute
   '/admin/brands': typeof AdminBrandsRoute
   '/admin/categories': typeof AdminCategoriesRoute
@@ -298,6 +315,7 @@ export interface FileRoutesById {
   '/admin/users': typeof AdminUsersRoute
   '/_public/': typeof PublicIndexRoute
   '/admin/': typeof AdminIndexRoute
+  '/_public/account/wishlist': typeof PublicAccountWishlistRoute
   '/_public/order/$id': typeof PublicOrderIdRoute
   '/_public/p/$slug': typeof PublicPSlugRoute
   '/_public/product/$slug': typeof PublicProductSlugRoute
@@ -319,6 +337,7 @@ export interface FileRouteTypes {
     | '/products'
     | '/suppliers'
     | '/wishlist'
+    | '/admin/ai-agents'
     | '/admin/banners'
     | '/admin/brands'
     | '/admin/categories'
@@ -333,6 +352,7 @@ export interface FileRouteTypes {
     | '/admin/suppliers'
     | '/admin/users'
     | '/admin/'
+    | '/account/wishlist'
     | '/order/$id'
     | '/p/$slug'
     | '/product/$slug'
@@ -350,6 +370,7 @@ export interface FileRouteTypes {
     | '/products'
     | '/suppliers'
     | '/wishlist'
+    | '/admin/ai-agents'
     | '/admin/banners'
     | '/admin/brands'
     | '/admin/categories'
@@ -365,6 +386,7 @@ export interface FileRouteTypes {
     | '/admin/users'
     | '/'
     | '/admin'
+    | '/account/wishlist'
     | '/order/$id'
     | '/p/$slug'
     | '/product/$slug'
@@ -384,6 +406,7 @@ export interface FileRouteTypes {
     | '/_public/products'
     | '/_public/suppliers'
     | '/_public/wishlist'
+    | '/admin/ai-agents'
     | '/admin/banners'
     | '/admin/brands'
     | '/admin/categories'
@@ -399,6 +422,7 @@ export interface FileRouteTypes {
     | '/admin/users'
     | '/_public/'
     | '/admin/'
+    | '/_public/account/wishlist'
     | '/_public/order/$id'
     | '/_public/p/$slug'
     | '/_public/product/$slug'
@@ -546,6 +570,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminBannersRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/ai-agents': {
+      id: '/admin/ai-agents'
+      path: '/ai-agents'
+      fullPath: '/admin/ai-agents'
+      preLoaderRoute: typeof AdminAiAgentsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/_public/wishlist': {
       id: '/_public/wishlist'
       path: '/wishlist'
@@ -637,11 +668,30 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicOrderIdRouteImport
       parentRoute: typeof PublicRoute
     }
+    '/_public/account/wishlist': {
+      id: '/_public/account/wishlist'
+      path: '/wishlist'
+      fullPath: '/account/wishlist'
+      preLoaderRoute: typeof PublicAccountWishlistRouteImport
+      parentRoute: typeof PublicAccountRoute
+    }
   }
 }
 
+interface PublicAccountRouteChildren {
+  PublicAccountWishlistRoute: typeof PublicAccountWishlistRoute
+}
+
+const PublicAccountRouteChildren: PublicAccountRouteChildren = {
+  PublicAccountWishlistRoute: PublicAccountWishlistRoute,
+}
+
+const PublicAccountRouteWithChildren = PublicAccountRoute._addFileChildren(
+  PublicAccountRouteChildren,
+)
+
 interface PublicRouteChildren {
-  PublicAccountRoute: typeof PublicAccountRoute
+  PublicAccountRoute: typeof PublicAccountRouteWithChildren
   PublicBecomeSupplierRoute: typeof PublicBecomeSupplierRoute
   PublicBrandsRoute: typeof PublicBrandsRoute
   PublicCartRoute: typeof PublicCartRoute
@@ -658,7 +708,7 @@ interface PublicRouteChildren {
 }
 
 const PublicRouteChildren: PublicRouteChildren = {
-  PublicAccountRoute: PublicAccountRoute,
+  PublicAccountRoute: PublicAccountRouteWithChildren,
   PublicBecomeSupplierRoute: PublicBecomeSupplierRoute,
   PublicBrandsRoute: PublicBrandsRoute,
   PublicCartRoute: PublicCartRoute,
@@ -678,6 +728,7 @@ const PublicRouteWithChildren =
   PublicRoute._addFileChildren(PublicRouteChildren)
 
 interface AdminRouteChildren {
+  AdminAiAgentsRoute: typeof AdminAiAgentsRoute
   AdminBannersRoute: typeof AdminBannersRoute
   AdminBrandsRoute: typeof AdminBrandsRoute
   AdminCategoriesRoute: typeof AdminCategoriesRoute
@@ -695,6 +746,7 @@ interface AdminRouteChildren {
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminAiAgentsRoute: AdminAiAgentsRoute,
   AdminBannersRoute: AdminBannersRoute,
   AdminBrandsRoute: AdminBrandsRoute,
   AdminCategoriesRoute: AdminCategoriesRoute,
