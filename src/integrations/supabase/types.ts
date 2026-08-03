@@ -68,6 +68,54 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_agents: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          id: string
+          is_active: boolean
+          model: string | null
+          name_ar: string
+          name_en: string
+          provider: string
+          role_key: string
+          system_prompt: string | null
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          id?: string
+          is_active?: boolean
+          model?: string | null
+          name_ar: string
+          name_en: string
+          provider?: string
+          role_key: string
+          system_prompt?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          id?: string
+          is_active?: boolean
+          model?: string | null
+          name_ar?: string
+          name_en?: string
+          provider?: string
+          role_key?: string
+          system_prompt?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       banners: {
         Row: {
           created_at: string
