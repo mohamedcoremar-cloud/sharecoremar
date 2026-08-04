@@ -1437,6 +1437,54 @@ export type Database = {
       }
     }
     Views: {
+      public_payment_methods: {
+        Row: {
+          code: string | null
+          description_ar: string | null
+          description_en: string | null
+          fees_fixed: number | null
+          fees_percent: number | null
+          icon_url: string | null
+          id: string | null
+          instructions_ar: string | null
+          instructions_en: string | null
+          is_available_at_launch: boolean | null
+          name_ar: string | null
+          name_en: string | null
+          sort_order: number | null
+        }
+        Insert: {
+          code?: string | null
+          description_ar?: string | null
+          description_en?: string | null
+          fees_fixed?: number | null
+          fees_percent?: number | null
+          icon_url?: string | null
+          id?: string | null
+          instructions_ar?: string | null
+          instructions_en?: string | null
+          is_available_at_launch?: boolean | null
+          name_ar?: string | null
+          name_en?: string | null
+          sort_order?: number | null
+        }
+        Update: {
+          code?: string | null
+          description_ar?: string | null
+          description_en?: string | null
+          fees_fixed?: number | null
+          fees_percent?: number | null
+          icon_url?: string | null
+          id?: string | null
+          instructions_ar?: string | null
+          instructions_en?: string | null
+          is_available_at_launch?: boolean | null
+          name_ar?: string | null
+          name_en?: string | null
+          sort_order?: number | null
+        }
+        Relationships: []
+      }
       public_suppliers: {
         Row: {
           brand_name: string | null
