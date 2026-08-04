@@ -13,9 +13,9 @@ function AiAgentsPage() {
   });
 
   return (
-    <div className="mx-auto max-w-5xl p-8">
+    <div className="mx-auto max-w-5xl p-4 md:p-8">
       <header className="mb-6">
-        <h1 className="flex items-center gap-2 text-3xl font-bold">
+        <h1 className="flex items-center gap-2 text-2xl font-bold md:text-3xl">
           <Bot className="h-7 w-7 text-primary" /> AI Agents
         </h1>
         <p className="mt-1 text-muted-foreground">Registry only — read-only. No agent is wired to any model yet.</p>
@@ -29,8 +29,8 @@ function AiAgentsPage() {
         </p>
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-border">
-        <table className="w-full text-sm">
+      <div className="overflow-x-auto rounded-2xl border border-border">
+        <table className="w-full min-w-[720px] text-sm">
           <thead className="bg-muted/50 text-left text-xs uppercase tracking-wider text-muted-foreground">
             <tr>
               <th className="px-4 py-3">Role key</th>
