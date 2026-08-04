@@ -97,6 +97,16 @@ const DICT: Dict = {
   "product.out_of_stock": { en: "Out of stock", ar: "غير متوفر" },
   "product.wholesale_from": { en: "Wholesale from", ar: "الجملة من" },
   "product.min_qty": { en: "min", ar: "أقل كمية" },
+  // Wishlist
+  "wishlist.title": { en: "My Wishlist", ar: "قائمة المفضلة" },
+  "wishlist.saved_one": { en: "1 saved product", ar: "منتج محفوظ واحد" },
+  "wishlist.saved_many": { en: "saved products", ar: "منتجات محفوظة" },
+  "wishlist.empty": { en: "Your wishlist is empty.", ar: "قائمة المفضلة فارغة." },
+  "wishlist.browse": { en: "Browse products", ar: "تصفح المنتجات" },
+  "wishlist.signin_title": { en: "Your wishlist", ar: "قائمة المفضلة" },
+  "wishlist.signin_body": { en: "Sign in to save products and pick up where you left off.", ar: "سجّل الدخول لحفظ المنتجات ومتابعة ما بدأته." },
+  "wishlist.remove": { en: "Remove from wishlist", ar: "إزالة من المفضلة" },
+  "nav.wishlist": { en: "Wishlist", ar: "المفضلة" },
 };
 
 interface I18nCtx {
