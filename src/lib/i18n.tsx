@@ -107,6 +107,7 @@ const DICT: Dict = {
   "wishlist.signin_body": { en: "Sign in to save products and pick up where you left off.", ar: "سجّل الدخول لحفظ المنتجات ومتابعة ما بدأته." },
   "wishlist.remove": { en: "Remove from wishlist", ar: "إزالة من المفضلة" },
   "nav.wishlist": { en: "Wishlist", ar: "المفضلة" },
+  "nav.cart": { en: "Cart", ar: "السلة" },
 };
 
 interface I18nCtx {
