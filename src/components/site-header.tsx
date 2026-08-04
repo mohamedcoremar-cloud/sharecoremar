@@ -46,9 +46,9 @@ export function SiteHeader() {
           <Button variant="ghost" size="sm" onClick={() => setLang(lang === "en" ? "ar" : "en")} className="gap-1 font-semibold">
             <Globe className="h-4 w-4" /> {lang === "en" ? "AR" : "EN"}
           </Button>
-          <Button variant="ghost" size="icon" asChild><Link to="/account/wishlist"><Heart className="h-5 w-5" /></Link></Button>
+          <Button variant="ghost" size="icon" asChild><Link to="/account/wishlist" aria-label={t("nav.wishlist")}><Heart className="h-5 w-5" /></Link></Button>
           <Button variant="ghost" size="icon" asChild className="relative">
-            <Link to="/cart">
+            <Link to="/cart" aria-label={t("nav.cart")}>
               <ShoppingCart className="h-5 w-5" />
               {count > 0 && <span className="absolute -top-1 -right-1 h-4 min-w-4 px-1 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center">{count}</span>}
             </Link>
@@ -56,7 +56,7 @@ export function SiteHeader() {
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon"><User className="h-5 w-5" /></Button>
+                <Button variant="ghost" size="icon" aria-label={t("nav.account")}><User className="h-5 w-5" /></Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
                 <div className="px-2 py-1.5 text-sm">
@@ -77,7 +77,7 @@ export function SiteHeader() {
           ) : (
             <Button asChild variant="default" className="btn-gold"><Link to="/auth">{t("nav.signin")}</Link></Button>
           )}
-          <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setOpen(!open)}>
+          <Button variant="ghost" size="icon" className="md:hidden" aria-label="Menu" aria-expanded={open} onClick={() => setOpen(!open)}>
             <Menu className="h-5 w-5" />
           </Button>
         </div>
@@ -90,6 +90,19 @@ export function SiteHeader() {
                 {n.label}
               </Link>
             ))}
+            <Link to="/account/wishlist" className="rounded px-2 py-2 text-sm font-medium hover:bg-muted" onClick={() => setOpen(false)}>
+              {t("nav.wishlist")}
+            </Link>
+            {user && (
+              <>
+                <Link to="/account" className="rounded px-2 py-2 text-sm font-medium hover:bg-muted" onClick={() => setOpen(false)}>
+                  {t("nav.account")}
+                </Link>
+                <Link to="/orders" className="rounded px-2 py-2 text-sm font-medium hover:bg-muted" onClick={() => setOpen(false)}>
+                  {t("nav.orders")}
+                </Link>
+              </>
+            )}
           </nav>
         </div>
       )}

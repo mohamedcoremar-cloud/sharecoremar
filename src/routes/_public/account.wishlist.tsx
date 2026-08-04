@@ -46,10 +46,10 @@ function AccountWishlistPage() {
         <div className="mx-auto mb-5 grid h-16 w-16 place-items-center rounded-2xl bg-gradient-to-br from-gold-soft to-accent">
           <Heart className="h-7 w-7 text-ink" />
         </div>
-        <h1 className="text-2xl font-bold tracking-tight">Your wishlist</h1>
-        <p className="mt-2 text-muted-foreground">Sign in to save products and pick up where you left off.</p>
+        <h1 className="text-2xl font-bold tracking-tight">{t("wishlist.signin_title")}</h1>
+        <p className="mt-2 text-muted-foreground">{t("wishlist.signin_body")}</p>
         <Button asChild className="btn-gold mt-7">
-          <Link to="/auth">Sign in</Link>
+          <Link to="/auth">{t("nav.signin")}</Link>
         </Button>
       </div>
     );
@@ -57,20 +57,32 @@ function AccountWishlistPage() {
   return (
     <div className="mx-auto max-w-5xl px-4 py-12">
       <header className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight md:text-4xl">My Wishlist</h1>
+        <h1 className="text-3xl font-bold tracking-tight md:text-4xl">{t("wishlist.title")}</h1>
         <p className="mt-2 text-muted-foreground">
-          {items.length} saved {items.length === 1 ? "product" : "products"}
+          {items.length === 1 ? t("wishlist.saved_one") : `${items.length} ${t("wishlist.saved_many")}`}
         </p>
       </header>
 
       {isLoading ? (
-        <div className="card-premium p-16 text-center text-muted-foreground">Loading…</div>
+        <div className="space-y-4">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="card-premium flex flex-col gap-4 p-4 sm:flex-row sm:items-center">
+              <div className="h-24 w-24 shrink-0 animate-pulse rounded-xl bg-muted" />
+              <div className="flex-1 space-y-2">
+                <div className="h-4 w-2/3 animate-pulse rounded bg-muted" />
+                <div className="h-5 w-24 animate-pulse rounded bg-muted" />
+                <div className="h-3 w-16 animate-pulse rounded bg-muted" />
+              </div>
+              <div className="h-10 w-32 animate-pulse rounded-lg bg-muted" />
+            </div>
+          ))}
+        </div>
       ) : items.length === 0 ? (
         <div className="card-premium p-16 text-center">
           <Heart className="mx-auto mb-3 h-10 w-10 text-muted-foreground/50" />
-          <p className="text-muted-foreground">Your wishlist is empty.</p>
+          <p className="text-muted-foreground">{t("wishlist.empty")}</p>
           <Button asChild variant="outline" className="mt-6">
-            <Link to="/products">Browse products</Link>
+            <Link to="/products">{t("wishlist.browse")}</Link>
           </Button>
         </div>
       ) : (
@@ -115,10 +127,10 @@ function AccountWishlistPage() {
                 </div>
 
                 <div className="flex shrink-0 items-center gap-2">
-                  <Button className="btn-gold" disabled={stock === 0} onClick={() => addToCart(p.id, 1)}>
+                  <Button className="btn-gold flex-1 sm:flex-none" disabled={stock === 0} onClick={() => addToCart(p.id, 1)}>
                     <ShoppingCart className="me-2 h-4 w-4" /> {t("product.add_to_cart")}
                   </Button>
-                  <Button variant="outline" size="icon" aria-label="Remove" onClick={() => toggleWishlist(p.id)}>
+                  <Button variant="outline" size="icon" aria-label={t("wishlist.remove")} onClick={() => toggleWishlist(p.id)}>
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
