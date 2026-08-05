@@ -1,7 +1,9 @@
 import { Link } from "@tanstack/react-router";
 import { ShoppingCart, Heart, Menu, Search, User, LogOut, LayoutDashboard, Globe } from "lucide-react";
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import logoIcon from "@/assets/logo-icon.png";
+import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
 import { useCart } from "@/lib/cart-context";
 import { useI18n } from "@/lib/i18n";
@@ -15,6 +17,18 @@ export function SiteHeader() {
   const { count } = useCart();
   const { t, lang, setLang } = useI18n();
   const [open, setOpen] = useState(false);
+  const { data: cmsPages = [] } = useQuery({
+    queryKey: ["nav-pages"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("pages")
+        .select("slug,title_en,title_ar,nav_sort_order")
+        .eq("is_published", true)
+        .eq("show_in_nav", true)
+        .order("nav_sort_order");
+      return data ?? [];
+    },
+  });
   const NAV = [
     { to: "/products", label: t("nav.products") },
     { to: "/categories", label: t("nav.categories") },
@@ -22,6 +36,11 @@ export function SiteHeader() {
     { to: "/suppliers", label: t("nav.suppliers") },
     { to: "/become-supplier", label: t("nav.become_supplier") },
   ];
+  const cmsNav = cmsPages.map((p: any) => ({
+    to: `/p/${p.slug}`,
+    label: (lang === "ar" ? p.title_ar : p.title_en) || p.title_en || p.slug,
+  }));
+
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border/60 bg-background/80 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-7xl items-center gap-4 px-4">
@@ -36,7 +55,13 @@ export function SiteHeader() {
               {n.label}
             </Link>
           ))}
+          {cmsNav.map((n) => (
+            <Link key={n.to} to="/p/$slug" params={{ slug: n.to.replace("/p/", "") }} className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
+              {n.label}
+            </Link>
+          ))}
         </nav>
+
 
         <div className="ms-auto flex items-center gap-2">
           <div className="hidden lg:flex items-center gap-2 rounded-full border border-border bg-muted/40 px-3 py-1.5 w-72">
@@ -90,6 +115,12 @@ export function SiteHeader() {
                 {n.label}
               </Link>
             ))}
+            {cmsNav.map((n) => (
+              <Link key={n.to} to="/p/$slug" params={{ slug: n.to.replace("/p/", "") }} className="rounded px-2 py-2 text-sm font-medium hover:bg-muted" onClick={() => setOpen(false)}>
+                {n.label}
+              </Link>
+            ))}
+
             <Link to="/account/wishlist" className="rounded px-2 py-2 text-sm font-medium hover:bg-muted" onClick={() => setOpen(false)}>
               {t("nav.wishlist")}
             </Link>
