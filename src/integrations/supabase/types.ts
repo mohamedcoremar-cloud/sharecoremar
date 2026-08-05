@@ -879,7 +879,9 @@ export type Database = {
           meta_description_en: string | null
           meta_title_ar: string | null
           meta_title_en: string | null
+          nav_sort_order: number
           og_image_url: string | null
+          show_in_nav: boolean
           slug: string
           sort_order: number
           title_ar: string | null
@@ -897,7 +899,9 @@ export type Database = {
           meta_description_en?: string | null
           meta_title_ar?: string | null
           meta_title_en?: string | null
+          nav_sort_order?: number
           og_image_url?: string | null
+          show_in_nav?: boolean
           slug: string
           sort_order?: number
           title_ar?: string | null
@@ -915,7 +919,9 @@ export type Database = {
           meta_description_en?: string | null
           meta_title_ar?: string | null
           meta_title_en?: string | null
+          nav_sort_order?: number
           og_image_url?: string | null
+          show_in_nav?: boolean
           slug?: string
           sort_order?: number
           title_ar?: string | null
