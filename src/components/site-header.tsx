@@ -55,7 +55,13 @@ export function SiteHeader() {
               {n.label}
             </Link>
           ))}
+          {cmsNav.map((n) => (
+            <Link key={n.to} to="/p/$slug" params={{ slug: n.to.replace("/p/", "") }} className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
+              {n.label}
+            </Link>
+          ))}
         </nav>
+
 
         <div className="ms-auto flex items-center gap-2">
           <div className="hidden lg:flex items-center gap-2 rounded-full border border-border bg-muted/40 px-3 py-1.5 w-72">
