@@ -6,9 +6,12 @@ export const Route = createFileRoute("/admin/payments")({
     <CrudPage
       title="Payment Methods"
       table="payment_methods"
+      // `config` holds gateway secrets and is intentionally not readable by the client.
+      selectColumns="id,code,name_en,name_ar,description_en,description_ar,instructions_en,instructions_ar,icon_url,is_enabled,is_available_at_launch,environment,fees_percent,fees_fixed,sort_order,created_at,updated_at"
       orderBy="sort_order"
       activeKey="is_enabled"
-      defaultValues={{ is_enabled: false, is_available_at_launch: false, environment: "sandbox", sort_order: 0, fees_percent: 0, fees_fixed: 0, config: {} }}
+      defaultValues={{ is_enabled: false, is_available_at_launch: false, environment: "sandbox", sort_order: 0, fees_percent: 0, fees_fixed: 0 }}
+
       columns={[
         { key: "code", label: "Code" },
         { key: "name_en", label: "Name" },
