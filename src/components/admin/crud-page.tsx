@@ -32,9 +32,11 @@ interface Props {
   searchKeys?: string[];
   hasActive?: boolean;
   activeKey?: string;
+  /** Explicit column list for reads. Use when the table has columns the client is not granted (e.g. secrets). */
+  selectColumns?: string;
 }
 
-export function CrudPage({ title, table, columns, fields, orderBy = "created_at", defaultValues = {}, searchKeys = ["name", "name_en", "slug", "title_en"], hasActive = true, activeKey = "is_active" }: Props) {
+export function CrudPage({ title, table, columns, fields, orderBy = "created_at", defaultValues = {}, searchKeys = ["name", "name_en", "slug", "title_en"], hasActive = true, activeKey = "is_active", selectColumns = "*" }: Props) {
   const { t } = useI18n();
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
@@ -45,13 +47,14 @@ export function CrudPage({ title, table, columns, fields, orderBy = "created_at"
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
   const { data: rows = [], isLoading } = useQuery({
-    queryKey: [table],
+    queryKey: [table, selectColumns],
     queryFn: async () => {
-      const { data, error } = await supabase.from(table as any).select("*").order(orderBy, { ascending: false });
+      const { data, error } = await supabase.from(table as any).select(selectColumns).order(orderBy, { ascending: false });
       if (error) throw error;
       return data ?? [];
     },
   });
+
 
   const filtered = useMemo(() => {
     const ql = q.toLowerCase().trim();
