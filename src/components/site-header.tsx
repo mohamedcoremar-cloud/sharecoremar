@@ -115,6 +115,12 @@ export function SiteHeader() {
                 {n.label}
               </Link>
             ))}
+            {cmsNav.map((n) => (
+              <Link key={n.to} to="/p/$slug" params={{ slug: n.to.replace("/p/", "") }} className="rounded px-2 py-2 text-sm font-medium hover:bg-muted" onClick={() => setOpen(false)}>
+                {n.label}
+              </Link>
+            ))}
+
             <Link to="/account/wishlist" className="rounded px-2 py-2 text-sm font-medium hover:bg-muted" onClick={() => setOpen(false)}>
               {t("nav.wishlist")}
             </Link>
