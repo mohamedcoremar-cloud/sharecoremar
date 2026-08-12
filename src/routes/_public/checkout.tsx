@@ -60,7 +60,7 @@ function CheckoutPage() {
 
   const { data: methods = [] } = useQuery({
     queryKey: ["pm-enabled"],
-    queryFn: async () => (await supabase.from("payment_methods").select("code, name_en, name_ar, description_en, description_ar, instructions_en, instructions_ar, icon_url").eq("is_enabled", true).eq("is_available_at_launch", true).order("sort_order")).data ?? [],
+    queryFn: async () => (await supabase.from("public_payment_methods").select("code, name_en, name_ar, description_en, description_ar, instructions_en, instructions_ar, icon_url").order("sort_order")).data ?? [],
   });
 
   useEffect(() => {
