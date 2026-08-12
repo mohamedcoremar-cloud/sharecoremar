@@ -1068,6 +1068,73 @@ export type Database = {
           },
         ]
       }
+      product_reviews: {
+        Row: {
+          comment: string | null
+          created_at: string
+          created_by: string | null
+          customer_id: string
+          deleted_at: string | null
+          id: string
+          order_id: string
+          product_id: string
+          rating: number
+          status_id: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string
+          created_by?: string | null
+          customer_id: string
+          deleted_at?: string | null
+          id?: string
+          order_id: string
+          product_id: string
+          rating: number
+          status_id: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string
+          created_by?: string | null
+          customer_id?: string
+          deleted_at?: string | null
+          id?: string
+          order_id?: string
+          product_id?: string
+          rating?: number
+          status_id?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_reviews_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_reviews_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_reviews_status_id_fkey"
+            columns: ["status_id"]
+            isOneToOne: false
+            referencedRelation: "review_statuses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
           barcode: string | null
@@ -1229,6 +1296,45 @@ export type Database = {
           language?: string | null
           phone?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      review_statuses: {
+        Row: {
+          code: string
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          id: string
+          is_active: boolean
+          label_ar: string
+          label_en: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          id?: string
+          is_active?: boolean
+          label_ar: string
+          label_en: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          id?: string
+          is_active?: boolean
+          label_ar?: string
+          label_en?: string
+          updated_at?: string
+          updated_by?: string | null
         }
         Relationships: []
       }
@@ -1565,6 +1671,10 @@ export type Database = {
           p_version_number: number
         }
         Returns: undefined
+      }
+      set_review_status: {
+        Args: { p_review_id: string; p_status_code: string }
+        Returns: Json
       }
       update_delivery_status: {
         Args: {
