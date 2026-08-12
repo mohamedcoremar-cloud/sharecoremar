@@ -1443,6 +1443,57 @@ export type Database = {
       }
     }
     Views: {
+      public_payment_methods: {
+        Row: {
+          code: string | null
+          description_ar: string | null
+          description_en: string | null
+          fees_fixed: number | null
+          fees_percent: number | null
+          icon_url: string | null
+          id: string | null
+          instructions_ar: string | null
+          instructions_en: string | null
+          is_available_at_launch: boolean | null
+          is_enabled: boolean | null
+          name_ar: string | null
+          name_en: string | null
+          sort_order: number | null
+        }
+        Insert: {
+          code?: string | null
+          description_ar?: string | null
+          description_en?: string | null
+          fees_fixed?: number | null
+          fees_percent?: number | null
+          icon_url?: string | null
+          id?: string | null
+          instructions_ar?: string | null
+          instructions_en?: string | null
+          is_available_at_launch?: boolean | null
+          is_enabled?: boolean | null
+          name_ar?: string | null
+          name_en?: string | null
+          sort_order?: number | null
+        }
+        Update: {
+          code?: string | null
+          description_ar?: string | null
+          description_en?: string | null
+          fees_fixed?: number | null
+          fees_percent?: number | null
+          icon_url?: string | null
+          id?: string | null
+          instructions_ar?: string | null
+          instructions_en?: string | null
+          is_available_at_launch?: boolean | null
+          is_enabled?: boolean | null
+          name_ar?: string | null
+          name_en?: string | null
+          sort_order?: number | null
+        }
+        Relationships: []
+      }
       public_suppliers: {
         Row: {
           brand_name: string | null
@@ -1491,6 +1542,17 @@ export type Database = {
       merge_guest_cart_on_login: {
         Args: { p_session_token: string }
         Returns: string
+      }
+      place_order: {
+        Args: {
+          p_address_id: string
+          p_notes?: string
+          p_payment_method: string
+          p_proof_media_id?: string
+          p_proof_url?: string
+          p_transfer_reference?: string
+        }
+        Returns: Json
       }
       reject_order_payment: {
         Args: { p_order_id: string; p_reason: string }
