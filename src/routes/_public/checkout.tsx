@@ -34,7 +34,7 @@ const EGY_GOV = [
 function CheckoutPage() {
   const { user } = useAuth();
   const { pick } = useI18n();
-  const { items, clearCart } = useCart();
+  const { items, refresh } = useCart();
   const nav = useNavigate();
   const active = items.filter((i) => !i.saved_for_later);
 
@@ -97,10 +97,10 @@ function CheckoutPage() {
       const { data, error } = await supabase.rpc("place_order", {
         p_address_id: addressId,
         p_payment_method: payment,
-        p_notes: notes || null,
-        p_transfer_reference: requiresProof ? transferRef.trim() : null,
-        p_proof_media_id: requiresProof ? proof?.id ?? null : null,
-        p_proof_url: requiresProof ? proof?.url ?? null : null,
+        p_notes: notes || undefined,
+        p_transfer_reference: requiresProof ? transferRef.trim() : undefined,
+        p_proof_media_id: requiresProof ? proof?.id ?? undefined : undefined,
+        p_proof_url: requiresProof ? proof?.url ?? undefined : undefined,
       });
       if (error) throw error;
       const orderId = (data as any)?.order_id as string;
