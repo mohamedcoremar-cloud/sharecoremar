@@ -8,6 +8,7 @@ import { useCart } from "@/lib/cart-context";
 import { fmt, priceOf } from "@/lib/currency";
 import { toast } from "sonner";
 import { useI18n } from "@/lib/i18n";
+import { RatingSummary, ReviewAction, ApprovedReviewList } from "@/components/product-reviews";
 
 export const Route = createFileRoute("/_public/product/$slug")({
   component: ProductPage,
