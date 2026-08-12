@@ -69,8 +69,9 @@ function AuthPage() {
             </TabsContent>
           </Tabs>
           <p className="mt-4 text-center text-xs text-muted-foreground">
-            Super admin bootstrap: sign up with <span className="font-mono">sharecoremar@gmail.com</span> to receive full admin access automatically.
+            By continuing you agree to our terms and privacy policy.
           </p>
+
         </div>
         <Link to="/" className="mt-6 block text-center text-sm text-muted-foreground hover:text-foreground">← Back to home</Link>
       </div>
