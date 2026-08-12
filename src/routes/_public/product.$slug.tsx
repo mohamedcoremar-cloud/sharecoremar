@@ -107,6 +107,8 @@ function ProductPage() {
           {product.brand && <div className="text-sm text-muted-foreground">{pick(product.brand, "name") || product.brand.name}</div>}
           <h1 className="text-3xl font-bold mt-1">{name}</h1>
           <div className="mt-2 text-sm text-muted-foreground">SKU: {product.sku || "—"}</div>
+          <RatingSummary productId={product.id} />
+
 
           <div className="mt-5 rounded-2xl border border-border bg-muted/30 p-5">
             <div className="flex flex-wrap items-baseline gap-3">
