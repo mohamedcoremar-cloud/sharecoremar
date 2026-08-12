@@ -92,58 +92,20 @@ function CheckoutPage() {
     }
     setPlacing(true);
     try {
-      const addr = addresses.find((a: any) => a.id === addressId);
-      const orderNumber = `SC-${Date.now().toString().slice(-8)}`;
-      const initialStatus = requiresProof ? "pending_payment_review" : "pending";
-      const { data: order, error } = await supabase.from("orders").insert({
-        buyer_id: user!.id,
-        order_number: orderNumber,
-        subtotal, tax, shipping, discount: 0, total,
-        payment_method: payment as any,
-        payment_status: "pending",
-        status: initialStatus as any,
-        currency: "EGP",
-        shipping_address: addr,
-        address_id: addressId,
-        contact_phone: addr?.phone,
-        customer_email: user!.email,
-        notes,
-      }).select().single();
+      // Prices, taxes, shipping and totals are computed server-side from the
+      // catalog — never trusted from the browser.
+      const { data, error } = await supabase.rpc("place_order", {
+        p_address_id: addressId,
+        p_payment_method: payment,
+        p_notes: notes || null,
+        p_transfer_reference: requiresProof ? transferRef.trim() : null,
+        p_proof_media_id: requiresProof ? proof?.id ?? null : null,
+        p_proof_url: requiresProof ? proof?.url ?? null : null,
+      });
       if (error) throw error;
-
-      const itemsInsert = active.map((i) => ({
-        order_id: order.id,
-        product_id: i.product_id,
-        product_name: i.product?.name_en ?? "Product",
-        quantity: i.quantity,
-        unit_price: priceOf(i.product),
-        total_price: priceOf(i.product) * i.quantity,
-      }));
-      const { error: itemsErr } = await supabase.from("order_items").insert(itemsInsert);
-      if (itemsErr) throw itemsErr;
-
-      // Create payment record (source of truth)
-      const { error: payErr } = await supabase.from("payments").insert({
-        order_id: order.id,
-        method: payment as any,
-        amount: total,
-        currency: "EGP",
-        status: "pending",
-        transfer_reference: requiresProof ? transferRef.trim() : null,
-        proof_media_id: requiresProof ? proof?.id ?? null : null,
-        proof_url: requiresProof ? proof?.url ?? null : null,
-        transferred_at: requiresProof ? new Date().toISOString() : null,
-      });
-      if (payErr) throw payErr;
-
-      await supabase.from("order_status_history").insert({
-        order_id: order.id,
-        status: initialStatus,
-        note: requiresProof ? "Awaiting payment review" : "Order placed",
-        created_by: user!.id,
-      });
-      await clearCart();
-      nav({ to: "/order/$id", params: { id: order.id } });
+      const orderId = (data as any)?.order_id as string;
+      await refresh();
+      nav({ to: "/order/$id", params: { id: orderId } });
     } catch (e: any) {
       toast.error(e.message ?? "Failed to place order");
     } finally {
