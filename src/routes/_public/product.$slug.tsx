@@ -171,8 +171,13 @@ function ProductPage() {
               {product.supplier.city && <div className="text-sm text-muted-foreground">{product.supplier.city}{product.supplier.governorate ? `, ${product.supplier.governorate}` : ""}</div>}
             </div>
           )}
+
+          <ReviewAction productId={product.id} />
         </div>
       </div>
+
+      <ApprovedReviewList productId={product.id} />
+
 
       {product.specifications && Object.keys(product.specifications as any).length > 0 && (
         <div className="mt-12">
