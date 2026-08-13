@@ -56,8 +56,8 @@ export function ReviewAction({ productId }: { productId: string }) {
         .from("order_items")
         .select("order_id, order:orders!inner(id, status, buyer_id)")
         .eq("product_id", productId)
-        .eq("orders.buyer_id", user!.id)
-        .eq("orders.status", "delivered");
+        .eq("order.buyer_id", user!.id)
+        .eq("order.status", "delivered");
       const orderId = (items ?? [])[0]?.order_id as string | undefined;
       if (!orderId) return { orderId: null, reviewed: false };
       const { data: mine } = await supabase
