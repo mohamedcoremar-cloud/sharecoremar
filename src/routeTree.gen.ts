@@ -9,7 +9,9 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SupplierRouteImport } from './routes/supplier'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as LogisticsRouteImport } from './routes/logistics'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as PublicRouteImport } from './routes/_public'
@@ -45,9 +47,19 @@ import { Route as PublicPSlugRouteImport } from './routes/_public/p.$slug'
 import { Route as PublicOrderIdRouteImport } from './routes/_public/order.$id'
 import { Route as PublicAccountWishlistRouteImport } from './routes/_public/account.wishlist'
 
+const SupplierRoute = SupplierRouteImport.update({
+  id: '/supplier',
+  path: '/supplier',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LogisticsRoute = LogisticsRouteImport.update({
+  id: '/logistics',
+  path: '/logistics',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -224,7 +236,9 @@ export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
+  '/logistics': typeof LogisticsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/supplier': typeof SupplierRoute
   '/account': typeof PublicAccountRouteWithChildren
   '/become-supplier': typeof PublicBecomeSupplierRoute
   '/brands': typeof PublicBrandsRoute
@@ -258,7 +272,9 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
+  '/logistics': typeof LogisticsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/supplier': typeof SupplierRoute
   '/account': typeof PublicAccountRouteWithChildren
   '/become-supplier': typeof PublicBecomeSupplierRoute
   '/brands': typeof PublicBrandsRoute
@@ -296,7 +312,9 @@ export interface FileRoutesById {
   '/_public': typeof PublicRouteWithChildren
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
+  '/logistics': typeof LogisticsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/supplier': typeof SupplierRoute
   '/_public/account': typeof PublicAccountRouteWithChildren
   '/_public/become-supplier': typeof PublicBecomeSupplierRoute
   '/_public/brands': typeof PublicBrandsRoute
@@ -335,7 +353,9 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/auth'
+    | '/logistics'
     | '/sitemap.xml'
+    | '/supplier'
     | '/account'
     | '/become-supplier'
     | '/brands'
@@ -369,7 +389,9 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth'
+    | '/logistics'
     | '/sitemap.xml'
+    | '/supplier'
     | '/account'
     | '/become-supplier'
     | '/brands'
@@ -406,7 +428,9 @@ export interface FileRouteTypes {
     | '/_public'
     | '/admin'
     | '/auth'
+    | '/logistics'
     | '/sitemap.xml'
+    | '/supplier'
     | '/_public/account'
     | '/_public/become-supplier'
     | '/_public/brands'
@@ -444,16 +468,32 @@ export interface RootRouteChildren {
   PublicRoute: typeof PublicRouteWithChildren
   AdminRoute: typeof AdminRouteWithChildren
   AuthRoute: typeof AuthRoute
+  LogisticsRoute: typeof LogisticsRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  SupplierRoute: typeof SupplierRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/supplier': {
+      id: '/supplier'
+      path: '/supplier'
+      fullPath: '/supplier'
+      preLoaderRoute: typeof SupplierRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/logistics': {
+      id: '/logistics'
+      path: '/logistics'
+      fullPath: '/logistics'
+      preLoaderRoute: typeof LogisticsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -790,7 +830,9 @@ const rootRouteChildren: RootRouteChildren = {
   PublicRoute: PublicRouteWithChildren,
   AdminRoute: AdminRouteWithChildren,
   AuthRoute: AuthRoute,
+  LogisticsRoute: LogisticsRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  SupplierRoute: SupplierRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

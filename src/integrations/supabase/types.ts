@@ -536,6 +536,50 @@ export type Database = {
         }
         Relationships: []
       }
+      delivery_partner_users: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          delivery_partner_id: string
+          id: string
+          is_active: boolean
+          updated_at: string
+          updated_by: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          delivery_partner_id: string
+          id?: string
+          is_active?: boolean
+          updated_at?: string
+          updated_by?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          delivery_partner_id?: string
+          id?: string
+          is_active?: boolean
+          updated_at?: string
+          updated_by?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "delivery_partner_users_delivery_partner_id_fkey"
+            columns: ["delivery_partner_id"]
+            isOneToOne: false
+            referencedRelation: "delivery_partners"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       delivery_partners: {
         Row: {
           coverage_notes: string | null
@@ -753,29 +797,44 @@ export type Database = {
         Row: {
           created_at: string
           created_by: string | null
+          driver_name: string | null
+          driver_phone: string | null
           id: string
           is_internal: boolean
+          logistics_delivery_eta: string | null
           note: string | null
           order_id: string
           status: string
+          supplier_ready_eta: string | null
+          vehicle_info: string | null
         }
         Insert: {
           created_at?: string
           created_by?: string | null
+          driver_name?: string | null
+          driver_phone?: string | null
           id?: string
           is_internal?: boolean
+          logistics_delivery_eta?: string | null
           note?: string | null
           order_id: string
           status: string
+          supplier_ready_eta?: string | null
+          vehicle_info?: string | null
         }
         Update: {
           created_at?: string
           created_by?: string | null
+          driver_name?: string | null
+          driver_phone?: string | null
           id?: string
           is_internal?: boolean
+          logistics_delivery_eta?: string | null
           note?: string | null
           order_id?: string
           status?: string
+          supplier_ready_eta?: string | null
+          vehicle_info?: string | null
         }
         Relationships: [
           {
@@ -1356,6 +1415,57 @@ export type Database = {
         }
         Relationships: []
       }
+      supplier_users: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          id: string
+          is_active: boolean
+          supplier_id: string
+          updated_at: string
+          updated_by: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          id?: string
+          is_active?: boolean
+          supplier_id: string
+          updated_at?: string
+          updated_by?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          id?: string
+          is_active?: boolean
+          supplier_id?: string
+          updated_at?: string
+          updated_by?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "supplier_users_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "public_suppliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "supplier_users_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       suppliers: {
         Row: {
           address: string | null
@@ -1549,6 +1659,28 @@ export type Database = {
       }
     }
     Views: {
+      order_fulfillment_current: {
+        Row: {
+          driver_name: string | null
+          driver_phone: string | null
+          logistics_delivery_eta: string | null
+          note: string | null
+          order_id: string | null
+          stage: string | null
+          stage_at: string | null
+          supplier_ready_eta: string | null
+          vehicle_info: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_status_history_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       public_payment_methods: {
         Row: {
           code: string | null
@@ -1645,6 +1777,18 @@ export type Database = {
         Args: { p_note?: string; p_order_id: string }
         Returns: Json
       }
+      logistics_set_order_stage: {
+        Args: {
+          p_driver_name?: string
+          p_driver_phone?: string
+          p_eta?: string
+          p_note?: string
+          p_order_id: string
+          p_stage: string
+          p_vehicle_info?: string
+        }
+        Returns: Json
+      }
       merge_guest_cart_on_login: {
         Args: { p_session_token: string }
         Returns: string
@@ -1676,6 +1820,15 @@ export type Database = {
         Args: { p_review_id: string; p_status_code: string }
         Returns: Json
       }
+      supplier_set_order_stage: {
+        Args: {
+          p_eta?: string
+          p_note?: string
+          p_order_id: string
+          p_stage: string
+        }
+        Returns: Json
+      }
       update_delivery_status: {
         Args: {
           p_delivery_id: string
@@ -1695,6 +1848,7 @@ export type Database = {
         | "supplier"
         | "business_buyer"
         | "personal_buyer"
+        | "logistics_partner"
       order_status:
         | "pending"
         | "pending_payment_review"
@@ -1841,6 +1995,7 @@ export const Constants = {
         "supplier",
         "business_buyer",
         "personal_buyer",
+        "logistics_partner",
       ],
       order_status: [
         "pending",

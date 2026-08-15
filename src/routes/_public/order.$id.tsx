@@ -6,6 +6,8 @@ import { fmt } from "@/lib/currency";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
 import { deliveryIcon } from "@/lib/delivery";
+import { STAGE_META } from "@/lib/fulfillment";
+
 
 export const Route = createFileRoute("/_public/order/$id")({
   component: OrderPage,
@@ -31,7 +33,12 @@ const STATUS_META: Record<string, { label: string; icon: any; color: string }> =
   delivered: { label: "Delivered", icon: Home, color: "text-emerald-500" },
   cancelled: { label: "Cancelled", icon: XCircle, color: "text-red-500" },
   refunded: { label: "Refunded", icon: XCircle, color: "text-red-500" },
+  // Fulfillment loop stages (stored in order_status_history only).
+  ...Object.fromEntries(
+    Object.entries(STAGE_META).map(([code, m]) => [code, { label: m.en, icon: m.icon, color: m.color }]),
+  ),
 };
+
 
 function OrderPage() {
   const { id } = Route.useParams();
@@ -99,8 +106,22 @@ function OrderPage() {
                     <I className={`h-5 w-5 mt-0.5 ${m.color}`} />
                     <div className="flex-1">
                       <div className="font-medium text-sm">{m.label}</div>
+                      {h.supplier_ready_eta && (
+                        <div className="text-xs text-muted-foreground">Ready in: {h.supplier_ready_eta}</div>
+                      )}
+                      {h.logistics_delivery_eta && (
+                        <div className="text-xs text-muted-foreground">Delivery timeframe: {h.logistics_delivery_eta}</div>
+                      )}
+                      {h.driver_name && (
+                        <div className="text-xs text-muted-foreground">
+                          Driver: {h.driver_name}
+                          {h.driver_phone ? ` · ${h.driver_phone}` : ""}
+                          {h.vehicle_info ? ` · ${h.vehicle_info}` : ""}
+                        </div>
+                      )}
                       {h.note && <div className="text-xs text-muted-foreground">{h.note}</div>}
                       <div className="text-xs text-muted-foreground">{new Date(h.created_at).toLocaleString()}</div>
+
                     </div>
                   </div>
                 );
