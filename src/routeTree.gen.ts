@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SupplierRouteImport } from './routes/supplier'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as LogisticsRouteImport } from './routes/logistics'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as PublicRouteImport } from './routes/_public'
@@ -54,6 +55,11 @@ const SupplierRoute = SupplierRouteImport.update({
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LogisticsRoute = LogisticsRouteImport.update({
+  id: '/logistics',
+  path: '/logistics',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -230,6 +236,7 @@ export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
+  '/logistics': typeof LogisticsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/supplier': typeof SupplierRoute
   '/account': typeof PublicAccountRouteWithChildren
@@ -265,6 +272,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
+  '/logistics': typeof LogisticsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/supplier': typeof SupplierRoute
   '/account': typeof PublicAccountRouteWithChildren
@@ -304,6 +312,7 @@ export interface FileRoutesById {
   '/_public': typeof PublicRouteWithChildren
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
+  '/logistics': typeof LogisticsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/supplier': typeof SupplierRoute
   '/_public/account': typeof PublicAccountRouteWithChildren
@@ -344,6 +353,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/auth'
+    | '/logistics'
     | '/sitemap.xml'
     | '/supplier'
     | '/account'
@@ -379,6 +389,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth'
+    | '/logistics'
     | '/sitemap.xml'
     | '/supplier'
     | '/account'
@@ -417,6 +428,7 @@ export interface FileRouteTypes {
     | '/_public'
     | '/admin'
     | '/auth'
+    | '/logistics'
     | '/sitemap.xml'
     | '/supplier'
     | '/_public/account'
@@ -456,6 +468,7 @@ export interface RootRouteChildren {
   PublicRoute: typeof PublicRouteWithChildren
   AdminRoute: typeof AdminRouteWithChildren
   AuthRoute: typeof AuthRoute
+  LogisticsRoute: typeof LogisticsRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SupplierRoute: typeof SupplierRoute
 }
@@ -474,6 +487,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/logistics': {
+      id: '/logistics'
+      path: '/logistics'
+      fullPath: '/logistics'
+      preLoaderRoute: typeof LogisticsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -810,6 +830,7 @@ const rootRouteChildren: RootRouteChildren = {
   PublicRoute: PublicRouteWithChildren,
   AdminRoute: AdminRouteWithChildren,
   AuthRoute: AuthRoute,
+  LogisticsRoute: LogisticsRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   SupplierRoute: SupplierRoute,
 }

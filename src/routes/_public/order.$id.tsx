@@ -31,7 +31,12 @@ const STATUS_META: Record<string, { label: string; icon: any; color: string }> =
   delivered: { label: "Delivered", icon: Home, color: "text-emerald-500" },
   cancelled: { label: "Cancelled", icon: XCircle, color: "text-red-500" },
   refunded: { label: "Refunded", icon: XCircle, color: "text-red-500" },
+  // Fulfillment loop stages (stored in order_status_history only).
+  ...Object.fromEntries(
+    Object.entries(STAGE_META).map(([code, m]) => [code, { label: m.en, icon: m.icon, color: m.color }]),
+  ),
 };
+
 
 function OrderPage() {
   const { id } = Route.useParams();
