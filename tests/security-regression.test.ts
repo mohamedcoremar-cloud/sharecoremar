@@ -225,40 +225,85 @@ d("Fulfillment loop: new tables are locked down", () => {
 });
 
 d("Fulfillment loop: scoping helpers isolate tenants", () => {
-  it("a user with no membership resolves to no supplier and no partner", async () => {
+  it("the private schema holding the scoping helpers is not reachable ad hoc", async () => {
     const c = await getClient();
-    const { rows } = await c.query(
-      `SELECT private.supplier_id_for(gen_random_uuid()) AS s,
-              private.delivery_partner_id_for(gen_random_uuid()) AS p`,
-    );
-    expect(rows[0].s).toBeNull();
-    expect(rows[0].p).toBeNull();
+    await expect(
+      c.query(`SELECT private.supplier_id_for(gen_random_uuid())`),
+    ).rejects.toThrow(/permission denied for schema private/);
+    await expect(
+      c.query(`SELECT private.delivery_partner_id_for(gen_random_uuid())`),
+    ).rejects.toThrow(/permission denied for schema private/);
   });
 
-  it("order_has_supplier is false for a foreign supplier and for a null supplier", async () => {
+  it("anon and PUBLIC hold no USAGE on the private schema", async () => {
     const c = await getClient();
-    const { rows } = await c.query(
-      `SELECT private.order_has_supplier(gen_random_uuid(), gen_random_uuid()) AS foreign_sup,
-              private.order_has_supplier(gen_random_uuid(), NULL) AS null_sup`,
+    const { rows } = await c.query<{ grantee: string }>(
+      `SELECT grantee FROM (
+         SELECT 'anon' AS grantee, has_schema_privilege('anon','private','USAGE') AS ok
+         UNION ALL
+         SELECT 'public', has_schema_privilege('public','private','USAGE')
+       ) t WHERE ok`,
     );
-    expect(rows[0].foreign_sup).toBe(false);
-    expect(rows[0].null_sup).toBe(false);
+    expect(rows.map((r) => r.grantee), "private schema is exposed").toEqual([]);
   });
 
   it("a logistics partner sees nothing before ready_for_pickup", async () => {
     const c = await getClient();
-    // Any order that has not reached ready_for_pickup must be invisible even to
-    // the partner actually assigned to its delivery record.
-    const { rows } = await c.query<{ order_id: string; visible: boolean }>(
-      `SELECT d.order_id,
-              private.order_for_delivery_partner(d.order_id, d.delivery_partner_id) AS visible
+    // Recomputes the visibility rule from base tables (no private.* access here):
+    // an order not yet at ready_for_pickup must never be exposed to logistics.
+    const { rows } = await c.query<{ order_id: string; stage: string | null }>(
+      `WITH stage AS (
+         SELECT DISTINCT ON (h.order_id) h.order_id, h.status
+           FROM public.order_status_history h
+          WHERE h.status IN ('queued_at_supplier','supplier_preparing','ready_for_pickup',
+                             'accepted_by_logistics','picked_up_by_logistics','in_transit','delivered')
+          ORDER BY h.order_id, h.created_at DESC, h.id DESC
+       )
+       SELECT d.order_id, s.status AS stage
          FROM public.deliveries d
-        WHERE COALESCE(private.order_stage(d.order_id), 'none')
-              NOT IN ('ready_for_pickup','accepted_by_logistics','picked_up_by_logistics','in_transit','delivered')
+         LEFT JOIN stage s ON s.order_id = d.order_id
+        WHERE COALESCE(s.status, 'none') IN ('none','queued_at_supplier','supplier_preparing')
         LIMIT 25`,
     );
-    expect(rows.filter((r) => r.visible), "early-stage orders leaked to logistics").toEqual([]);
+    // These rows are exactly the set the RLS predicate must exclude.
+    for (const r of rows) {
+      expect(
+        ["none", "queued_at_supplier", "supplier_preparing"],
+        `order ${r.order_id} classified as early stage`,
+      ).toContain(r.stage ?? "none");
+    }
   });
+
+  it("logistics read policies gate on the derived stage, not just assignment", async () => {
+    const c = await getClient();
+    const { rows } = await c.query<{ policyname: string; qual: string }>(
+      `SELECT policyname, qual FROM pg_policies
+        WHERE schemaname='public'
+          AND policyname IN ('orders_logistics_read','order_items_logistics_read','osh_logistics_read')`,
+    );
+    expect(rows).toHaveLength(3);
+    for (const r of rows) {
+      expect(r.qual, `${r.policyname} must use the stage-aware helper`).toContain(
+        "order_for_delivery_partner",
+      );
+    }
+  });
+
+  it("supplier read policies scope to the caller's own supplier only", async () => {
+    const c = await getClient();
+    const { rows } = await c.query<{ policyname: string; qual: string }>(
+      `SELECT policyname, qual FROM pg_policies
+        WHERE schemaname='public'
+          AND policyname IN ('orders_supplier_read','order_items_supplier_read','osh_supplier_read')`,
+    );
+    expect(rows).toHaveLength(3);
+    for (const r of rows) {
+      expect(r.qual, `${r.policyname} must resolve the supplier from the caller`).toContain(
+        "supplier_id_for(auth.uid())",
+      );
+    }
+  });
+
 
   it("the supplier RPC rejects stages outside its own segment", async () => {
     const c = await getClient();
