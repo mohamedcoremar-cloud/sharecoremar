@@ -6,6 +6,8 @@ import { fmt } from "@/lib/currency";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
 import { deliveryIcon } from "@/lib/delivery";
+import { STAGE_META } from "@/lib/fulfillment";
+
 
 export const Route = createFileRoute("/_public/order/$id")({
   component: OrderPage,
