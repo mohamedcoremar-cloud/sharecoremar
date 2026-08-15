@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SupplierRouteImport } from './routes/supplier'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
@@ -45,6 +46,11 @@ import { Route as PublicPSlugRouteImport } from './routes/_public/p.$slug'
 import { Route as PublicOrderIdRouteImport } from './routes/_public/order.$id'
 import { Route as PublicAccountWishlistRouteImport } from './routes/_public/account.wishlist'
 
+const SupplierRoute = SupplierRouteImport.update({
+  id: '/supplier',
+  path: '/supplier',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
@@ -225,6 +231,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/supplier': typeof SupplierRoute
   '/account': typeof PublicAccountRouteWithChildren
   '/become-supplier': typeof PublicBecomeSupplierRoute
   '/brands': typeof PublicBrandsRoute
@@ -259,6 +266,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/supplier': typeof SupplierRoute
   '/account': typeof PublicAccountRouteWithChildren
   '/become-supplier': typeof PublicBecomeSupplierRoute
   '/brands': typeof PublicBrandsRoute
@@ -297,6 +305,7 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/supplier': typeof SupplierRoute
   '/_public/account': typeof PublicAccountRouteWithChildren
   '/_public/become-supplier': typeof PublicBecomeSupplierRoute
   '/_public/brands': typeof PublicBrandsRoute
@@ -336,6 +345,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/sitemap.xml'
+    | '/supplier'
     | '/account'
     | '/become-supplier'
     | '/brands'
@@ -370,6 +380,7 @@ export interface FileRouteTypes {
   to:
     | '/auth'
     | '/sitemap.xml'
+    | '/supplier'
     | '/account'
     | '/become-supplier'
     | '/brands'
@@ -407,6 +418,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/sitemap.xml'
+    | '/supplier'
     | '/_public/account'
     | '/_public/become-supplier'
     | '/_public/brands'
@@ -445,10 +457,18 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRouteWithChildren
   AuthRoute: typeof AuthRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  SupplierRoute: typeof SupplierRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/supplier': {
+      id: '/supplier'
+      path: '/supplier'
+      fullPath: '/supplier'
+      preLoaderRoute: typeof SupplierRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
@@ -791,6 +811,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRouteWithChildren,
   AuthRoute: AuthRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  SupplierRoute: SupplierRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

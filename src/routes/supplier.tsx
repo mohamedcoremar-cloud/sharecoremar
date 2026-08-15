@@ -131,8 +131,9 @@ function SupplierOrders({ supplierId, companyName }: { supplierId: string; compa
       const { error } = await supabase.rpc("supplier_set_order_stage", {
         p_order_id: orderId,
         p_stage: stage,
-        p_eta: etaValue ?? null,
-        p_note: null,
+        p_eta: etaValue ?? undefined,
+        p_note: undefined,
+
       });
       if (error) throw error;
     },
