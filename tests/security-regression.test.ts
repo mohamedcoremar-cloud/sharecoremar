@@ -144,3 +144,144 @@ d("SECURITY DEFINER admin RPC execute permissions", () => {
     },
   );
 });
+
+d("Fulfillment loop: new tables are locked down", () => {
+  it("supplier_users and delivery_partner_users have RLS + policies", async () => {
+    const c = await getClient();
+    const { rows } = await c.query<{ relname: string; rls: boolean; policies: string }>(
+      `SELECT c.relname, c.relrowsecurity AS rls, COUNT(p.polname)::text AS policies
+         FROM pg_class c
+         JOIN pg_namespace n ON n.oid = c.relnamespace
+         LEFT JOIN pg_policy p ON p.polrelid = c.oid
+        WHERE n.nspname = 'public'
+          AND c.relname IN ('supplier_users','delivery_partner_users')
+        GROUP BY 1,2 ORDER BY 1`,
+    );
+    expect(rows).toHaveLength(2);
+    for (const r of rows) {
+      expect(r.rls, `${r.relname} RLS`).toBe(true);
+      expect(Number(r.policies), `${r.relname} policies`).toBeGreaterThan(0);
+    }
+  });
+
+  it("anon holds no privileges on the membership tables or the stage view", async () => {
+    const c = await getClient();
+    const { rows } = await c.query<{ table_name: string; privilege_type: string }>(
+      `SELECT table_name, privilege_type
+         FROM information_schema.role_table_grants
+        WHERE table_schema = 'public'
+          AND grantee = 'anon'
+          AND table_name IN ('supplier_users','delivery_partner_users','order_fulfillment_current')`,
+    );
+    expect(rows, "anon must have no grants on fulfillment surfaces").toEqual([]);
+  });
+
+  it("authenticated cannot write the membership tables directly", async () => {
+    const c = await getClient();
+    const { rows } = await c.query<{ table_name: string; privilege_type: string }>(
+      `SELECT table_name, privilege_type
+         FROM information_schema.role_table_grants
+        WHERE table_schema = 'public'
+          AND grantee = 'authenticated'
+          AND privilege_type IN ('INSERT','UPDATE','DELETE')
+          AND table_name IN ('supplier_users','delivery_partner_users')`,
+    );
+    expect(rows, "membership assignment is admin/service_role only").toEqual([]);
+  });
+
+  it("the derived stage view is security_invoker (RLS still applies)", async () => {
+    const c = await getClient();
+    const { rows } = await c.query<{ opts: string[] | null }>(
+      `SELECT c.reloptions AS opts
+         FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
+        WHERE n.nspname = 'public' AND c.relname = 'order_fulfillment_current'`,
+    );
+    expect(rows).toHaveLength(1);
+    expect((rows[0].opts ?? []).join(",")).toContain("security_invoker=true");
+  });
+
+  it("scoped read policies exist for supplier and logistics on every exposed table", async () => {
+    const c = await getClient();
+    const { rows } = await c.query<{ policyname: string }>(
+      `SELECT policyname FROM pg_policies
+        WHERE schemaname = 'public'
+          AND policyname IN (
+            'orders_supplier_read','orders_logistics_read',
+            'order_items_supplier_read','order_items_logistics_read',
+            'osh_supplier_read','osh_logistics_read',
+            'deliveries_logistics_read')
+        ORDER BY 1`,
+    );
+    expect(rows.map((r) => r.policyname)).toEqual([
+      "deliveries_logistics_read",
+      "order_items_logistics_read",
+      "order_items_supplier_read",
+      "orders_logistics_read",
+      "orders_supplier_read",
+      "osh_logistics_read",
+      "osh_supplier_read",
+    ]);
+  });
+});
+
+d("Fulfillment loop: scoping helpers isolate tenants", () => {
+  it("a user with no membership resolves to no supplier and no partner", async () => {
+    const c = await getClient();
+    const { rows } = await c.query(
+      `SELECT private.supplier_id_for(gen_random_uuid()) AS s,
+              private.delivery_partner_id_for(gen_random_uuid()) AS p`,
+    );
+    expect(rows[0].s).toBeNull();
+    expect(rows[0].p).toBeNull();
+  });
+
+  it("order_has_supplier is false for a foreign supplier and for a null supplier", async () => {
+    const c = await getClient();
+    const { rows } = await c.query(
+      `SELECT private.order_has_supplier(gen_random_uuid(), gen_random_uuid()) AS foreign_sup,
+              private.order_has_supplier(gen_random_uuid(), NULL) AS null_sup`,
+    );
+    expect(rows[0].foreign_sup).toBe(false);
+    expect(rows[0].null_sup).toBe(false);
+  });
+
+  it("a logistics partner sees nothing before ready_for_pickup", async () => {
+    const c = await getClient();
+    // Any order that has not reached ready_for_pickup must be invisible even to
+    // the partner actually assigned to its delivery record.
+    const { rows } = await c.query<{ order_id: string; visible: boolean }>(
+      `SELECT d.order_id,
+              private.order_for_delivery_partner(d.order_id, d.delivery_partner_id) AS visible
+         FROM public.deliveries d
+        WHERE COALESCE(private.order_stage(d.order_id), 'none')
+              NOT IN ('ready_for_pickup','accepted_by_logistics','picked_up_by_logistics','in_transit','delivered')
+        LIMIT 25`,
+    );
+    expect(rows.filter((r) => r.visible), "early-stage orders leaked to logistics").toEqual([]);
+  });
+
+  it("the supplier RPC rejects stages outside its own segment", async () => {
+    const c = await getClient();
+    await expect(
+      c.query(`SELECT public.supplier_set_order_stage(gen_random_uuid(), 'in_transit')`),
+    ).rejects.toThrow();
+  });
+
+  it("the logistics RPC rejects stages outside its own segment", async () => {
+    const c = await getClient();
+    await expect(
+      c.query(`SELECT public.logistics_set_order_stage(gen_random_uuid(), 'supplier_preparing')`),
+    ).rejects.toThrow();
+  });
+
+  it("orders.status enum was NOT extended with fulfillment stages", async () => {
+    const c = await getClient();
+    const { rows } = await c.query<{ v: string }>(
+      `SELECT unnest(enum_range(NULL::public.order_status))::text AS v`,
+    );
+    expect(rows.map((r) => r.v)).toEqual([
+      "pending", "pending_payment_review", "confirmed", "processing",
+      "shipped", "delivered", "cancelled", "refunded",
+    ]);
+  });
+});
