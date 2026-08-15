@@ -106,8 +106,22 @@ function OrderPage() {
                     <I className={`h-5 w-5 mt-0.5 ${m.color}`} />
                     <div className="flex-1">
                       <div className="font-medium text-sm">{m.label}</div>
+                      {h.supplier_ready_eta && (
+                        <div className="text-xs text-muted-foreground">Ready in: {h.supplier_ready_eta}</div>
+                      )}
+                      {h.logistics_delivery_eta && (
+                        <div className="text-xs text-muted-foreground">Delivery timeframe: {h.logistics_delivery_eta}</div>
+                      )}
+                      {h.driver_name && (
+                        <div className="text-xs text-muted-foreground">
+                          Driver: {h.driver_name}
+                          {h.driver_phone ? ` · ${h.driver_phone}` : ""}
+                          {h.vehicle_info ? ` · ${h.vehicle_info}` : ""}
+                        </div>
+                      )}
                       {h.note && <div className="text-xs text-muted-foreground">{h.note}</div>}
                       <div className="text-xs text-muted-foreground">{new Date(h.created_at).toLocaleString()}</div>
+
                     </div>
                   </div>
                 );
