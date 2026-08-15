@@ -36,16 +36,27 @@ const ADMIN_RPCS: Array<{
   { schema: "public", name: "merge_guest_cart_on_login", allowedExecutors: ["authenticated", "service_role"] },
   // Review moderation — admin/super_admin asserted inside the function body.
   { schema: "public", name: "set_review_status", allowedExecutors: ["authenticated", "service_role"] },
+  // Fulfillment loop — scope asserted inside the function body (supplier_users /
+  // delivery_partner_users membership + forward-only stage transitions).
+  { schema: "public", name: "supplier_set_order_stage", allowedExecutors: ["authenticated", "service_role"] },
+  { schema: "public", name: "logistics_set_order_stage", allowedExecutors: ["authenticated", "service_role"] },
   // Trigger-only helpers — must NOT be callable from the Data API.
   { schema: "public", name: "record_content_version", allowedExecutors: ["service_role"] },
   { schema: "public", name: "handle_new_user", allowedExecutors: ["service_role"] },
   { schema: "public", name: "ensure_delivery_for_confirmed_order", allowedExecutors: ["service_role"] },
   { schema: "public", name: "enforce_verified_purchase_review", allowedExecutors: ["service_role"] },
   { schema: "public", name: "recalc_product_rating", allowedExecutors: ["service_role"] },
-  // Private role-check helpers — never callable by anon/public.
+  { schema: "public", name: "queue_order_at_supplier", allowedExecutors: ["service_role"] },
+  // Private role/scope helpers — never callable by anon/public.
   { schema: "private", name: "has_role", allowedExecutors: ["authenticated", "service_role"] },
   { schema: "private", name: "is_admin", allowedExecutors: ["authenticated", "service_role"] },
+  { schema: "private", name: "supplier_id_for", allowedExecutors: ["authenticated", "service_role"] },
+  { schema: "private", name: "delivery_partner_id_for", allowedExecutors: ["authenticated", "service_role"] },
+  { schema: "private", name: "order_has_supplier", allowedExecutors: ["authenticated", "service_role"] },
+  { schema: "private", name: "order_stage", allowedExecutors: ["authenticated", "service_role"] },
+  { schema: "private", name: "order_for_delivery_partner", allowedExecutors: ["authenticated", "service_role"] },
 ];
+
 
 const FORBIDDEN_EXECUTORS = ["anon", "public", "PUBLIC"];
 
