@@ -804,6 +804,7 @@ export type Database = {
           logistics_delivery_eta: string | null
           note: string | null
           order_id: string
+          seq: number
           status: string
           supplier_ready_eta: string | null
           vehicle_info: string | null
@@ -818,6 +819,7 @@ export type Database = {
           logistics_delivery_eta?: string | null
           note?: string | null
           order_id: string
+          seq?: number
           status: string
           supplier_ready_eta?: string | null
           vehicle_info?: string | null
@@ -832,6 +834,7 @@ export type Database = {
           logistics_delivery_eta?: string | null
           note?: string | null
           order_id?: string
+          seq?: number
           status?: string
           supplier_ready_eta?: string | null
           vehicle_info?: string | null

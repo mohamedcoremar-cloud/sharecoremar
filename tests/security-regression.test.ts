@@ -200,6 +200,28 @@ d("Fulfillment loop: new tables are locked down", () => {
     expect((rows[0].opts ?? []).join(",")).toContain("security_invoker=true");
   });
 
+  it("current fulfillment stage is derived from the monotonic seq, not created_at", async () => {
+    const c = await getClient();
+    const { rows: view } = await c.query<{ def: string }>(
+      `SELECT pg_get_viewdef('public.order_fulfillment_current'::regclass, true) AS def`,
+    );
+    expect(view[0].def, "view must break created_at ties with seq").toContain("seq DESC");
+
+    const { rows: fn } = await c.query<{ prosrc: string }>(
+      `SELECT p.prosrc FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
+        WHERE n.nspname = 'private' AND p.proname = 'order_stage'`,
+    );
+    expect(fn[0].prosrc, "order_stage must order by seq").toContain("seq DESC");
+
+    const { rows: col } = await c.query(
+      `SELECT 1 FROM information_schema.columns
+        WHERE table_schema = 'public' AND table_name = 'order_status_history'
+          AND column_name = 'seq' AND is_identity = 'YES'`,
+    );
+    expect(col, "order_status_history.seq must be an identity column").toHaveLength(1);
+  });
+
+
   it("scoped read policies exist for supplier and logistics on every exposed table", async () => {
     const c = await getClient();
     const { rows } = await c.query<{ policyname: string }>(
