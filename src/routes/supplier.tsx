@@ -118,6 +118,8 @@ function SupplierOrders({ supplierId, companyName }: { supplierId: string; compa
 
       const stageBy = new Map((stages ?? []).map((s: any) => [s.order_id, s]));
       return (ords ?? [])
+        .filter((o: any) => ids.includes(o.id))
+
         .map((o: any) => ({
           ...o,
           lines: mine.filter((i: any) => i.order_id === o.id),
