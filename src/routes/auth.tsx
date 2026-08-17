@@ -20,12 +20,26 @@ function AuthPage() {
   async function signIn(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) {
+      setLoading(false);
+      return toast.error(error.message);
+    }
+    // Destination only — role/permission logic itself is unchanged (RLS + route gates still decide access).
+    let dest = "/account";
+    const userId = data.user?.id;
+    if (userId) {
+      const { data: roleRows } = await supabase.from("user_roles").select("role").eq("user_id", userId);
+      const roles = (roleRows ?? []).map((r: any) => r.role as string);
+      if (roles.includes("super_admin") || roles.includes("admin")) dest = "/admin";
+      else if (roles.includes("supplier")) dest = "/supplier";
+      else if (roles.includes("logistics_partner")) dest = "/logistics";
+    }
     setLoading(false);
-    if (error) return toast.error(error.message);
     toast.success("Welcome back!");
-    navigate({ to: "/" });
+    navigate({ to: dest });
   }
+
 
   async function signUp(e: React.FormEvent) {
     e.preventDefault();

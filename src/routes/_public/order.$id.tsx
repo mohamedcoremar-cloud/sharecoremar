@@ -1,12 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { CheckCircle2, Package, Truck, Home, Clock, XCircle } from "lucide-react";
 import { fmt } from "@/lib/currency";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
 import { deliveryIcon } from "@/lib/delivery";
-import { STAGE_META } from "@/lib/fulfillment";
+import { OrderTimeline, STATUS_META } from "@/components/order-timeline";
 
 
 export const Route = createFileRoute("/_public/order/$id")({
@@ -23,21 +22,6 @@ export const Route = createFileRoute("/_public/order/$id")({
   }),
 });
 
-const STATUS_META: Record<string, { label: string; icon: any; color: string }> = {
-  pending: { label: "Pending", icon: Clock, color: "text-amber-500" },
-  pending_payment_review: { label: "Awaiting payment review", icon: Clock, color: "text-amber-500" },
-  confirmed: { label: "Confirmed", icon: CheckCircle2, color: "text-blue-500" },
-  processing: { label: "Preparing", icon: Package, color: "text-blue-500" },
-  packed: { label: "Packed", icon: Package, color: "text-blue-500" },
-  shipped: { label: "Shipped", icon: Truck, color: "text-indigo-500" },
-  delivered: { label: "Delivered", icon: Home, color: "text-emerald-500" },
-  cancelled: { label: "Cancelled", icon: XCircle, color: "text-red-500" },
-  refunded: { label: "Refunded", icon: XCircle, color: "text-red-500" },
-  // Fulfillment loop stages (stored in order_status_history only).
-  ...Object.fromEntries(
-    Object.entries(STAGE_META).map(([code, m]) => [code, { label: m.en, icon: m.icon, color: m.color }]),
-  ),
-};
 
 
 function OrderPage() {
