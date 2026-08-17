@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/admin/users")({ component: UsersAdmin });
 
-const ROLES = ["super_admin", "admin", "supplier", "business_buyer", "personal_buyer"];
+const ROLES = ["super_admin", "admin", "supplier", "logistics_partner", "business_buyer", "personal_buyer"];
 
 function UsersAdmin() {
   const qc = useQueryClient();
