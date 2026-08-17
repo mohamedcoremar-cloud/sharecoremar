@@ -440,7 +440,21 @@ export type Database = {
             foreignKeyName: "deliveries_order_id_fkey"
             columns: ["order_id"]
             isOneToOne: true
+            referencedRelation: "logistics_orders_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deliveries_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: true
             referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deliveries_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: true
+            referencedRelation: "supplier_orders_view"
             referencedColumns: ["id"]
           },
           {
@@ -781,7 +795,21 @@ export type Database = {
             foreignKeyName: "order_items_order_id_fkey"
             columns: ["order_id"]
             isOneToOne: false
+            referencedRelation: "logistics_orders_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
             referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "supplier_orders_view"
             referencedColumns: ["id"]
           },
           {
@@ -844,7 +872,21 @@ export type Database = {
             foreignKeyName: "order_status_history_order_id_fkey"
             columns: ["order_id"]
             isOneToOne: false
+            referencedRelation: "logistics_orders_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_status_history_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
             referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_status_history_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "supplier_orders_view"
             referencedColumns: ["id"]
           },
         ]
@@ -1118,7 +1160,21 @@ export type Database = {
             foreignKeyName: "payments_order_id_fkey"
             columns: ["order_id"]
             isOneToOne: false
+            referencedRelation: "logistics_orders_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
             referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "supplier_orders_view"
             referencedColumns: ["id"]
           },
           {
@@ -1178,7 +1234,21 @@ export type Database = {
             foreignKeyName: "product_reviews_order_id_fkey"
             columns: ["order_id"]
             isOneToOne: false
+            referencedRelation: "logistics_orders_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_reviews_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
             referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_reviews_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "supplier_orders_view"
             referencedColumns: ["id"]
           },
           {
@@ -1662,6 +1732,33 @@ export type Database = {
       }
     }
     Views: {
+      logistics_orders_view: {
+        Row: {
+          created_at: string | null
+          currency: string | null
+          delivery_address: Json | null
+          id: string | null
+          order_number: string | null
+          total: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          currency?: string | null
+          delivery_address?: never
+          id?: string | null
+          order_number?: string | null
+          total?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          currency?: string | null
+          delivery_address?: never
+          id?: string | null
+          order_number?: string | null
+          total?: number | null
+        }
+        Relationships: []
+      }
       order_fulfillment_current: {
         Row: {
           driver_name: string | null
@@ -1679,7 +1776,21 @@ export type Database = {
             foreignKeyName: "order_status_history_order_id_fkey"
             columns: ["order_id"]
             isOneToOne: false
+            referencedRelation: "logistics_orders_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_status_history_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
             referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_status_history_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "supplier_orders_view"
             referencedColumns: ["id"]
           },
         ]
@@ -1771,6 +1882,33 @@ export type Database = {
           id?: string | null
           is_featured?: boolean | null
           logo_url?: string | null
+        }
+        Relationships: []
+      }
+      supplier_orders_view: {
+        Row: {
+          created_at: string | null
+          currency: string | null
+          id: string | null
+          order_number: string | null
+          status: Database["public"]["Enums"]["order_status"] | null
+          total: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          currency?: string | null
+          id?: string | null
+          order_number?: string | null
+          status?: Database["public"]["Enums"]["order_status"] | null
+          total?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          currency?: string | null
+          id?: string | null
+          order_number?: string | null
+          status?: Database["public"]["Enums"]["order_status"] | null
+          total?: number | null
         }
         Relationships: []
       }
