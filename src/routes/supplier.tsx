@@ -111,9 +111,11 @@ function SupplierOrders({ supplierId, companyName }: { supplierId: string; compa
       const ids = [...new Set(mine.map((i: any) => i.order_id))];
       if (ids.length === 0) return [];
       const [{ data: ords }, { data: stages }] = await Promise.all([
-        supabase.from("orders").select("id, order_number, created_at, status, total, contact_phone").in("id", ids),
+        // Column-limited RPC: suppliers never receive buyer PII or internal notes.
+        supabase.rpc("supplier_orders"),
         supabase.from("order_fulfillment_current").select("*").in("order_id", ids),
       ]);
+
       const stageBy = new Map((stages ?? []).map((s: any) => [s.order_id, s]));
       return (ords ?? [])
         .map((o: any) => ({
