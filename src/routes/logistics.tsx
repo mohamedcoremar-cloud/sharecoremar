@@ -171,7 +171,7 @@ function LogisticsOrders({ partnerId, partner }: { partnerId: string; partner: a
           const Icon = meta?.icon;
           const next = LOGISTICS_NEXT[code] ?? [];
           const f = form[o.id] ?? {};
-          const addr: any = o.shipping_address;
+          const addr: any = o.delivery_address;
           return (
             <div key={o.id} className="card-premium p-6">
               <div className="flex flex-wrap items-start justify-between gap-3">
