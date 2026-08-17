@@ -1780,6 +1780,17 @@ export type Database = {
         Args: { p_note?: string; p_order_id: string }
         Returns: Json
       }
+      logistics_orders: {
+        Args: never
+        Returns: {
+          created_at: string
+          currency: string
+          delivery_address: Json
+          id: string
+          order_number: string
+          total: number
+        }[]
+      }
       logistics_set_order_stage: {
         Args: {
           p_driver_name?: string
@@ -1822,6 +1833,17 @@ export type Database = {
       set_review_status: {
         Args: { p_review_id: string; p_status_code: string }
         Returns: Json
+      }
+      supplier_orders: {
+        Args: never
+        Returns: {
+          created_at: string
+          currency: string
+          id: string
+          order_number: string
+          status: Database["public"]["Enums"]["order_status"]
+          total: number
+        }[]
       }
       supplier_set_order_stage: {
         Args: {

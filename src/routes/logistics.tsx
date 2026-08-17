@@ -102,11 +102,10 @@ function LogisticsOrders({ partnerId, partner }: { partnerId: string; partner: a
   const { data: orders = [], isLoading } = useQuery({
     queryKey: ["logistics-orders", partnerId],
     queryFn: async () => {
-      // RLS only exposes this partner's assignments at ready_for_pickup or later.
-      const { data: ords } = await supabase
-        .from("orders")
-        .select("id, order_number, created_at, total, contact_phone, shipping_address")
-        .order("created_at", { ascending: false });
+      // Column-limited RPC: only this partner's assignments at ready_for_pickup or later,
+      // and only the delivery fields (no buyer account email, no internal notes).
+      const { data: ords } = await supabase.rpc("logistics_orders");
+
       const ids = (ords ?? []).map((o: any) => o.id);
       if (ids.length === 0) return [];
       const [{ data: stages }, { data: items }] = await Promise.all([
@@ -172,7 +171,7 @@ function LogisticsOrders({ partnerId, partner }: { partnerId: string; partner: a
           const Icon = meta?.icon;
           const next = LOGISTICS_NEXT[code] ?? [];
           const f = form[o.id] ?? {};
-          const addr: any = o.shipping_address;
+          const addr: any = o.delivery_address;
           return (
             <div key={o.id} className="card-premium p-6">
               <div className="flex flex-wrap items-start justify-between gap-3">
