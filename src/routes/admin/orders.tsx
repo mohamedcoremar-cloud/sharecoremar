@@ -5,16 +5,20 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { useState } from "react";
-import { CheckCircle2, XCircle, Clock } from "lucide-react";
+import { CheckCircle2, XCircle, Clock, Eye } from "lucide-react";
 import { fmt } from "@/lib/currency";
+import { OrderTimeline, statusMeta } from "@/components/order-timeline";
 
 export const Route = createFileRoute("/admin/orders")({ component: OrdersAdmin });
 
 const REGULAR_STATUSES = ["pending", "confirmed", "processing", "shipped", "delivered", "cancelled", "refunded"];
 
+
 function OrdersAdmin() {
   const qc = useQueryClient();
   const [tab, setTab] = useState<"review" | "all">("review");
+  const [detailOrder, setDetailOrder] = useState<any>(null);
+
 
   const { data: orders = [], isLoading } = useQuery({
     queryKey: ["admin-orders"],
@@ -51,7 +55,12 @@ function OrdersAdmin() {
       </div>
 
       {tab === "review" ? (
-        <PaymentReviewList orders={reviewQueue} isLoading={isLoading} onDone={() => qc.invalidateQueries({ queryKey: ["admin-orders"] })} />
+        <PaymentReviewList
+          orders={reviewQueue}
+          isLoading={isLoading}
+          onDone={() => qc.invalidateQueries({ queryKey: ["admin-orders"] })}
+          onOpen={setDetailOrder}
+        />
       ) : (
         <div className="rounded-2xl border border-border bg-card overflow-hidden">
           <div className="overflow-x-auto">
@@ -63,16 +72,21 @@ function OrdersAdmin() {
                   <th className="text-left p-3">Payment</th>
                   <th className="text-left p-3">Total</th>
                   <th className="text-left p-3">Date</th>
+                  <th className="text-left p-3">Timeline</th>
                 </tr>
               </thead>
               <tbody>
-                {isLoading ? <tr><td colSpan={5} className="p-8 text-center">Loading…</td></tr>
-                  : rest.length === 0 ? <tr><td colSpan={5} className="p-8 text-center text-muted-foreground">No orders yet</td></tr>
+                {isLoading ? <tr><td colSpan={6} className="p-8 text-center">Loading…</td></tr>
+                  : rest.length === 0 ? <tr><td colSpan={6} className="p-8 text-center text-muted-foreground">No orders yet</td></tr>
                   : rest.map((o: any) => {
                     const pay = (o.payments ?? [])[0];
                     return (
                       <tr key={o.id} className="border-b border-border last:border-0">
-                        <td className="p-3 font-mono text-xs">{o.order_number}</td>
+                        <td className="p-3 font-mono text-xs">
+                          <button onClick={() => setDetailOrder(o)} className="hover:text-primary hover:underline">
+                            {o.order_number}
+                          </button>
+                        </td>
                         <td className="p-3">
                           <select value={o.status} onChange={(e) => update.mutate({ id: o.id, status: e.target.value })} className="rounded border border-input bg-background px-2 py-1 text-sm">
                             {REGULAR_STATUSES.map((s) => <option key={s}>{s}</option>)}
@@ -81,6 +95,11 @@ function OrdersAdmin() {
                         <td className="p-3 capitalize">{o.payment_method} · {pay?.status ?? o.payment_status}</td>
                         <td className="p-3 font-semibold">{fmt(o.total)}</td>
                         <td className="p-3 text-muted-foreground">{new Date(o.created_at).toLocaleDateString()}</td>
+                        <td className="p-3">
+                          <Button variant="outline" size="sm" onClick={() => setDetailOrder(o)}>
+                            <Eye className="h-4 w-4 mr-1" /> View
+                          </Button>
+                        </td>
                       </tr>
                     );
                   })}
@@ -89,11 +108,14 @@ function OrdersAdmin() {
           </div>
         </div>
       )}
+
+      <OrderDetailDialog order={detailOrder} onClose={() => setDetailOrder(null)} />
     </div>
   );
+
 }
 
-function PaymentReviewList({ orders, isLoading, onDone }: { orders: any[]; isLoading: boolean; onDone: () => void }) {
+function PaymentReviewList({ orders, isLoading, onDone, onOpen }: { orders: any[]; isLoading: boolean; onDone: () => void; onOpen: (order: any) => void }) {
   if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading…</div>;
   if (orders.length === 0) return (
     <div className="card-premium p-16 text-center">
@@ -103,12 +125,89 @@ function PaymentReviewList({ orders, isLoading, onDone }: { orders: any[]; isLoa
   );
   return (
     <div className="space-y-4">
-      {orders.map((o) => <ReviewCard key={o.id} order={o} onDone={onDone} />)}
+      {orders.map((o) => <ReviewCard key={o.id} order={o} onDone={onDone} onOpen={onOpen} />)}
     </div>
   );
 }
 
-function ReviewCard({ order, onDone }: { order: any; onDone: () => void }) {
+/** Read-only admin view of one order: items, summary and the full fulfillment timeline
+ *  (reuses the same OrderTimeline component as the buyer-facing order page). */
+function OrderDetailDialog({ order, onClose }: { order: any; onClose: () => void }) {
+  const { data, isLoading } = useQuery({
+    queryKey: ["admin-order-detail", order?.id],
+    enabled: !!order?.id,
+    queryFn: async () => {
+      const [{ data: items }, { data: history }] = await Promise.all([
+        supabase.from("order_items").select("*").eq("order_id", order.id),
+        // Admin sees every stage, internal notes included.
+        supabase.from("order_status_history").select("*").eq("order_id", order.id).order("seq"),
+      ]);
+      return { items: items ?? [], history: history ?? [] };
+    },
+  });
+
+  if (!order) return null;
+  const meta = statusMeta(order.status);
+  const Icon = meta.icon;
+  const addr: any = order.shipping_address;
+  const pay = (order.payments ?? [])[0];
+
+  return (
+    <Dialog open={!!order} onOpenChange={(o) => !o && onClose()}>
+      <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <Icon className={`h-5 w-5 ${meta.color}`} /> Order {order.order_number}
+          </DialogTitle>
+        </DialogHeader>
+
+        <div className="grid gap-6 sm:grid-cols-2 text-sm">
+          <div className="space-y-1">
+            <div className="text-xs text-muted-foreground">Current status</div>
+            <div className={`font-semibold ${meta.color}`}>{meta.label}</div>
+            <div className="text-xs text-muted-foreground capitalize">
+              Payment: {order.payment_method} · {pay?.status ?? order.payment_status}
+            </div>
+            {pay?.transfer_reference && <div className="text-xs text-muted-foreground">Ref: {pay.transfer_reference}</div>}
+            <div className="font-semibold pt-1">{fmt(order.total)}</div>
+            <div className="text-xs text-muted-foreground">{new Date(order.created_at).toLocaleString()}</div>
+          </div>
+          {addr && (
+            <div className="space-y-1">
+              <div className="text-xs text-muted-foreground">Delivery to</div>
+              <div>{addr.full_name}</div>
+              <div className="text-muted-foreground">{addr.phone}</div>
+              <div className="text-muted-foreground">{addr.street}, {addr.city}, {addr.governorate}</div>
+              {order.internal_notes && <div className="text-xs text-muted-foreground">Internal: {order.internal_notes}</div>}
+            </div>
+          )}
+        </div>
+
+        <div className="mt-4">
+          <h3 className="font-bold mb-2">Items</h3>
+          {isLoading ? <div className="text-sm text-muted-foreground">Loading…</div> : (
+            <div className="space-y-2">
+              {(data?.items ?? []).map((i: any) => (
+                <div key={i.id} className="flex justify-between text-sm">
+                  <span>{i.product_name} × {i.quantity}</span>
+                  <span className="font-medium">{fmt(i.total_price)}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="mt-6">
+          <h3 className="font-bold mb-3">Fulfillment timeline</h3>
+          {isLoading ? <div className="text-sm text-muted-foreground">Loading…</div> : <OrderTimeline history={data?.history ?? []} />}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function ReviewCard({ order, onDone, onOpen }: { order: any; onDone: () => void; onOpen: (order: any) => void }) {
+
   const pay = (order.payments ?? []).find((p: any) => p.status === "pending") ?? (order.payments ?? [])[0];
   const [busy, setBusy] = useState(false);
   const [rejectOpen, setRejectOpen] = useState(false);
@@ -144,6 +243,8 @@ function ReviewCard({ order, onDone }: { order: any; onDone: () => void }) {
           <div className="text-xs text-muted-foreground">{new Date(order.created_at).toLocaleString()}</div>
         </div>
         <div className="flex gap-2">
+          <Button variant="outline" onClick={() => onOpen(order)}><Eye className="h-4 w-4 mr-1" /> View</Button>
+
           <Button variant="outline" onClick={() => setRejectOpen(true)} disabled={busy}><XCircle className="h-4 w-4 mr-1" /> Reject</Button>
           <Button className="btn-gold" onClick={approve} disabled={busy}><CheckCircle2 className="h-4 w-4 mr-1" /> {busy ? "Working…" : "Approve"}</Button>
         </div>
