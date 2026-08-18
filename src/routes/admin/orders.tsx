@@ -20,13 +20,26 @@ function OrdersAdmin() {
   const [detailOrder, setDetailOrder] = useState<any>(null);
 
 
+  // Internal columns (orders.internal_notes, payments.review_note/reviewed_by) are no longer
+  // readable through the tables — admins read them through these guarded admin-only functions.
   const { data: orders = [], isLoading } = useQuery({
     queryKey: ["admin-orders"],
-    queryFn: async () => (await supabase
-      .from("orders")
-      .select("*, payments(*)")
-      .order("created_at", { ascending: false })).data ?? [],
+    queryFn: async () => {
+      const [{ data: rows, error }, { data: pays }] = await Promise.all([
+        supabase.rpc("admin_orders" as any),
+        supabase.rpc("admin_payments" as any),
+      ]);
+      if (error) throw error;
+      const byOrder = new Map<string, any[]>();
+      for (const p of ((pays as any[]) ?? [])) {
+        const list = byOrder.get(p.order_id) ?? [];
+        list.push(p);
+        byOrder.set(p.order_id, list);
+      }
+      return ((rows as any[]) ?? []).map((o) => ({ ...o, payments: byOrder.get(o.id) ?? [] }));
+    },
   });
+
 
   const update = useMutation({
     mutationFn: async ({ id, status }: any) => {
