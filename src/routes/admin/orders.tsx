@@ -83,7 +83,7 @@ function OrdersAdmin() {
                     return (
                       <tr key={o.id} className="border-b border-border last:border-0">
                         <td className="p-3 font-mono text-xs">
-                          <button onClick={() => setDetailOrder(o)} className="hover:text-primary hover:underline">
+                          <button onClick={() => (console.log("VIEWCLICK", o.order_number), setDetailOrder(o))} className="hover:text-primary hover:underline">
                             {o.order_number}
                           </button>
                         </td>
@@ -96,7 +96,7 @@ function OrdersAdmin() {
                         <td className="p-3 font-semibold">{fmt(o.total)}</td>
                         <td className="p-3 text-muted-foreground">{new Date(o.created_at).toLocaleDateString()}</td>
                         <td className="p-3">
-                          <Button variant="outline" size="sm" onClick={() => setDetailOrder(o)}>
+                          <Button variant="outline" size="sm" onClick={() => (console.log("VIEWCLICK", o.order_number), setDetailOrder(o))}>
                             <Eye className="h-4 w-4 mr-1" /> View
                           </Button>
                         </td>
