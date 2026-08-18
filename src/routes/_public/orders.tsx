@@ -25,7 +25,7 @@ function OrdersPage() {
   const { data: orders = [] } = useQuery({
     queryKey: ["orders", user?.id],
     enabled: !!user,
-    queryFn: async () => (await supabase.from("orders").select("*, payments(status)").eq("buyer_id", user!.id).order("created_at", { ascending: false })).data ?? [],
+    queryFn: async () => (await supabase.from("orders").select("id, order_number, buyer_id, status, payment_method, payment_status, subtotal, tax, shipping, total, currency, shipping_address, contact_phone, notes, created_at, updated_at, discount, coupon_code, address_id, customer_email, payments(status)").eq("buyer_id", user!.id).order("created_at", { ascending: false })).data ?? [],
   });
 
   if (!user) return <div className="mx-auto max-w-md px-4 py-20 text-center"><Button asChild className="btn-gold"><Link to="/auth">Sign in</Link></Button></div>;

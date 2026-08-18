@@ -1776,6 +1776,66 @@ export type Database = {
       }
     }
     Functions: {
+      admin_orders: {
+        Args: never
+        Returns: {
+          address_id: string | null
+          buyer_id: string | null
+          contact_phone: string | null
+          coupon_code: string | null
+          created_at: string
+          currency: string
+          customer_email: string | null
+          discount: number
+          id: string
+          internal_notes: string | null
+          notes: string | null
+          order_number: string
+          payment_method: Database["public"]["Enums"]["payment_method"]
+          payment_status: Database["public"]["Enums"]["payment_status"]
+          shipping: number
+          shipping_address: Json | null
+          status: Database["public"]["Enums"]["order_status"]
+          subtotal: number
+          tax: number
+          total: number
+          updated_at: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "orders"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      admin_payments: {
+        Args: never
+        Returns: {
+          amount: number
+          created_at: string
+          currency: string
+          gateway_reference: string | null
+          id: string
+          metadata: Json
+          method: Database["public"]["Enums"]["payment_method"]
+          order_id: string
+          proof_media_id: string | null
+          proof_url: string | null
+          review_note: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          transfer_reference: string | null
+          transferred_at: string | null
+          updated_at: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "payments"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       approve_order_payment: {
         Args: { p_note?: string; p_order_id: string }
         Returns: Json

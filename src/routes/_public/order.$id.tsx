@@ -31,10 +31,10 @@ function OrderPage() {
     queryKey: ["order", id],
     queryFn: async () => {
       const [{ data: order }, { data: items }, { data: history }, { data: payments }, { data: deliveries }] = await Promise.all([
-        supabase.from("orders").select("*").eq("id", id).maybeSingle(),
+        supabase.from("orders").select("id, order_number, buyer_id, status, payment_method, payment_status, subtotal, tax, shipping, total, currency, shipping_address, contact_phone, notes, created_at, updated_at, discount, coupon_code, address_id, customer_email").eq("id", id).maybeSingle(),
         supabase.from("order_items").select("*").eq("order_id", id),
         supabase.from("order_status_history").select("*").eq("order_id", id).eq("is_internal", false).order("created_at"),
-        supabase.from("payments").select("*").eq("order_id", id).order("created_at", { ascending: false }),
+        supabase.from("payments").select("id, order_id, method, amount, currency, status, transfer_reference, proof_media_id, proof_url, transferred_at, reviewed_at, gateway_reference, metadata, created_at, updated_at").eq("order_id", id).order("created_at", { ascending: false }),
         (supabase as any)
           .from("deliveries")
           .select("*, delivery_statuses(code,name_en,name_ar), delivery_partners(name_en,name_ar), delivery_attempts(*, delivery_failure_reasons(code,name_en,name_ar))")
