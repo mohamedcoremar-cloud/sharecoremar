@@ -17,6 +17,8 @@ const REGULAR_STATUSES = ["pending", "confirmed", "processing", "shipped", "deli
 function OrdersAdmin() {
   const qc = useQueryClient();
   const [tab, setTab] = useState<"review" | "all">("review");
+  const [detailOrder, setDetailOrder] = useState<any>(null);
+
 
   const { data: orders = [], isLoading } = useQuery({
     queryKey: ["admin-orders"],
