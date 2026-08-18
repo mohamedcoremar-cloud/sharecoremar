@@ -243,6 +243,8 @@ function ReviewCard({ order, onDone, onOpen }: { order: any; onDone: () => void;
           <div className="text-xs text-muted-foreground">{new Date(order.created_at).toLocaleString()}</div>
         </div>
         <div className="flex gap-2">
+          <Button variant="outline" onClick={() => onOpen(order)}><Eye className="h-4 w-4 mr-1" /> View</Button>
+
           <Button variant="outline" onClick={() => setRejectOpen(true)} disabled={busy}><XCircle className="h-4 w-4 mr-1" /> Reject</Button>
           <Button className="btn-gold" onClick={approve} disabled={busy}><CheckCircle2 className="h-4 w-4 mr-1" /> {busy ? "Working…" : "Approve"}</Button>
         </div>
