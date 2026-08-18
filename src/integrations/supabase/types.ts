@@ -440,13 +440,6 @@ export type Database = {
             foreignKeyName: "deliveries_order_id_fkey"
             columns: ["order_id"]
             isOneToOne: true
-            referencedRelation: "admin_orders"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "deliveries_order_id_fkey"
-            columns: ["order_id"]
-            isOneToOne: true
             referencedRelation: "orders"
             referencedColumns: ["id"]
           },
@@ -788,13 +781,6 @@ export type Database = {
             foreignKeyName: "order_items_order_id_fkey"
             columns: ["order_id"]
             isOneToOne: false
-            referencedRelation: "admin_orders"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "order_items_order_id_fkey"
-            columns: ["order_id"]
-            isOneToOne: false
             referencedRelation: "orders"
             referencedColumns: ["id"]
           },
@@ -854,13 +840,6 @@ export type Database = {
           vehicle_info?: string | null
         }
         Relationships: [
-          {
-            foreignKeyName: "order_status_history_order_id_fkey"
-            columns: ["order_id"]
-            isOneToOne: false
-            referencedRelation: "admin_orders"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "order_status_history_order_id_fkey"
             columns: ["order_id"]
@@ -1139,13 +1118,6 @@ export type Database = {
             foreignKeyName: "payments_order_id_fkey"
             columns: ["order_id"]
             isOneToOne: false
-            referencedRelation: "admin_orders"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "payments_order_id_fkey"
-            columns: ["order_id"]
-            isOneToOne: false
             referencedRelation: "orders"
             referencedColumns: ["id"]
           },
@@ -1202,13 +1174,6 @@ export type Database = {
           updated_by?: string | null
         }
         Relationships: [
-          {
-            foreignKeyName: "product_reviews_order_id_fkey"
-            columns: ["order_id"]
-            isOneToOne: false
-            referencedRelation: "admin_orders"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "product_reviews_order_id_fkey"
             columns: ["order_id"]
@@ -1697,168 +1662,6 @@ export type Database = {
       }
     }
     Views: {
-      admin_orders: {
-        Row: {
-          address_id: string | null
-          buyer_id: string | null
-          contact_phone: string | null
-          coupon_code: string | null
-          created_at: string | null
-          currency: string | null
-          customer_email: string | null
-          discount: number | null
-          id: string | null
-          internal_notes: string | null
-          notes: string | null
-          order_number: string | null
-          payment_method: Database["public"]["Enums"]["payment_method"] | null
-          payment_status: Database["public"]["Enums"]["payment_status"] | null
-          shipping: number | null
-          shipping_address: Json | null
-          status: Database["public"]["Enums"]["order_status"] | null
-          subtotal: number | null
-          tax: number | null
-          total: number | null
-          updated_at: string | null
-        }
-        Insert: {
-          address_id?: string | null
-          buyer_id?: string | null
-          contact_phone?: string | null
-          coupon_code?: string | null
-          created_at?: string | null
-          currency?: string | null
-          customer_email?: string | null
-          discount?: number | null
-          id?: string | null
-          internal_notes?: string | null
-          notes?: string | null
-          order_number?: string | null
-          payment_method?: Database["public"]["Enums"]["payment_method"] | null
-          payment_status?: Database["public"]["Enums"]["payment_status"] | null
-          shipping?: number | null
-          shipping_address?: Json | null
-          status?: Database["public"]["Enums"]["order_status"] | null
-          subtotal?: number | null
-          tax?: number | null
-          total?: number | null
-          updated_at?: string | null
-        }
-        Update: {
-          address_id?: string | null
-          buyer_id?: string | null
-          contact_phone?: string | null
-          coupon_code?: string | null
-          created_at?: string | null
-          currency?: string | null
-          customer_email?: string | null
-          discount?: number | null
-          id?: string | null
-          internal_notes?: string | null
-          notes?: string | null
-          order_number?: string | null
-          payment_method?: Database["public"]["Enums"]["payment_method"] | null
-          payment_status?: Database["public"]["Enums"]["payment_status"] | null
-          shipping?: number | null
-          shipping_address?: Json | null
-          status?: Database["public"]["Enums"]["order_status"] | null
-          subtotal?: number | null
-          tax?: number | null
-          total?: number | null
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "orders_address_id_fkey"
-            columns: ["address_id"]
-            isOneToOne: false
-            referencedRelation: "addresses"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      admin_payments: {
-        Row: {
-          amount: number | null
-          created_at: string | null
-          currency: string | null
-          gateway_reference: string | null
-          id: string | null
-          metadata: Json | null
-          method: Database["public"]["Enums"]["payment_method"] | null
-          order_id: string | null
-          proof_media_id: string | null
-          proof_url: string | null
-          review_note: string | null
-          reviewed_at: string | null
-          reviewed_by: string | null
-          status: string | null
-          transfer_reference: string | null
-          transferred_at: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          amount?: number | null
-          created_at?: string | null
-          currency?: string | null
-          gateway_reference?: string | null
-          id?: string | null
-          metadata?: Json | null
-          method?: Database["public"]["Enums"]["payment_method"] | null
-          order_id?: string | null
-          proof_media_id?: string | null
-          proof_url?: string | null
-          review_note?: string | null
-          reviewed_at?: string | null
-          reviewed_by?: string | null
-          status?: string | null
-          transfer_reference?: string | null
-          transferred_at?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          amount?: number | null
-          created_at?: string | null
-          currency?: string | null
-          gateway_reference?: string | null
-          id?: string | null
-          metadata?: Json | null
-          method?: Database["public"]["Enums"]["payment_method"] | null
-          order_id?: string | null
-          proof_media_id?: string | null
-          proof_url?: string | null
-          review_note?: string | null
-          reviewed_at?: string | null
-          reviewed_by?: string | null
-          status?: string | null
-          transfer_reference?: string | null
-          transferred_at?: string | null
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "payments_order_id_fkey"
-            columns: ["order_id"]
-            isOneToOne: false
-            referencedRelation: "admin_orders"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "payments_order_id_fkey"
-            columns: ["order_id"]
-            isOneToOne: false
-            referencedRelation: "orders"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "payments_proof_media_id_fkey"
-            columns: ["proof_media_id"]
-            isOneToOne: false
-            referencedRelation: "media_library"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       order_fulfillment_current: {
         Row: {
           driver_name: string | null
@@ -1872,13 +1675,6 @@ export type Database = {
           vehicle_info: string | null
         }
         Relationships: [
-          {
-            foreignKeyName: "order_status_history_order_id_fkey"
-            columns: ["order_id"]
-            isOneToOne: false
-            referencedRelation: "admin_orders"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "order_status_history_order_id_fkey"
             columns: ["order_id"]
@@ -1980,6 +1776,66 @@ export type Database = {
       }
     }
     Functions: {
+      admin_orders: {
+        Args: never
+        Returns: {
+          address_id: string | null
+          buyer_id: string | null
+          contact_phone: string | null
+          coupon_code: string | null
+          created_at: string
+          currency: string
+          customer_email: string | null
+          discount: number
+          id: string
+          internal_notes: string | null
+          notes: string | null
+          order_number: string
+          payment_method: Database["public"]["Enums"]["payment_method"]
+          payment_status: Database["public"]["Enums"]["payment_status"]
+          shipping: number
+          shipping_address: Json | null
+          status: Database["public"]["Enums"]["order_status"]
+          subtotal: number
+          tax: number
+          total: number
+          updated_at: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "orders"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      admin_payments: {
+        Args: never
+        Returns: {
+          amount: number
+          created_at: string
+          currency: string
+          gateway_reference: string | null
+          id: string
+          metadata: Json
+          method: Database["public"]["Enums"]["payment_method"]
+          order_id: string
+          proof_media_id: string | null
+          proof_url: string | null
+          review_note: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          transfer_reference: string | null
+          transferred_at: string | null
+          updated_at: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "payments"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       approve_order_payment: {
         Args: { p_note?: string; p_order_id: string }
         Returns: Json
