@@ -5,12 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { useState } from "react";
-import { CheckCircle2, XCircle, Clock } from "lucide-react";
+import { CheckCircle2, XCircle, Clock, Eye } from "lucide-react";
 import { fmt } from "@/lib/currency";
+import { OrderTimeline, statusMeta } from "@/components/order-timeline";
 
 export const Route = createFileRoute("/admin/orders")({ component: OrdersAdmin });
 
 const REGULAR_STATUSES = ["pending", "confirmed", "processing", "shipped", "delivered", "cancelled", "refunded"];
+
 
 function OrdersAdmin() {
   const qc = useQueryClient();
