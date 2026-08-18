@@ -55,7 +55,12 @@ function OrdersAdmin() {
       </div>
 
       {tab === "review" ? (
-        <PaymentReviewList orders={reviewQueue} isLoading={isLoading} onDone={() => qc.invalidateQueries({ queryKey: ["admin-orders"] })} />
+        <PaymentReviewList
+          orders={reviewQueue}
+          isLoading={isLoading}
+          onDone={() => qc.invalidateQueries({ queryKey: ["admin-orders"] })}
+          onOpen={setDetailOrder}
+        />
       ) : (
         <div className="rounded-2xl border border-border bg-card overflow-hidden">
           <div className="overflow-x-auto">
@@ -67,16 +72,21 @@ function OrdersAdmin() {
                   <th className="text-left p-3">Payment</th>
                   <th className="text-left p-3">Total</th>
                   <th className="text-left p-3">Date</th>
+                  <th className="text-left p-3">Timeline</th>
                 </tr>
               </thead>
               <tbody>
-                {isLoading ? <tr><td colSpan={5} className="p-8 text-center">Loading…</td></tr>
-                  : rest.length === 0 ? <tr><td colSpan={5} className="p-8 text-center text-muted-foreground">No orders yet</td></tr>
+                {isLoading ? <tr><td colSpan={6} className="p-8 text-center">Loading…</td></tr>
+                  : rest.length === 0 ? <tr><td colSpan={6} className="p-8 text-center text-muted-foreground">No orders yet</td></tr>
                   : rest.map((o: any) => {
                     const pay = (o.payments ?? [])[0];
                     return (
                       <tr key={o.id} className="border-b border-border last:border-0">
-                        <td className="p-3 font-mono text-xs">{o.order_number}</td>
+                        <td className="p-3 font-mono text-xs">
+                          <button onClick={() => setDetailOrder(o)} className="hover:text-primary hover:underline">
+                            {o.order_number}
+                          </button>
+                        </td>
                         <td className="p-3">
                           <select value={o.status} onChange={(e) => update.mutate({ id: o.id, status: e.target.value })} className="rounded border border-input bg-background px-2 py-1 text-sm">
                             {REGULAR_STATUSES.map((s) => <option key={s}>{s}</option>)}
@@ -85,6 +95,11 @@ function OrdersAdmin() {
                         <td className="p-3 capitalize">{o.payment_method} · {pay?.status ?? o.payment_status}</td>
                         <td className="p-3 font-semibold">{fmt(o.total)}</td>
                         <td className="p-3 text-muted-foreground">{new Date(o.created_at).toLocaleDateString()}</td>
+                        <td className="p-3">
+                          <Button variant="outline" size="sm" onClick={() => setDetailOrder(o)}>
+                            <Eye className="h-4 w-4 mr-1" /> View
+                          </Button>
+                        </td>
                       </tr>
                     );
                   })}
@@ -93,8 +108,11 @@ function OrdersAdmin() {
           </div>
         </div>
       )}
+
+      <OrderDetailDialog order={detailOrder} onClose={() => setDetailOrder(null)} />
     </div>
   );
+
 }
 
 function PaymentReviewList({ orders, isLoading, onDone }: { orders: any[]; isLoading: boolean; onDone: () => void }) {
