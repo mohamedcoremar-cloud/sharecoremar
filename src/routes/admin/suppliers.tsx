@@ -6,6 +6,7 @@ export const Route = createFileRoute("/admin/suppliers")({
     <CrudPage
       title="Suppliers"
       table="suppliers"
+      hasActive={false}
       defaultValues={{ status: "pending", is_featured: false }}
       columns={[
         { key: "company_name", label: "Company" },
