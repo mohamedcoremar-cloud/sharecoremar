@@ -26,6 +26,7 @@ import { Route as AdminPaymentsRouteImport } from './routes/admin/payments'
 import { Route as AdminPagesRouteImport } from './routes/admin/pages'
 import { Route as AdminOrdersRouteImport } from './routes/admin/orders'
 import { Route as AdminMediaRouteImport } from './routes/admin/media'
+import { Route as AdminLogisticsPartnersRouteImport } from './routes/admin/logistics-partners'
 import { Route as AdminHomepageRouteImport } from './routes/admin/homepage'
 import { Route as AdminDeliveriesRouteImport } from './routes/admin/deliveries'
 import { Route as AdminCategoriesRouteImport } from './routes/admin/categories'
@@ -129,6 +130,11 @@ const AdminOrdersRoute = AdminOrdersRouteImport.update({
 const AdminMediaRoute = AdminMediaRouteImport.update({
   id: '/media',
   path: '/media',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminLogisticsPartnersRoute = AdminLogisticsPartnersRouteImport.update({
+  id: '/logistics-partners',
+  path: '/logistics-partners',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminHomepageRoute = AdminHomepageRouteImport.update({
@@ -255,6 +261,7 @@ export interface FileRoutesByFullPath {
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/deliveries': typeof AdminDeliveriesRoute
   '/admin/homepage': typeof AdminHomepageRoute
+  '/admin/logistics-partners': typeof AdminLogisticsPartnersRoute
   '/admin/media': typeof AdminMediaRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/pages': typeof AdminPagesRoute
@@ -291,6 +298,7 @@ export interface FileRoutesByTo {
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/deliveries': typeof AdminDeliveriesRoute
   '/admin/homepage': typeof AdminHomepageRoute
+  '/admin/logistics-partners': typeof AdminLogisticsPartnersRoute
   '/admin/media': typeof AdminMediaRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/pages': typeof AdminPagesRoute
@@ -331,6 +339,7 @@ export interface FileRoutesById {
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/deliveries': typeof AdminDeliveriesRoute
   '/admin/homepage': typeof AdminHomepageRoute
+  '/admin/logistics-partners': typeof AdminLogisticsPartnersRoute
   '/admin/media': typeof AdminMediaRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/pages': typeof AdminPagesRoute
@@ -372,6 +381,7 @@ export interface FileRouteTypes {
     | '/admin/categories'
     | '/admin/deliveries'
     | '/admin/homepage'
+    | '/admin/logistics-partners'
     | '/admin/media'
     | '/admin/orders'
     | '/admin/pages'
@@ -408,6 +418,7 @@ export interface FileRouteTypes {
     | '/admin/categories'
     | '/admin/deliveries'
     | '/admin/homepage'
+    | '/admin/logistics-partners'
     | '/admin/media'
     | '/admin/orders'
     | '/admin/pages'
@@ -447,6 +458,7 @@ export interface FileRouteTypes {
     | '/admin/categories'
     | '/admin/deliveries'
     | '/admin/homepage'
+    | '/admin/logistics-partners'
     | '/admin/media'
     | '/admin/orders'
     | '/admin/pages'
@@ -592,6 +604,13 @@ declare module '@tanstack/react-router' {
       path: '/media'
       fullPath: '/admin/media'
       preLoaderRoute: typeof AdminMediaRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/logistics-partners': {
+      id: '/admin/logistics-partners'
+      path: '/logistics-partners'
+      fullPath: '/admin/logistics-partners'
+      preLoaderRoute: typeof AdminLogisticsPartnersRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/homepage': {
@@ -793,6 +812,7 @@ interface AdminRouteChildren {
   AdminCategoriesRoute: typeof AdminCategoriesRoute
   AdminDeliveriesRoute: typeof AdminDeliveriesRoute
   AdminHomepageRoute: typeof AdminHomepageRoute
+  AdminLogisticsPartnersRoute: typeof AdminLogisticsPartnersRoute
   AdminMediaRoute: typeof AdminMediaRoute
   AdminOrdersRoute: typeof AdminOrdersRoute
   AdminPagesRoute: typeof AdminPagesRoute
@@ -812,6 +832,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminCategoriesRoute: AdminCategoriesRoute,
   AdminDeliveriesRoute: AdminDeliveriesRoute,
   AdminHomepageRoute: AdminHomepageRoute,
+  AdminLogisticsPartnersRoute: AdminLogisticsPartnersRoute,
   AdminMediaRoute: AdminMediaRoute,
   AdminOrdersRoute: AdminOrdersRoute,
   AdminPagesRoute: AdminPagesRoute,

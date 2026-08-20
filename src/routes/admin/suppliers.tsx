@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { CrudPage } from "@/components/admin/crud-page";
+import { ProvisionAccountButton } from "@/components/admin/provision-account-button";
 
 export const Route = createFileRoute("/admin/suppliers")({
   component: () => (
@@ -7,7 +8,9 @@ export const Route = createFileRoute("/admin/suppliers")({
       title="Suppliers"
       table="suppliers"
       hasActive={false}
+      rowActions={(row) => <ProvisionAccountButton entityType="supplier" row={row} />}
       defaultValues={{ status: "pending", is_featured: false }}
+
       columns={[
         { key: "company_name", label: "Company" },
         { key: "brand_name", label: "Brand" },
