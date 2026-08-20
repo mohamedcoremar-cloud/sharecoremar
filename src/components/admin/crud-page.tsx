@@ -39,7 +39,7 @@ interface Props {
 
 }
 
-export function CrudPage({ title, table, columns, fields, orderBy = "created_at", defaultValues = {}, searchKeys = ["name", "name_en", "slug", "title_en"], hasActive = true, activeKey = "is_active", selectColumns = "*" }: Props) {
+export function CrudPage({ title, table, columns, fields, orderBy = "created_at", defaultValues = {}, searchKeys = ["name", "name_en", "slug", "title_en"], hasActive = true, activeKey = "is_active", rowActions, selectColumns = "*" }: Props) {
   const { t } = useI18n();
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
@@ -239,6 +239,7 @@ export function CrudPage({ title, table, columns, fields, orderBy = "created_at"
                   {columns.map((c) => <td key={c.key} className="p-3">{c.render ? c.render(row) : String(row[c.key] ?? "—")}</td>)}
                   <td className="p-3">
                     <div className="flex gap-1 justify-end">
+                      {rowActions?.(row)}
                       <Button size="icon" variant="ghost" title="Duplicate" onClick={() => duplicate(row)}><Copy className="h-4 w-4" /></Button>
                       <Button size="icon" variant="ghost" title="Edit" onClick={() => startEdit(row)}><Pencil className="h-4 w-4" /></Button>
                       <Button size="icon" variant="ghost" title="Delete" onClick={() => { if (confirm("Delete this record?")) del.mutate([row.id]); }}><Trash2 className="h-4 w-4 text-destructive" /></Button>
