@@ -32,8 +32,11 @@ interface Props {
   searchKeys?: string[];
   hasActive?: boolean;
   activeKey?: string;
+  /** Extra per-row action rendered before the built-in actions. */
+  rowActions?: (row: any) => any;
   /** Explicit column list for reads. Use when the table has columns the client is not granted (e.g. secrets). */
   selectColumns?: string;
+
 }
 
 export function CrudPage({ title, table, columns, fields, orderBy = "created_at", defaultValues = {}, searchKeys = ["name", "name_en", "slug", "title_en"], hasActive = true, activeKey = "is_active", selectColumns = "*" }: Props) {
