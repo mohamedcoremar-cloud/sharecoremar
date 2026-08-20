@@ -25,6 +25,7 @@ function useMenu() {
     { to: "/admin/suppliers", label: t("admin.suppliers"), icon: Building2 },
     { to: "/admin/orders", label: t("admin.orders"), icon: ShoppingBag },
     { to: "/admin/deliveries", label: "Deliveries", icon: Truck },
+    { to: "/admin/logistics-partners", label: "Logistics Partners", icon: Truck },
     { to: "/admin/reviews", label: "Reviews", icon: Star },
     { to: "/admin/users", label: t("admin.users"), icon: Users },
     { to: "/admin/homepage", label: t("admin.homepage"), icon: Layers },
