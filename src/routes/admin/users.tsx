@@ -41,14 +41,27 @@ function UsersAdmin() {
     onError: (e: any) => toast.error(e.message),
   });
 
+  const filtered = useMemo(() => {
+    const ql = q.trim().toLowerCase();
+    if (!ql) return users as any[];
+    return (users as any[]).filter((u) =>
+      ["ref_code", "email", "full_name", "phone"].some((k) => String(u[k] ?? "").toLowerCase().includes(ql)),
+    );
+  }, [users, q]);
+
   return (
     <div className="p-8 max-w-7xl mx-auto">
       <h1 className="text-3xl font-bold mb-6">Users & Roles</h1>
+      <div className="relative mb-4 max-w-sm">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search by code, email, name or phone…" className="pl-9" />
+      </div>
       <div className="rounded-2xl border border-border bg-card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-muted/30 border-b border-border">
               <tr>
+                <th className="text-left p-3">Code</th>
                 <th className="text-left p-3">Email</th>
                 <th className="text-left p-3">Name</th>
                 <th className="text-left p-3">Type</th>
@@ -56,8 +69,12 @@ function UsersAdmin() {
               </tr>
             </thead>
             <tbody>
-              {users.map((u: any) => (
+              {filtered.length === 0 && (
+                <tr><td colSpan={5} className="p-8 text-center text-muted-foreground">No matching accounts</td></tr>
+              )}
+              {filtered.map((u: any) => (
                 <tr key={u.id} className="border-b border-border last:border-0">
+                  <td className="p-3 font-mono text-xs">{u.ref_code ?? "—"}</td>
                   <td className="p-3 font-medium">{u.email}</td>
                   <td className="p-3">{u.full_name ?? "—"}</td>
                   <td className="p-3">{u.account_type}</td>
