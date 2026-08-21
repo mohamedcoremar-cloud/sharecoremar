@@ -1335,6 +1335,7 @@ export type Database = {
           id: string
           language: string | null
           phone: string | null
+          ref_code: string
           updated_at: string
         }
         Insert: {
@@ -1346,6 +1347,7 @@ export type Database = {
           id: string
           language?: string | null
           phone?: string | null
+          ref_code: string
           updated_at?: string
         }
         Update: {
@@ -1357,6 +1359,7 @@ export type Database = {
           id?: string
           language?: string | null
           phone?: string | null
+          ref_code?: string
           updated_at?: string
         }
         Relationships: []
@@ -1840,6 +1843,7 @@ export type Database = {
         Args: { p_note?: string; p_order_id: string }
         Returns: Json
       }
+      generate_ref_code: { Args: { p_prefix: string }; Returns: string }
       logistics_orders: {
         Args: never
         Returns: {
