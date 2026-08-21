@@ -2,7 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
+import { useMemo, useState } from "react";
+import { Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
 
 export const Route = createFileRoute("/admin/users")({ component: UsersAdmin });
 
@@ -10,6 +12,7 @@ const ROLES = ["super_admin", "admin", "supplier", "logistics_partner", "busines
 
 function UsersAdmin() {
   const qc = useQueryClient();
+  const [q, setQ] = useState("");
   const { data: users = [] } = useQuery({
     queryKey: ["admin-users"],
     queryFn: async () => {
