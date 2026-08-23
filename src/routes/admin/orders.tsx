@@ -4,8 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { useState } from "react";
-import { CheckCircle2, XCircle, Clock, Eye } from "lucide-react";
+import { useMemo, useState } from "react";
+import { CheckCircle2, XCircle, Clock, Eye, Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { fmt } from "@/lib/currency";
 import { OrderTimeline, statusMeta } from "@/components/order-timeline";
 
@@ -18,6 +19,7 @@ function OrdersAdmin() {
   const qc = useQueryClient();
   const [tab, setTab] = useState<"review" | "all">("review");
   const [detailOrder, setDetailOrder] = useState<any>(null);
+  const [q, setQ] = useState("");
 
 
   // Internal columns (orders.internal_notes, payments.review_note/reviewed_by) are no longer
@@ -51,8 +53,17 @@ function OrdersAdmin() {
     onError: (e: any) => toast.error(e.message),
   });
 
-  const reviewQueue = (orders as any[]).filter((o) => o.status === "pending_payment_review");
-  const rest = (orders as any[]).filter((o) => o.status !== "pending_payment_review");
+  const matching = useMemo(() => {
+    const ql = q.trim().toLowerCase();
+    if (!ql) return orders as any[];
+    return (orders as any[]).filter((o) =>
+      String(o.order_number ?? "").toLowerCase().includes(ql) ||
+      String(o.contact_phone ?? "").toLowerCase().includes(ql),
+    );
+  }, [orders, q]);
+
+  const reviewQueue = matching.filter((o) => o.status === "pending_payment_review");
+  const rest = matching.filter((o) => o.status !== "pending_payment_review");
 
   return (
     <div className="p-8 max-w-7xl mx-auto">
@@ -66,6 +77,12 @@ function OrdersAdmin() {
           <button onClick={() => setTab("all")} className={`px-4 py-2 ${tab === "all" ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}>All orders</button>
         </div>
       </div>
+
+      <div className="relative mb-4 max-w-sm">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search by order number or phone…" className="pl-9" />
+      </div>
+
 
       {tab === "review" ? (
         <PaymentReviewList
@@ -150,12 +167,15 @@ function OrderDetailDialog({ order, onClose }: { order: any; onClose: () => void
     queryKey: ["admin-order-detail", order?.id],
     enabled: !!order?.id,
     queryFn: async () => {
-      const [{ data: items }, { data: history }] = await Promise.all([
+      const [{ data: items }, { data: history }, { data: profile }] = await Promise.all([
         supabase.from("order_items").select("*").eq("order_id", order.id),
         // Admin sees every stage, internal notes included.
         supabase.from("order_status_history").select("*").eq("order_id", order.id).order("seq"),
+        order.buyer_id
+          ? supabase.from("profiles").select("ref_code, email").eq("id", order.buyer_id).maybeSingle()
+          : Promise.resolve({ data: null }),
       ]);
-      return { items: items ?? [], history: history ?? [] };
+      return { items: items ?? [], history: history ?? [], profile: profile as any };
     },
   });
 
@@ -171,6 +191,11 @@ function OrderDetailDialog({ order, onClose }: { order: any; onClose: () => void
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Icon className={`h-5 w-5 ${meta.color}`} /> Order {order.order_number}
+            {data?.profile?.ref_code && (
+              <span className="ml-2 rounded-md border border-border bg-muted/40 px-2 py-0.5 font-mono text-xs font-normal text-muted-foreground">
+                Customer {data.profile.ref_code}
+              </span>
+            )}
           </DialogTitle>
         </DialogHeader>
 
