@@ -4,8 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { useState } from "react";
-import { CheckCircle2, XCircle, Clock, Eye } from "lucide-react";
+import { useMemo, useState } from "react";
+import { CheckCircle2, XCircle, Clock, Eye, Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { fmt } from "@/lib/currency";
 import { OrderTimeline, statusMeta } from "@/components/order-timeline";
 
