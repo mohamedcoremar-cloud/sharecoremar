@@ -224,6 +224,9 @@ d("Fulfillment loop: new tables are locked down", () => {
 
   it("scoped read policies exist for supplier and logistics on every exposed table", async () => {
     const c = await getClient();
+    // public.orders is intentionally NOT readable by suppliers/logistics: buyer PII and
+    // internal notes are only exposed through the column-limited supplier_orders() /
+    // logistics_orders() SECURITY DEFINER functions.
     const { rows } = await c.query<{ policyname: string }>(
       `SELECT policyname FROM pg_policies
         WHERE schemaname = 'public'
@@ -238,12 +241,23 @@ d("Fulfillment loop: new tables are locked down", () => {
       "deliveries_logistics_read",
       "order_items_logistics_read",
       "order_items_supplier_read",
-      "orders_logistics_read",
-      "orders_supplier_read",
       "osh_logistics_read",
       "osh_supplier_read",
     ]);
+
+    const { rows: fns } = await c.query<{ proname: string }>(
+      `SELECT proname FROM pg_proc p
+         JOIN pg_namespace n ON n.oid = p.pronamespace
+        WHERE n.nspname = 'public'
+          AND proname IN ('supplier_orders','logistics_orders')
+        ORDER BY 1`,
+    );
+    expect(
+      fns.map((f) => f.proname),
+      "PII-free order readers must exist for both tenant portals",
+    ).toEqual(["logistics_orders", "supplier_orders"]);
   });
+
 });
 
 d("Fulfillment loop: scoping helpers isolate tenants", () => {
