@@ -191,6 +191,11 @@ function OrderDetailDialog({ order, onClose }: { order: any; onClose: () => void
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Icon className={`h-5 w-5 ${meta.color}`} /> Order {order.order_number}
+            {data?.profile?.ref_code && (
+              <span className="ml-2 rounded-md border border-border bg-muted/40 px-2 py-0.5 font-mono text-xs font-normal text-muted-foreground">
+                Customer {data.profile.ref_code}
+              </span>
+            )}
           </DialogTitle>
         </DialogHeader>
 
