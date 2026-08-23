@@ -78,6 +78,12 @@ function OrdersAdmin() {
         </div>
       </div>
 
+      <div className="relative mb-4 max-w-sm">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search by order number or phone…" className="pl-9" />
+      </div>
+
+
       {tab === "review" ? (
         <PaymentReviewList
           orders={reviewQueue}
