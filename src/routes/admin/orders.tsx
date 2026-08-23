@@ -167,12 +167,15 @@ function OrderDetailDialog({ order, onClose }: { order: any; onClose: () => void
     queryKey: ["admin-order-detail", order?.id],
     enabled: !!order?.id,
     queryFn: async () => {
-      const [{ data: items }, { data: history }] = await Promise.all([
+      const [{ data: items }, { data: history }, { data: profile }] = await Promise.all([
         supabase.from("order_items").select("*").eq("order_id", order.id),
         // Admin sees every stage, internal notes included.
         supabase.from("order_status_history").select("*").eq("order_id", order.id).order("seq"),
+        order.buyer_id
+          ? supabase.from("profiles").select("ref_code, email").eq("id", order.buyer_id).maybeSingle()
+          : Promise.resolve({ data: null }),
       ]);
-      return { items: items ?? [], history: history ?? [] };
+      return { items: items ?? [], history: history ?? [], profile: profile as any };
     },
   });
 
