@@ -19,6 +19,7 @@ function OrdersAdmin() {
   const qc = useQueryClient();
   const [tab, setTab] = useState<"review" | "all">("review");
   const [detailOrder, setDetailOrder] = useState<any>(null);
+  const [q, setQ] = useState("");
 
 
   // Internal columns (orders.internal_notes, payments.review_note/reviewed_by) are no longer
