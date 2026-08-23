@@ -52,8 +52,17 @@ function OrdersAdmin() {
     onError: (e: any) => toast.error(e.message),
   });
 
-  const reviewQueue = (orders as any[]).filter((o) => o.status === "pending_payment_review");
-  const rest = (orders as any[]).filter((o) => o.status !== "pending_payment_review");
+  const matching = useMemo(() => {
+    const ql = q.trim().toLowerCase();
+    if (!ql) return orders as any[];
+    return (orders as any[]).filter((o) =>
+      String(o.order_number ?? "").toLowerCase().includes(ql) ||
+      String(o.contact_phone ?? "").toLowerCase().includes(ql),
+    );
+  }, [orders, q]);
+
+  const reviewQueue = matching.filter((o) => o.status === "pending_payment_review");
+  const rest = matching.filter((o) => o.status !== "pending_payment_review");
 
   return (
     <div className="p-8 max-w-7xl mx-auto">
