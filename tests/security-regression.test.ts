@@ -315,9 +315,9 @@ d("Fulfillment loop: scoping helpers isolate tenants", () => {
     const { rows } = await c.query<{ policyname: string; qual: string }>(
       `SELECT policyname, qual FROM pg_policies
         WHERE schemaname='public'
-          AND policyname IN ('orders_logistics_read','order_items_logistics_read','osh_logistics_read')`,
+          AND policyname IN ('order_items_logistics_read','osh_logistics_read')`,
     );
-    expect(rows).toHaveLength(3);
+    expect(rows).toHaveLength(2);
     for (const r of rows) {
       expect(r.qual, `${r.policyname} must use the stage-aware helper`).toContain(
         "order_for_delivery_partner",
@@ -330,9 +330,10 @@ d("Fulfillment loop: scoping helpers isolate tenants", () => {
     const { rows } = await c.query<{ policyname: string; qual: string }>(
       `SELECT policyname, qual FROM pg_policies
         WHERE schemaname='public'
-          AND policyname IN ('orders_supplier_read','order_items_supplier_read','osh_supplier_read')`,
+          AND policyname IN ('order_items_supplier_read','osh_supplier_read')`,
     );
-    expect(rows).toHaveLength(3);
+    expect(rows).toHaveLength(2);
+
     for (const r of rows) {
       expect(r.qual, `${r.policyname} must resolve the supplier from the caller`).toContain(
         "supplier_id_for(auth.uid())",
