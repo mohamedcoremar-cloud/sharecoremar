@@ -293,6 +293,137 @@ export type Database = {
         }
         Relationships: []
       }
+      catalog_submission_statuses: {
+        Row: {
+          code: string
+          created_at: string
+          id: string
+          is_active: boolean
+          is_terminal: boolean
+          label_ar: string
+          label_en: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          is_terminal?: boolean
+          label_ar: string
+          label_en: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          is_terminal?: boolean
+          label_ar?: string
+          label_en?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      catalog_submissions: {
+        Row: {
+          ai_note: string | null
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          id: string
+          kind: string
+          product_id: string | null
+          proposed: Json
+          published_at: string | null
+          reason: string | null
+          reference_code: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          source: string
+          status_id: string
+          submitted_by: string | null
+          supplier_id: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          ai_note?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          id?: string
+          kind?: string
+          product_id?: string | null
+          proposed?: Json
+          published_at?: string | null
+          reason?: string | null
+          reference_code: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          source?: string
+          status_id: string
+          submitted_by?: string | null
+          supplier_id: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          ai_note?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          id?: string
+          kind?: string
+          product_id?: string | null
+          proposed?: Json
+          published_at?: string | null
+          reason?: string | null
+          reference_code?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          source?: string
+          status_id?: string
+          submitted_by?: string | null
+          supplier_id?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "catalog_submissions_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "catalog_submissions_status_id_fkey"
+            columns: ["status_id"]
+            isOneToOne: false
+            referencedRelation: "catalog_submission_statuses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "catalog_submissions_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "public_suppliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "catalog_submissions_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       categories: {
         Row: {
           created_at: string
@@ -1779,6 +1910,15 @@ export type Database = {
       }
     }
     Functions: {
+      admin_create_submission_draft: {
+        Args: {
+          p_ai_note?: string
+          p_proposed: Json
+          p_source?: string
+          p_supplier_id: string
+        }
+        Returns: Json
+      }
       admin_orders: {
         Args: never
         Returns: {
@@ -1839,6 +1979,15 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      admin_set_submission_status: {
+        Args: {
+          p_proposed?: Json
+          p_reason?: string
+          p_status_code: string
+          p_submission_id: string
+        }
+        Returns: Json
+      }
       approve_order_payment: {
         Args: { p_note?: string; p_order_id: string }
         Returns: Json
@@ -1898,6 +2047,10 @@ export type Database = {
         Args: { p_review_id: string; p_status_code: string }
         Returns: Json
       }
+      submit_product_edit: {
+        Args: { p_product_id: string; p_proposed: Json }
+        Returns: Json
+      }
       supplier_orders: {
         Args: never
         Returns: {
@@ -1908,6 +2061,10 @@ export type Database = {
           status: Database["public"]["Enums"]["order_status"]
           total: number
         }[]
+      }
+      supplier_respond_submission: {
+        Args: { p_action: string; p_note?: string; p_submission_id: string }
+        Returns: Json
       }
       supplier_set_order_stage: {
         Args: {
