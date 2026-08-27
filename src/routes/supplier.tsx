@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { fmt } from "@/lib/currency";
 import { LogOut, Globe, PackageCheck, ChefHat } from "lucide-react";
 import { ETA_PRESETS, SUPPLIER_NEXT, stageMeta } from "@/lib/fulfillment";
+import { SupplierCatalogPanel } from "@/components/supplier/catalog-panel";
 
 export const Route = createFileRoute("/supplier")({
   component: () => (
@@ -90,7 +91,36 @@ function SupplierGate() {
   if (!user) return <Denied title="Sign in required" body="Please sign in with your supplier account to continue." />;
   if (!link || !link.is_active) return <Denied title="Access Denied" body="This account is not linked to an active supplier." />;
 
-  return <SupplierOrders supplierId={link.supplier_id} companyName={(link as any).suppliers?.company_name ?? ""} />;
+  return <SupplierPortal supplierId={link.supplier_id} companyName={(link as any).suppliers?.company_name ?? ""} />;
+}
+
+function SupplierPortal({ supplierId, companyName }: { supplierId: string; companyName: string }) {
+  const { lang } = useI18n();
+  const [tab, setTab] = useState<"orders" | "catalog">("orders");
+  const ar = lang === "ar";
+  const tabs = [
+    { key: "orders" as const, label: ar ? "الطلبات" : "Orders" },
+    { key: "catalog" as const, label: ar ? "منتجاتي" : "My Catalog" },
+  ];
+
+  return (
+    <Shell title={ar ? `بوابة المورد — ${companyName}` : `Supplier Portal — ${companyName}`}>
+      <div className="flex rounded-lg border border-border overflow-hidden w-fit mb-6">
+        {tabs.map((t) => (
+          <button
+            key={t.key}
+            onClick={() => setTab(t.key)}
+            className={`px-4 py-2 text-sm font-medium ${tab === t.key ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+      {tab === "orders"
+        ? <SupplierOrders supplierId={supplierId} companyName={companyName} />
+        : <SupplierCatalogPanel supplierId={supplierId} />}
+    </Shell>
+  );
 }
 
 function SupplierOrders({ supplierId, companyName }: { supplierId: string; companyName: string }) {
@@ -151,7 +181,7 @@ function SupplierOrders({ supplierId, companyName }: { supplierId: string; compa
   });
 
   return (
-    <Shell title={lang === "ar" ? `طلباتي — ${companyName}` : `My Orders — ${companyName}`}>
+    <>
       {isLoading && <div>Loading…</div>}
       {!isLoading && orders.length === 0 && (
         <div className="card-premium p-8 text-center text-muted-foreground">
@@ -246,6 +276,6 @@ function SupplierOrders({ supplierId, companyName }: { supplierId: string; compa
           );
         })}
       </div>
-    </Shell>
+    </>
   );
 }
