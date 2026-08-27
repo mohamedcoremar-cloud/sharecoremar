@@ -4,6 +4,7 @@ import { I18nProvider, useI18n } from "@/lib/i18n";
 import {
   LayoutDashboard, Package, FolderTree, BadgeCheck, Users, ShoppingBag, Image as ImageIcon,
   Building2, Home as HomeIcon, LogOut, Settings, Layers, Globe, FileText, CreditCard, Truck, Bot, Star,
+  ClipboardCheck,
 } from "lucide-react";
 import logoIcon from "@/assets/logo-icon.png";
 
@@ -24,6 +25,7 @@ function useMenu() {
     { to: "/admin/brands", label: t("admin.brands"), icon: BadgeCheck },
     { to: "/admin/suppliers", label: t("admin.suppliers"), icon: Building2 },
     { to: "/admin/orders", label: t("admin.orders"), icon: ShoppingBag },
+    { to: "/admin/submissions", label: "Catalog Submissions", icon: ClipboardCheck },
     { to: "/admin/deliveries", label: "Deliveries", icon: Truck },
     { to: "/admin/logistics-partners", label: "Logistics Partners", icon: Truck },
     { to: "/admin/reviews", label: "Reviews", icon: Star },
