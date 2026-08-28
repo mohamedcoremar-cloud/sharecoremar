@@ -1,36 +1,80 @@
-# Diagnosis — Suppliers "is_active" error (no changes made)
+# Bring Your Own AI Key for the merchandising_inventory Agent
 
-## 1. What column represents active/inactive on suppliers?
-There is **no boolean active column**. Verified live columns on `public.suppliers`: id, user_id, company_name, brand_name, owner_name, business_type, tax_number, commercial_registration, vat_number, description, address, governorate, city, phone, whatsapp, email, logo_url, cover_url, **status**, is_featured, rating, created_at, updated_at.
+## Feasibility: yes
 
-`status` is an enum (`verification_status`): pending / approved / rejected / suspended. That is the real state field — approved = live, suspended/rejected = not live.
+Nothing in the app calls an AI provider today. The `ai_agents` registry is
+documentation-only (it already carries `provider` and `model` columns), and the
+Item 3 bulk-intake extraction call has not been built yet. So the provider choice
+is still fully open — your own key can be the primary path from day one, with
+Lovable's credits as a fallback.
 
-## 2. Is the admin screen writing to `is_active`? Is that the error source?
-Yes — and that is exactly the error source. `src/routes/admin/suppliers.tsx` renders the shared `CrudPage` without passing `hasActive`/`activeKey`, and `CrudPage` defaults to `activeKey = "is_active"` and `hasActive = true`. So:
-- The Active/Inactive filter chips read `row.is_active` (always undefined → the "Active" filter shows nothing).
-- Bulk enable/disable runs `update({ is_active: ... })` on `suppliers`, producing "Could not find the 'is_active' column of 'suppliers' in the schema cache".
+## What you need to supply
 
-The column genuinely does not exist in the live schema.
+Pick one (both can be added; the agent uses whichever is configured):
 
-## 3. Is there an existing working pattern to reuse?
-Yes. `CrudPage` already supports a configurable state column, used by:
-- Products / Categories / Brands / Banners: real `is_active` boolean (default).
-- Pages: `activeKey="is_published"`.
-- Payment methods: `activeKey="is_enabled"`.
+| Provider | Key you create | Format | Models used |
+|---|---|---|---|
+| **Google AI Studio** (recommended for this task) | Gemini API key | `AIza...` | `gemini-2.5-flash` / `gemini-2.5-pro` — strong image + PDF reading, cheapest per price list |
+| **OpenAI** | Platform API key | `sk-...` (project keys `sk-proj-...`) | `gpt-5-mini` / `gpt-5` vision |
 
-So the established pattern is "tell CrudPage which column holds the state", not "add a new column".
+You top up and monitor the balance directly with that provider; billing never
+touches your Lovable subscription. The key is stored as a project secret
+(server-side only, never shipped to the browser) — I request it through the
+secret prompt when we build Item 3, so you paste it into a masked field, not
+into chat.
 
-## 4. Does supplier_users have its own is_active? Was the logic mis-pointed?
-Confirmed: `public.supplier_users` has its own `is_active` boolean (columns: id, user_id, supplier_id, **is_active**, created_at, updated_at, created_by, updated_by, deleted_at). It is a separate link table (which user account operates which supplier) and is unrelated to supplier approval state. The Suppliers screen inherited `is_active` purely from the CrudPage default — it is a naming mismatch of the same kind, and it should target `suppliers.status` instead.
+Recommendation: Google Gemini. Price lists photographed on a phone and multi-page
+PDFs are its strongest case, and cost per extraction is the lowest of the two.
 
-## Recommended minimal fix (not applied)
-Do **not** add an `is_active` column to `suppliers` — it would duplicate and contradict `status`.
+## Automatic fallback
 
-Correct the screen only, in `src/routes/admin/suppliers.tsx`:
-- Pass `hasActive={false}` so the boolean filter chips and bulk enable/disable (the code that writes `is_active`) are not rendered for suppliers.
-- Keep the existing `status` select field in the edit form as the way an admin approves/suspends a supplier (already present and already enforced admin-only by the `protect_supplier_verification_fields` trigger).
+Yes. The extraction runs through one small server-side resolver with an ordered
+chain:
 
-Optional, if you want one-click approve/suspend from the list instead of opening the dialog: a small suppliers-specific status action that updates `suppliers.status` to `approved` / `suspended`. That is a second, larger step — say the word and I'll include it.
+```text
+1. your external key (if present and enabled)
+      | on 401/403 (bad key), 429 (rate limit), 402/quota exhausted, or 5xx
+      v
+2. Lovable AI credits (google/gemini-3.7-flash via the gateway)
+      | if that is also blocked (402/403)
+      v
+3. surface a clear error in the admin upload screen — no silent failure,
+   no fabricated draft rows
+```
 
-## Scope guarantee
-The fix touches only `src/routes/admin/suppliers.tsx` (frontend). It will **not** touch `supplier_users`, the Supplier Portal (`/supplier`), orders, order history, RLS policies, triggers, or any database schema/data.
+Rules the resolver follows:
+- A malformed request (400) is never retried on the other provider — same input
+  would fail again; the error is shown as-is.
+- Every extraction records which provider actually served it, so you can see in
+  the admin screen whether your key or Lovable credits paid for it.
+- One switch in Admin > AI Agents to disable the fallback entirely if you want
+  hard-stop behaviour instead of spending Lovable credits.
+
+## Blast radius
+
+Scoped to the merchandising_inventory extraction call only:
+- No change to Level 1 fulfillment, order pipeline, or supplier/logistics portals.
+- No RLS policy, GRANT, or RPC signature changes.
+- No behaviour change for any other registry agent — they remain
+  documentation-only rows; each agent keeps its own `provider`/`model` values, so
+  switching this one does not switch the others.
+- The catalog submission approval chain is untouched: AI output still lands as
+  `draft` submissions and still needs the full admin/supplier approval path
+  before anything publishes.
+
+## Technical notes
+
+- New server-only module (e.g. `src/lib/ai-provider.server.ts`) resolves the
+  provider chain and reads `process.env` inside the handler.
+- Secrets: `GEMINI_API_KEY` and/or `OPENAI_API_KEY`, plus existing
+  `LOVABLE_API_KEY` for the fallback leg.
+- External providers are called with the AI SDK (`@ai-sdk/google` /
+  `@ai-sdk/openai`); the Lovable leg keeps the gateway provider already
+  documented for this stack.
+- Streaming used for extraction so long multi-page files can't be cut off by the
+  request timeout.
+
+## Next step
+
+Confirm which provider key you'll supply (or both). Then this configuration work
+folds into building Item 3 — it is not a separate sprint.
