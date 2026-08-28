@@ -73,6 +73,7 @@ export type Database = {
           created_at: string
           created_by: string | null
           deleted_at: string | null
+          fallback_to_lovable: boolean
           id: string
           is_active: boolean
           model: string | null
@@ -83,11 +84,13 @@ export type Database = {
           system_prompt: string | null
           updated_at: string
           updated_by: string | null
+          use_own_key: boolean
         }
         Insert: {
           created_at?: string
           created_by?: string | null
           deleted_at?: string | null
+          fallback_to_lovable?: boolean
           id?: string
           is_active?: boolean
           model?: string | null
@@ -98,11 +101,13 @@ export type Database = {
           system_prompt?: string | null
           updated_at?: string
           updated_by?: string | null
+          use_own_key?: boolean
         }
         Update: {
           created_at?: string
           created_by?: string | null
           deleted_at?: string | null
+          fallback_to_lovable?: boolean
           id?: string
           is_active?: boolean
           model?: string | null
@@ -113,6 +118,7 @@ export type Database = {
           system_prompt?: string | null
           updated_at?: string
           updated_by?: string | null
+          use_own_key?: boolean
         }
         Relationships: []
       }
