@@ -12,7 +12,8 @@ function AiAgentsPage() {
           <Info className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
           <p>
             Registry only. Enabling an agent records state in the database — no model is called, no prompt is executed
-            and no automation runs.
+            and no automation runs. The key switches below decide which AI account pays for an agent's calls once that
+            agent is wired up: your own external provider key first, with Lovable AI credits as an optional fallback.
           </p>
         </div>
       </div>
@@ -22,13 +23,15 @@ function AiAgentsPage() {
         orderBy="created_at"
         activeKey="is_active"
         searchKeys={["role_key", "name_en", "name_ar", "provider", "model"]}
-        defaultValues={{ provider: "none", is_active: false }}
+        defaultValues={{ provider: "none", is_active: false, use_own_key: true, fallback_to_lovable: true }}
         columns={[
           { key: "role_key", label: "Role key" },
           { key: "name_en", label: "Name (EN)" },
           { key: "name_ar", label: "Name (AR)" },
           { key: "provider", label: "Provider" },
           { key: "model", label: "Model", render: (r) => r.model ?? "—" },
+          { key: "use_own_key", label: "Own key", render: (r) => (r.use_own_key ? "✓" : "—") },
+          { key: "fallback_to_lovable", label: "Fallback", render: (r) => (r.fallback_to_lovable ? "✓" : "—") },
           { key: "is_active", label: "Enabled", render: (r) => (r.is_active ? "✓" : "—") },
         ]}
         fields={[
@@ -38,9 +41,16 @@ function AiAgentsPage() {
           { name: "provider", label: "Provider (documentation only)" },
           { name: "model", label: "Model (documentation only)" },
           { name: "system_prompt", label: "Notes / intended system prompt", type: "textarea" },
+          { name: "use_own_key", label: "Use my own external API key first", type: "switch" },
+          {
+            name: "fallback_to_lovable",
+            label: "Fall back to Lovable AI credits if my key fails or runs out",
+            type: "switch",
+          },
           { name: "is_active", label: "Enabled (database flag only)", type: "switch" },
         ]}
       />
+
     </div>
   );
 }
