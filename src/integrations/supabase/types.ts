@@ -2053,6 +2053,7 @@ export type Database = {
         Args: { p_review_id: string; p_status_code: string }
         Returns: Json
       }
+      submit_new_product: { Args: { p_proposed: Json }; Returns: Json }
       submit_product_edit: {
         Args: { p_product_id: string; p_proposed: Json }
         Returns: Json
