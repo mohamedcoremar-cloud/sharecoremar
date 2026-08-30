@@ -35,7 +35,7 @@ export class AiUnavailableError extends Error {
   }
 }
 
-const GOOGLE_MODEL = "gemini-2.5-flash";
+const GOOGLE_MODEL = "gemini-3.6-flash";
 const OPENAI_MODEL = "gpt-5-mini";
 const LOVABLE_MODEL = "google/gemini-3.7-flash";
 
