@@ -26,6 +26,7 @@ function SubmissionsAdmin() {
   const [q, setQ] = useState("");
   const [detail, setDetail] = useState<any>(null);
   const [reason, setReason] = useState("");
+  const [intakeOpen, setIntakeOpen] = useState(false);
 
   const { data: rows = [], isLoading } = useQuery({
     queryKey: ["admin-submissions"],
@@ -42,6 +43,12 @@ function SubmissionsAdmin() {
   const { data: categories = [] } = useQuery({
     queryKey: ["all-categories"],
     queryFn: async () => (await supabase.from("categories").select("id, name_en").order("name_en")).data ?? [],
+  });
+
+  const { data: suppliers = [] } = useQuery({
+    queryKey: ["all-suppliers"],
+    queryFn: async () =>
+      (await supabase.from("suppliers").select("id, company_name").is("deleted_at", null).order("company_name")).data ?? [],
   });
 
   const act = useMutation({
