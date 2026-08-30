@@ -1,8 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { extractCatalogDrafts } from "@/lib/catalog-intake.functions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -11,7 +13,7 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription,
 } from "@/components/ui/dialog";
 import { fmt } from "@/lib/currency";
-import { Search, Eye } from "lucide-react";
+import { Search, Eye, Sparkles, Upload } from "lucide-react";
 import { StatusBadge } from "@/components/supplier/catalog-panel";
 
 export const Route = createFileRoute("/admin/submissions")({ component: SubmissionsAdmin });
