@@ -228,6 +228,153 @@ function SubmissionsAdmin() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <AiIntakeDialog
+        open={intakeOpen}
+        onOpenChange={setIntakeOpen}
+        suppliers={suppliers as any[]}
+        onDone={() => qc.invalidateQueries({ queryKey: ["admin-submissions"] })}
+      />
     </div>
+  );
+}
+
+function AiIntakeDialog({
+  open,
+  onOpenChange,
+  suppliers,
+  onDone,
+}: {
+  open: boolean;
+  onOpenChange: (o: boolean) => void;
+  suppliers: { id: string; company_name: string }[];
+  onDone: () => void;
+}) {
+  const run = useServerFn(extractCatalogDrafts);
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [supplierId, setSupplierId] = useState("");
+  const [note, setNote] = useState("");
+  const [file, setFile] = useState<File | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [result, setResult] = useState<null | {
+    created: { reference_code: string; name: string }[];
+    skipped: { name: string; reason: string }[];
+    servedByLabel: string;
+  }>(null);
+
+  const reset = () => {
+    setSupplierId(""); setNote(""); setFile(null); setResult(null);
+    if (fileRef.current) fileRef.current.value = "";
+  };
+
+  const submit = async () => {
+    if (!supplierId || !file) return;
+    setBusy(true);
+    try {
+      const buf = await file.arrayBuffer();
+      let bin = "";
+      const bytes = new Uint8Array(buf);
+      const chunk = 0x8000;
+      for (let i = 0; i < bytes.length; i += chunk) {
+        bin += String.fromCharCode(...bytes.subarray(i, i + chunk));
+      }
+      const fileBase64 = btoa(bin);
+      const res = await run({
+        data: { supplierId, fileBase64, mimeType: file.type || "application/octet-stream", note: note.trim() || undefined },
+      });
+      setResult(res);
+      onDone();
+      toast.success(`Extracted ${res.created.length} draft${res.created.length === 1 ? "" : "s"}`);
+    } catch (e: any) {
+      toast.error(e?.message ?? "Extraction failed");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={(o) => { onOpenChange(o); if (!o) reset(); }}>
+      <DialogContent className="max-w-xl">
+        <DialogHeader>
+          <DialogTitle>AI Bulk Intake</DialogTitle>
+          <DialogDescription>
+            Upload a trader's price list (photo, PDF, CSV or text). The AI extracts product drafts — nothing goes live
+            without passing the full review chain.
+          </DialogDescription>
+        </DialogHeader>
+
+        {!result ? (
+          <div className="space-y-4">
+            <div>
+              <Label>Supplier</Label>
+              <select
+                className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                value={supplierId}
+                onChange={(e) => setSupplierId(e.target.value)}
+              >
+                <option value="">Choose supplier…</option>
+                {suppliers.map((s) => (
+                  <option key={s.id} value={s.id}>{s.company_name}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <Label>Price list file</Label>
+              <Input
+                ref={fileRef}
+                type="file"
+                accept="image/png,image/jpeg,image/webp,application/pdf,text/plain,text/csv,application/json"
+                className="mt-1"
+                onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+              />
+            </div>
+            <div>
+              <Label>Note for reviewers (optional)</Label>
+              <Textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="e.g. WhatsApp list from Hajj Mahmoud, March prices" />
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-3 max-h-[50vh] overflow-y-auto">
+            <div className="text-xs text-muted-foreground">Served by: {result.servedByLabel}</div>
+            {result.created.length > 0 && (
+              <div>
+                <div className="font-semibold text-sm mb-1">Created drafts ({result.created.length})</div>
+                <ul className="text-sm space-y-1">
+                  {result.created.map((c) => (
+                    <li key={c.reference_code} className="rounded-md border border-border px-3 py-1.5">
+                      {c.reference_code} · {c.name}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {result.skipped.length > 0 && (
+              <div>
+                <div className="font-semibold text-sm mb-1">Skipped ({result.skipped.length})</div>
+                <ul className="text-sm space-y-1 text-muted-foreground">
+                  {result.skipped.map((s, i) => (
+                    <li key={i}>{s.name} — {s.reason}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            <p className="text-xs text-muted-foreground">
+              Drafts are in <strong>draft</strong> status. Review them, then move to admin review → send to supplier.
+            </p>
+          </div>
+        )}
+
+        <DialogFooter>
+          {!result ? (
+            <Button onClick={submit} disabled={busy || !supplierId || !file}>
+              <Upload className="h-4 w-4 me-1" />
+              {busy ? "Extracting…" : "Extract drafts"}
+            </Button>
+          ) : (
+            <Button variant="outline" onClick={() => { onOpenChange(false); reset(); }}>Close</Button>
+          )}
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
