@@ -123,6 +123,9 @@ function SubmissionsAdmin() {
           <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input className="ps-9" placeholder="Search code, supplier or product…" value={q} onChange={(e) => setQ(e.target.value)} />
         </div>
+        <Button onClick={() => setIntakeOpen(true)}>
+          <Sparkles className="h-4 w-4 me-1" /> AI Bulk Intake
+        </Button>
       </div>
 
       {isLoading && <div>Loading…</div>}
