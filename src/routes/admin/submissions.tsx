@@ -13,8 +13,9 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription,
 } from "@/components/ui/dialog";
 import { fmt } from "@/lib/currency";
-import { Search, Eye, Sparkles, Upload } from "lucide-react";
+import { Search, Eye, Sparkles, Upload, Plus } from "lucide-react";
 import { StatusBadge } from "@/components/supplier/catalog-panel";
+import { ManualProductDialog } from "@/components/catalog/manual-product-form";
 
 export const Route = createFileRoute("/admin/submissions")({ component: SubmissionsAdmin });
 
