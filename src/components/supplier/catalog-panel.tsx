@@ -349,6 +349,13 @@ export function SupplierCatalogPanel({ supplierId }: { supplierId: string }) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      <ManualProductDialog
+        open={adding}
+        onOpenChange={setAdding}
+        mode="supplier"
+        supplierId={supplierId}
+        onCreated={() => qc.invalidateQueries({ queryKey: ["supplier-submissions", supplierId] })}
+      />
     </div>
   );
 }
