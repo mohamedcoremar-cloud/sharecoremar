@@ -10,8 +10,9 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription,
 } from "@/components/ui/dialog";
 import { fmt } from "@/lib/currency";
-import { Pencil, Clock, CheckCircle2, XCircle, Send } from "lucide-react";
+import { Pencil, Clock, CheckCircle2, XCircle, Send, Plus } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
+import { ManualProductDialog } from "@/components/catalog/manual-product-form";
 
 export type SubmissionRow = {
   id: string;
