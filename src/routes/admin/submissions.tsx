@@ -28,6 +28,7 @@ function SubmissionsAdmin() {
   const [detail, setDetail] = useState<any>(null);
   const [reason, setReason] = useState("");
   const [intakeOpen, setIntakeOpen] = useState(false);
+  const [manualOpen, setManualOpen] = useState(false);
 
   const { data: rows = [], isLoading } = useQuery({
     queryKey: ["admin-submissions"],
