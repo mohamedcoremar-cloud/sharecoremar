@@ -1619,6 +1619,7 @@ export type Database = {
           company_name: string
           cover_url: string | null
           created_at: string
+          deleted_at: string | null
           description: string | null
           email: string | null
           governorate: string | null
@@ -1644,6 +1645,7 @@ export type Database = {
           company_name: string
           cover_url?: string | null
           created_at?: string
+          deleted_at?: string | null
           description?: string | null
           email?: string | null
           governorate?: string | null
@@ -1669,6 +1671,7 @@ export type Database = {
           company_name?: string
           cover_url?: string | null
           created_at?: string
+          deleted_at?: string | null
           description?: string | null
           email?: string | null
           governorate?: string | null
