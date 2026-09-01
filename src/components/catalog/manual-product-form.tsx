@@ -115,7 +115,7 @@ export function ManualProductDialog({
         p_supplier_id: sup,
         p_proposed: proposed,
         p_source: "manual",
-        p_ai_note: null,
+        p_ai_note: "Manual entry by admin",
       });
       if (error) throw error;
       return data;
