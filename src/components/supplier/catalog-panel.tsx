@@ -10,8 +10,9 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription,
 } from "@/components/ui/dialog";
 import { fmt } from "@/lib/currency";
-import { Pencil, Clock, CheckCircle2, XCircle, Send } from "lucide-react";
+import { Pencil, Clock, CheckCircle2, XCircle, Send, Plus } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
+import { ManualProductDialog } from "@/components/catalog/manual-product-form";
 
 export type SubmissionRow = {
   id: string;
@@ -78,6 +79,7 @@ export function SupplierCatalogPanel({ supplierId }: { supplierId: string }) {
   const [draft, setDraft] = useState<Draft | null>(null);
   const [respondTo, setRespondTo] = useState<SubmissionRow | null>(null);
   const [note, setNote] = useState("");
+  const [adding, setAdding] = useState(false);
 
   const ar = lang === "ar";
 
@@ -190,7 +192,12 @@ export function SupplierCatalogPanel({ supplierId }: { supplierId: string }) {
       )}
 
       <section>
-        <h2 className="text-lg font-bold mb-3">{ar ? "منتجاتي" : "My products"}</h2>
+        <div className="flex items-center justify-between mb-3 gap-3">
+          <h2 className="text-lg font-bold">{ar ? "منتجاتي" : "My products"}</h2>
+          <Button size="sm" onClick={() => setAdding(true)}>
+            <Plus className="h-4 w-4 me-1" /> {ar ? "إضافة منتج" : "Add product"}
+          </Button>
+        </div>
         {isLoading && <div>Loading…</div>}
         {!isLoading && products.length === 0 && (
           <div className="card-premium p-8 text-center text-muted-foreground">
@@ -342,6 +349,13 @@ export function SupplierCatalogPanel({ supplierId }: { supplierId: string }) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      <ManualProductDialog
+        open={adding}
+        onOpenChange={setAdding}
+        mode="supplier"
+        supplierId={supplierId}
+        onCreated={() => qc.invalidateQueries({ queryKey: ["supplier-submissions", supplierId] })}
+      />
     </div>
   );
 }

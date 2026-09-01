@@ -13,8 +13,9 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription,
 } from "@/components/ui/dialog";
 import { fmt } from "@/lib/currency";
-import { Search, Eye, Sparkles, Upload } from "lucide-react";
+import { Search, Eye, Sparkles, Upload, Plus } from "lucide-react";
 import { StatusBadge } from "@/components/supplier/catalog-panel";
+import { ManualProductDialog } from "@/components/catalog/manual-product-form";
 
 export const Route = createFileRoute("/admin/submissions")({ component: SubmissionsAdmin });
 
@@ -27,6 +28,7 @@ function SubmissionsAdmin() {
   const [detail, setDetail] = useState<any>(null);
   const [reason, setReason] = useState("");
   const [intakeOpen, setIntakeOpen] = useState(false);
+  const [manualOpen, setManualOpen] = useState(false);
 
   const { data: rows = [], isLoading } = useQuery({
     queryKey: ["admin-submissions"],
@@ -123,9 +125,18 @@ function SubmissionsAdmin() {
           <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input className="ps-9" placeholder="Search code, supplier or product…" value={q} onChange={(e) => setQ(e.target.value)} />
         </div>
+        <Button variant="outline" onClick={() => setManualOpen(true)}>
+          <Plus className="h-4 w-4 me-1" /> Add product manually
+        </Button>
         <Button onClick={() => setIntakeOpen(true)}>
           <Sparkles className="h-4 w-4 me-1" /> AI Bulk Intake
         </Button>
+        <ManualProductDialog
+          open={manualOpen}
+          onOpenChange={setManualOpen}
+          mode="admin"
+          suppliers={suppliers as { id: string; company_name: string }[]}
+        />
       </div>
 
       {isLoading && <div>Loading…</div>}
