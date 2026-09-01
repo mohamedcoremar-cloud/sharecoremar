@@ -190,7 +190,12 @@ export function SupplierCatalogPanel({ supplierId }: { supplierId: string }) {
       )}
 
       <section>
-        <h2 className="text-lg font-bold mb-3">{ar ? "منتجاتي" : "My products"}</h2>
+        <div className="flex items-center justify-between mb-3 gap-3">
+          <h2 className="text-lg font-bold">{ar ? "منتجاتي" : "My products"}</h2>
+          <Button size="sm" onClick={() => setAdding(true)}>
+            <Plus className="h-4 w-4 me-1" /> {ar ? "إضافة منتج" : "Add product"}
+          </Button>
+        </div>
         {isLoading && <div>Loading…</div>}
         {!isLoading && products.length === 0 && (
           <div className="card-premium p-8 text-center text-muted-foreground">
