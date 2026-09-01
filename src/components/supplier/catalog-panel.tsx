@@ -79,6 +79,7 @@ export function SupplierCatalogPanel({ supplierId }: { supplierId: string }) {
   const [draft, setDraft] = useState<Draft | null>(null);
   const [respondTo, setRespondTo] = useState<SubmissionRow | null>(null);
   const [note, setNote] = useState("");
+  const [adding, setAdding] = useState(false);
 
   const ar = lang === "ar";
 
