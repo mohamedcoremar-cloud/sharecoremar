@@ -123,9 +123,18 @@ function SubmissionsAdmin() {
           <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input className="ps-9" placeholder="Search code, supplier or product…" value={q} onChange={(e) => setQ(e.target.value)} />
         </div>
+        <Button variant="outline" onClick={() => setManualOpen(true)}>
+          <Plus className="h-4 w-4 me-1" /> Add product manually
+        </Button>
         <Button onClick={() => setIntakeOpen(true)}>
           <Sparkles className="h-4 w-4 me-1" /> AI Bulk Intake
         </Button>
+        <ManualProductDialog
+          open={manualOpen}
+          onOpenChange={setManualOpen}
+          mode="admin"
+          suppliers={suppliers as { id: string; company_name: string }[]}
+        />
       </div>
 
       {isLoading && <div>Loading…</div>}
