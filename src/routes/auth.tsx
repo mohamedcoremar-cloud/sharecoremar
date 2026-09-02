@@ -8,7 +8,19 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import logoIcon from "@/assets/logo-icon.png";
 
-export const Route = createFileRoute("/auth")({ component: AuthPage });
+export const Route = createFileRoute("/auth")({
+  head: () => ({
+    meta: [
+      { title: "Sign in | Share CoreMar" },
+      { name: "description", content: "Sign in to your Share CoreMar account or recover access securely." },
+      { property: "og:title", content: "Sign in | Share CoreMar" },
+      { property: "og:description", content: "Sign in to your Share CoreMar account or recover access securely." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
+  component: AuthPage,
+});
 
 function AuthPage() {
   const navigate = useNavigate();
@@ -16,6 +28,8 @@ function AuthPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
+  const [recovering, setRecovering] = useState(false);
+  const [recoverySent, setRecoverySent] = useState(false);
 
   async function signIn(e: React.FormEvent) {
     e.preventDefault();
@@ -53,6 +67,28 @@ function AuthPage() {
     toast.success("Account created — you can sign in now.");
   }
 
+  async function requestPasswordReset() {
+    const normalizedEmail = email.trim();
+    if (!normalizedEmail) {
+      toast.error("Enter your email address first");
+      return;
+    }
+
+    setRecovering(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(normalizedEmail, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    setRecovering(false);
+
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+
+    setRecoverySent(true);
+    toast.success("Password reset link sent");
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center p-4" style={{ background: "var(--gradient-hero)" }}>
       <div className="w-full max-w-md">
@@ -69,7 +105,20 @@ function AuthPage() {
             <TabsContent value="signin">
               <form onSubmit={signIn} className="space-y-4 pt-4">
                 <div><Label>Email</Label><Input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} /></div>
-                <div><Label>Password</Label><Input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} /></div>
+                <div>
+                  <div className="mb-1.5 flex items-center justify-between gap-3">
+                    <Label>Password</Label>
+                    <Button type="button" variant="link" className="h-auto p-0 text-xs" disabled={recovering} onClick={requestPasswordReset}>
+                      {recovering ? "Sending…" : "Forgot password?"}
+                    </Button>
+                  </div>
+                  <Input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+                </div>
+                {recoverySent && (
+                  <p className="rounded-md border border-border bg-muted px-3 py-2 text-sm text-muted-foreground" role="status">
+                    Check your email for a secure password reset link.
+                  </p>
+                )}
                 <Button type="submit" disabled={loading} className="w-full btn-gold">{loading ? "Signing in..." : "Sign in"}</Button>
               </form>
             </TabsContent>
