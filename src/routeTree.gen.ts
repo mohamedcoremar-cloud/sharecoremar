@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SupplierRouteImport } from './routes/supplier'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as LogisticsRouteImport } from './routes/logistics'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
@@ -57,6 +58,11 @@ const SupplierRoute = SupplierRouteImport.update({
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LogisticsRoute = LogisticsRouteImport.update({
@@ -249,6 +255,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
   '/logistics': typeof LogisticsRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/supplier': typeof SupplierRoute
   '/account': typeof PublicAccountRouteWithChildren
@@ -287,6 +294,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/logistics': typeof LogisticsRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/supplier': typeof SupplierRoute
   '/account': typeof PublicAccountRouteWithChildren
@@ -329,6 +337,7 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
   '/logistics': typeof LogisticsRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/supplier': typeof SupplierRoute
   '/_public/account': typeof PublicAccountRouteWithChildren
@@ -372,6 +381,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/logistics'
+    | '/reset-password'
     | '/sitemap.xml'
     | '/supplier'
     | '/account'
@@ -410,6 +420,7 @@ export interface FileRouteTypes {
   to:
     | '/auth'
     | '/logistics'
+    | '/reset-password'
     | '/sitemap.xml'
     | '/supplier'
     | '/account'
@@ -451,6 +462,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/logistics'
+    | '/reset-password'
     | '/sitemap.xml'
     | '/supplier'
     | '/_public/account'
@@ -493,6 +505,7 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRouteWithChildren
   AuthRoute: typeof AuthRoute
   LogisticsRoute: typeof LogisticsRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SupplierRoute: typeof SupplierRoute
 }
@@ -511,6 +524,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/logistics': {
@@ -873,6 +893,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRouteWithChildren,
   AuthRoute: AuthRoute,
   LogisticsRoute: LogisticsRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   SupplierRoute: SupplierRoute,
 }
