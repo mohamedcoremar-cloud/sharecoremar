@@ -1,5 +1,7 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 
+import { translateBackoffice } from "./backoffice-translations";
+
 export type Lang = "en" | "ar";
 
 type Dict = Record<string, { en: string; ar: string }>;
@@ -115,6 +117,7 @@ interface I18nCtx {
   dir: "ltr" | "rtl";
   setLang: (l: Lang) => void;
   t: (key: string) => string;
+  tr: (text: string) => string;
   pick: (row: any, base: string) => any;
 }
 
@@ -141,13 +144,14 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   }
 
   const t = (key: string) => DICT[key]?.[lang] ?? key;
+  const tr = (text: string) => translateBackoffice(text, lang);
   const pick = (row: any, base: string) => {
     if (!row) return "";
     return row[`${base}_${lang}`] ?? row[`${base}_en`] ?? row[base] ?? "";
   };
 
   return (
-    <Ctx.Provider value={{ lang, dir: lang === "ar" ? "rtl" : "ltr", setLang, t, pick }}>
+    <Ctx.Provider value={{ lang, dir: lang === "ar" ? "rtl" : "ltr", setLang, t, tr, pick }}>
       {children}
     </Ctx.Provider>
   );
