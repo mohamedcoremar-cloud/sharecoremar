@@ -13,6 +13,7 @@ import { Truck } from "lucide-react";
 export const Route = createFileRoute("/admin/deliveries")({ component: DeliveriesAdmin });
 
 function DeliveriesAdmin() {
+  const { tr } = useI18n();
   const { pick } = useI18n();
   const qc = useQueryClient();
   const [openId, setOpenId] = useState<string | null>(null);
@@ -37,27 +38,26 @@ function DeliveriesAdmin() {
 
   return (
     <div className="p-8 max-w-7xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6 flex items-center gap-2"><Truck className="h-7 w-7" /> Deliveries</h1>
+      <h1 className="text-3xl font-bold mb-6 flex items-center gap-2"><Truck className="h-7 w-7" /> {tr("Deliveries")}</h1>
 
       {isLoading ? (
-        <div className="p-8 text-center text-muted-foreground">Loading…</div>
+        <div className="p-8 text-center text-muted-foreground">{tr("Loading…")}</div>
       ) : deliveries.length === 0 ? (
         <div className="card-premium p-16 text-center text-muted-foreground">
-          No deliveries yet. A delivery row is created automatically when an order is confirmed.
-        </div>
+          {tr("No deliveries yet. A delivery row is created automatically when an order is confirmed.")}</div>
       ) : (
         <div className="rounded-2xl border border-border bg-card overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="bg-muted/30 border-b border-border">
                 <tr>
-                  <th className="text-left p-3">Order #</th>
-                  <th className="text-left p-3">Delivery status</th>
-                  <th className="text-left p-3">Partner</th>
-                  <th className="text-left p-3">Attempts</th>
-                  <th className="text-left p-3">Scheduled</th>
-                  <th className="text-left p-3">Total</th>
-                  <th className="text-right p-3"></th>
+                  <th className="text-start p-3">{tr("Order #")}</th>
+                  <th className="text-start p-3">{tr("Delivery status")}</th>
+                  <th className="text-start p-3">{tr("Partner")}</th>
+                  <th className="text-start p-3">{tr("Attempts")}</th>
+                  <th className="text-start p-3">{tr("Scheduled")}</th>
+                  <th className="text-start p-3">{tr("Total")}</th>
+                  <th className="text-end p-3"></th>
                 </tr>
               </thead>
               <tbody>
@@ -74,8 +74,8 @@ function DeliveriesAdmin() {
                       <td className="p-3">{d.attempts_count}</td>
                       <td className="p-3 text-muted-foreground">{d.scheduled_at ? new Date(d.scheduled_at).toLocaleString() : "—"}</td>
                       <td className="p-3 font-semibold">{fmt(d.orders?.total ?? 0)}</td>
-                      <td className="p-3 text-right">
-                        <Button size="sm" variant="outline" onClick={() => setOpenId(d.id)}>Manage</Button>
+                      <td className="p-3 text-end">
+                        <Button size="sm" variant="outline" onClick={() => setOpenId(d.id)}>{tr("Manage")}</Button>
                       </td>
                     </tr>
                   );
@@ -100,6 +100,7 @@ function DeliveriesAdmin() {
 }
 
 function ManageDialog({ delivery, statuses, reasons, onClose, onDone }: any) {
+  const { tr } = useI18n();
   const { pick } = useI18n();
   const current: string = delivery.delivery_statuses?.code ?? "assigned";
   const allowed: string[] = DELIVERY_TRANSITIONS[current] ?? [];
@@ -112,8 +113,9 @@ function ManageDialog({ delivery, statuses, reasons, onClose, onDone }: any) {
   const attempts = (delivery.delivery_attempts ?? []).slice().sort((a: any, b: any) => a.attempt_number - b.attempt_number);
 
   async function submit() {
+  const { tr } = useI18n();
     if (!next) return;
-    if (next === "failed" && !reason) return toast.error("Please select a failure reason");
+    if (next === "failed" && !reason) return toast.error(tr("Please select a failure reason"));
     setBusy(true);
     const { error } = await (supabase as any).rpc("update_delivery_status", {
       p_delivery_id: delivery.id,
@@ -136,22 +138,22 @@ function ManageDialog({ delivery, statuses, reasons, onClose, onDone }: any) {
   return (
     <Dialog open onOpenChange={(o) => !o && onClose()}>
       <DialogContent className="max-w-lg">
-        <DialogHeader><DialogTitle>Delivery — {delivery.orders?.order_number}</DialogTitle></DialogHeader>
+        <DialogHeader><DialogTitle>{tr("Delivery —")}{delivery.orders?.order_number}</DialogTitle></DialogHeader>
 
         <div className="space-y-4 text-sm">
           <div className="rounded-lg border border-border p-3">
-            <div className="text-xs text-muted-foreground">Current delivery status</div>
+            <div className="text-xs text-muted-foreground">{tr("Current delivery status")}</div>
             <div className="font-semibold">{label(current)}</div>
-            {delivery.scheduled_at && <div className="text-xs text-muted-foreground mt-1">Scheduled: {new Date(delivery.scheduled_at).toLocaleString()}</div>}
+            {delivery.scheduled_at && <div className="text-xs text-muted-foreground mt-1">{tr("Scheduled:")}{new Date(delivery.scheduled_at).toLocaleString()}</div>}
           </div>
 
           {attempts.length > 0 && (
             <div>
-              <div className="text-xs text-muted-foreground mb-1">Delivery attempts</div>
+              <div className="text-xs text-muted-foreground mb-1">{tr("Delivery attempts")}</div>
               <div className="space-y-1">
                 {attempts.map((a: any) => (
                   <div key={a.id} className="text-xs">
-                    #{a.attempt_number} · <span className={a.result === "delivered" ? "text-emerald-500" : "text-red-500"}>{a.result}</span>
+                    #{a.attempt_number} · <span className={a.result === "delivered" ? "text-emerald-500" : "text-red-500"}>{tr(a.result)}</span>
                     {a.note ? ` · ${a.note}` : ""} · {new Date(a.attempted_at).toLocaleString()}
                   </div>
                 ))}
@@ -160,11 +162,11 @@ function ManageDialog({ delivery, statuses, reasons, onClose, onDone }: any) {
           )}
 
           {allowed.length === 0 ? (
-            <p className="text-muted-foreground">This delivery reached a final state; no further transitions are allowed.</p>
+            <p className="text-muted-foreground">{tr("This delivery reached a final state; no further transitions are allowed.")}</p>
           ) : (
             <>
               <div>
-                <div className="text-xs text-muted-foreground mb-1">New status</div>
+                <div className="text-xs text-muted-foreground mb-1">{tr("New status")}</div>
                 <select value={next} onChange={(e) => setNext(e.target.value)} className="w-full rounded-lg border border-input bg-background px-3 py-2">
                   {allowed.map((c) => <option key={c} value={c}>{label(c)}</option>)}
                 </select>
@@ -172,24 +174,24 @@ function ManageDialog({ delivery, statuses, reasons, onClose, onDone }: any) {
 
               {next === "failed" && (
                 <div>
-                  <div className="text-xs text-muted-foreground mb-1">Failure reason (required)</div>
+                  <div className="text-xs text-muted-foreground mb-1">{tr("Failure reason (required)")}</div>
                   <select value={reason} onChange={(e) => setReason(e.target.value)} className="w-full rounded-lg border border-input bg-background px-3 py-2">
-                    <option value="">Select a reason…</option>
+                    <option value="">{tr("Select a reason…")}</option>
                     {reasons.map((r: any) => <option key={r.code} value={r.code}>{pick(r, "name")}</option>)}
                   </select>
-                  <p className="text-xs text-muted-foreground mt-1">The order stays open so the delivery can be rescheduled.</p>
+                  <p className="text-xs text-muted-foreground mt-1">{tr("The order stays open so the delivery can be rescheduled.")}</p>
                 </div>
               )}
 
               {(next === "rescheduled" || next === "failed") && (
                 <div>
-                  <div className="text-xs text-muted-foreground mb-1">Proposed new delivery time</div>
+                  <div className="text-xs text-muted-foreground mb-1">{tr("Proposed new delivery time")}</div>
                   <input type="datetime-local" value={reschedule} onChange={(e) => setReschedule(e.target.value)} className="w-full rounded-lg border border-input bg-background px-3 py-2" />
                 </div>
               )}
 
               <div>
-                <div className="text-xs text-muted-foreground mb-1">Note</div>
+                <div className="text-xs text-muted-foreground mb-1">{tr("Note")}</div>
                 <textarea rows={2} value={note} onChange={(e) => setNote(e.target.value)} className="w-full rounded-lg border border-border bg-background px-3 py-2" />
               </div>
             </>
@@ -197,8 +199,8 @@ function ManageDialog({ delivery, statuses, reasons, onClose, onDone }: any) {
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={onClose}>Close</Button>
-          {allowed.length > 0 && <Button className="btn-gold" onClick={submit} disabled={busy}>{busy ? "Working…" : "Update delivery"}</Button>}
+          <Button variant="outline" onClick={onClose}>{tr("Close")}</Button>
+          {allowed.length > 0 && <Button className="btn-gold" onClick={submit} disabled={busy}>{busy ? tr("Working…") : "Update delivery"}</Button>}
         </DialogFooter>
       </DialogContent>
     </Dialog>

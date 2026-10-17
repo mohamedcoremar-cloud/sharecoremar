@@ -1,3 +1,4 @@
+import { useI18n } from "@/lib/i18n";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -22,6 +23,7 @@ export const Route = createFileRoute("/admin/submissions")({ component: Submissi
 const OPEN_CODES = ["draft", "admin_review", "sent_to_supplier", "supplier_approved", "pending_final_approval"];
 
 function SubmissionsAdmin() {
+  const { tr, lang } = useI18n();
   const qc = useQueryClient();
   const [tab, setTab] = useState<"open" | "all">("open");
   const [q, setQ] = useState("");
@@ -44,7 +46,7 @@ function SubmissionsAdmin() {
 
   const { data: categories = [] } = useQuery({
     queryKey: ["all-categories"],
-    queryFn: async () => (await supabase.from("categories").select("id, name_en").order("name_en")).data ?? [],
+    queryFn: async () => (await supabase.from("categories").select("id, name_en, name_ar").order("name_en")).data ?? [],
   });
 
   const { data: suppliers = [] } = useQuery({
@@ -66,7 +68,7 @@ function SubmissionsAdmin() {
       qc.invalidateQueries({ queryKey: ["admin-submissions"] });
       setDetail(null);
       setReason("");
-      toast.success(v.status === "published" ? "Published to the catalogue" : "Updated");
+      toast.success(v.status === "published" ? tr("Published to the catalogue") : tr("Updated"));
     },
     onError: (e: any) => toast.error(e.message),
   });
@@ -79,6 +81,7 @@ function SubmissionsAdmin() {
         !ql ||
         String(r.reference_code ?? "").toLowerCase().includes(ql) ||
         String(r.suppliers?.company_name ?? "").toLowerCase().includes(ql) ||
+        String(r.proposed?.name_ar ?? "").toLowerCase().includes(ql) ||
         String(r.proposed?.name_en ?? "").toLowerCase().includes(ql) ||
         String(r.products?.name_en ?? "").toLowerCase().includes(ql),
       );
@@ -87,16 +90,16 @@ function SubmissionsAdmin() {
   const code = detail?.catalog_submission_statuses?.code as string | undefined;
   const nextActions: { label: string; status: string; variant?: "default" | "outline" }[] = (() => {
     switch (code) {
-      case "draft": return [{ label: "Move to admin review", status: "admin_review" }];
+      case "draft": return [{ label: tr("Move to admin review"), status: "admin_review" }];
       case "admin_review": return [
-        { label: "Send to supplier", status: "sent_to_supplier" },
-        { label: "Skip to final approval", status: "pending_final_approval", variant: "outline" },
+        { label: tr("Send to supplier"), status: "sent_to_supplier" },
+        { label: tr("Skip to final approval"), status: "pending_final_approval", variant: "outline" },
       ];
-      case "sent_to_supplier": return [{ label: "Pull back to review", status: "admin_review", variant: "outline" }];
-      case "supplier_approved": return [{ label: "Move to final approval", status: "pending_final_approval" }];
+      case "sent_to_supplier": return [{ label: tr("Pull back to review"), status: "admin_review", variant: "outline" }];
+      case "supplier_approved": return [{ label: tr("Move to final approval"), status: "pending_final_approval" }];
       case "pending_final_approval": return [
-        { label: "Approve & publish", status: "published" },
-        { label: "Back to review", status: "admin_review", variant: "outline" },
+        { label: tr("Approve & publish"), status: "published" },
+        { label: tr("Back to review"), status: "admin_review", variant: "outline" },
       ];
       default: return [];
     }
@@ -104,16 +107,15 @@ function SubmissionsAdmin() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 md:px-8">
-      <h1 className="text-2xl font-bold mb-1">Catalog Submissions</h1>
+      <h1 className="text-2xl font-bold mb-1">{tr("Catalog Submissions")}</h1>
       <p className="text-sm text-muted-foreground mb-6">
-        Supplier product proposals and bulk intake drafts. Nothing reaches the live catalogue until you publish it here.
-      </p>
+        {tr("Supplier product proposals and bulk intake drafts. Nothing reaches the live catalogue until you publish it here.")}</p>
 
       <div className="flex flex-wrap items-center gap-3 mb-4">
         <div className="flex rounded-lg border border-border overflow-hidden">
           {(["open", "all"] as const).map((t) => (
             <button
-              key={t}
+              key={tr(t)}
               onClick={() => setTab(t)}
               className={`px-4 py-2 text-sm font-medium capitalize ${tab === t ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
             >
@@ -123,14 +125,12 @@ function SubmissionsAdmin() {
         </div>
         <div className="relative flex-1 min-w-[200px]">
           <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input className="ps-9" placeholder="Search code, supplier or product…" value={q} onChange={(e) => setQ(e.target.value)} />
+          <Input className="ps-9" placeholder={tr("Search code, supplier or product…")} value={q} onChange={(e) => setQ(e.target.value)} />
         </div>
         <Button variant="outline" onClick={() => setManualOpen(true)}>
-          <Plus className="h-4 w-4 me-1" /> Add product manually
-        </Button>
+          <Plus className="h-4 w-4 me-1" /> {tr("Add product manually")}</Button>
         <Button onClick={() => setIntakeOpen(true)}>
-          <Sparkles className="h-4 w-4 me-1" /> AI Bulk Intake
-        </Button>
+          <Sparkles className="h-4 w-4 me-1" /> {tr("AI Bulk Intake")}</Button>
         <ManualProductDialog
           open={manualOpen}
           onOpenChange={setManualOpen}
@@ -139,9 +139,9 @@ function SubmissionsAdmin() {
         />
       </div>
 
-      {isLoading && <div>Loading…</div>}
+      {isLoading && <div>{tr("Loading…")}</div>}
       {!isLoading && filtered.length === 0 && (
-        <div className="card-premium p-8 text-center text-muted-foreground">No submissions here.</div>
+        <div className="card-premium p-8 text-center text-muted-foreground">{tr("No submissions here.")}</div>
       )}
 
       <div className="space-y-3">
@@ -149,7 +149,7 @@ function SubmissionsAdmin() {
           <div key={r.id} className="card-premium p-5 flex flex-wrap items-center justify-between gap-3">
             <div className="min-w-0">
               <div className="font-semibold">
-                {r.reference_code} · {r.kind === "edit" ? "Edit" : "New product"}
+                {r.reference_code} · {r.kind === "edit" ? tr("Edit") : tr("New product")}
               </div>
               <div className="text-xs text-muted-foreground truncate">
                 {r.suppliers?.company_name ?? "—"} · {r.products?.name_en ?? r.proposed?.name_en ?? "—"}
@@ -164,8 +164,7 @@ function SubmissionsAdmin() {
                 />
               )}
               <Button size="sm" variant="outline" onClick={() => { setDetail(r); setReason(r.reason ?? ""); }}>
-                <Eye className="h-4 w-4 me-1" /> Review
-              </Button>
+                <Eye className="h-4 w-4 me-1" /> {tr("Review")}</Button>
             </div>
           </div>
         ))}
@@ -176,8 +175,8 @@ function SubmissionsAdmin() {
           <DialogHeader>
             <DialogTitle>{detail?.reference_code}</DialogTitle>
             <DialogDescription>
-              {detail?.suppliers?.company_name} · {detail?.kind === "edit" ? "Edit to an existing product" : "New product draft"}
-              {detail?.source === "ai_bulk" ? " · extracted by AI" : ""}
+              {detail?.suppliers?.company_name} · {detail?.kind === "edit" ? tr("Edit to an existing product") : tr("New product draft")}
+              {detail?.source === "ai_bulk" ? tr(" · extracted by AI") : ""}
             </DialogDescription>
           </DialogHeader>
 
@@ -185,23 +184,23 @@ function SubmissionsAdmin() {
             <div className="space-y-4 max-h-[55vh] overflow-y-auto pe-1">
               {detail.kind === "edit" && detail.products && (
                 <div className="rounded-lg border border-border p-3 text-sm">
-                  <div className="font-semibold mb-1">Current live values</div>
+                  <div className="font-semibold mb-1">{tr("Current live values")}</div>
                   <div className="text-muted-foreground">
                     {detail.products.name_en} · {fmt(detail.products.retail_price)}
                   </div>
                 </div>
               )}
               <div>
-                <div className="font-semibold text-sm mb-1">Proposed values</div>
+                <div className="font-semibold text-sm mb-1">{tr("Proposed values")}</div>
                 <table className="w-full text-sm">
                   <tbody>
                     {Object.entries(detail.proposed ?? {}).map(([k, v]) => (
                       <tr key={k} className="border-b border-border/60">
-                        <td className="py-1.5 pe-3 text-muted-foreground align-top">{k}</td>
+                        <td className="py-1.5 pe-3 text-muted-foreground align-top">{tr(k)}</td>
                         <td className="py-1.5 font-medium">
                           {k === "category_id"
-                            ? (categories as any[]).find((c) => c.id === v)?.name_en ?? String(v)
-                            : typeof v === "object" ? JSON.stringify(v) : String(v)}
+                            ? (categories as any[]).find((c) => c.id === v)?.[lang === "ar" ? "name_ar" : "name_en"] ?? String(v)
+                            : typeof v === "boolean" ? tr(v ? "Yes" : "No") : typeof v === "object" ? JSON.stringify(v) : v == null ? "—" : String(v)}
                         </td>
                       </tr>
                     ))}
@@ -209,10 +208,10 @@ function SubmissionsAdmin() {
                 </table>
               </div>
               {detail.ai_note && (
-                <div className="text-xs text-muted-foreground">AI note: {detail.ai_note}</div>
+                <div className="text-xs text-muted-foreground">{tr("AI note:")}{detail.ai_note}</div>
               )}
               <div>
-                <Label>Reason / note (required to reject)</Label>
+                <Label>{tr("Reason / note (required to reject)")}</Label>
                 <Textarea value={reason} onChange={(e) => setReason(e.target.value)} />
               </div>
             </div>
@@ -224,8 +223,7 @@ function SubmissionsAdmin() {
               disabled={act.isPending || !reason.trim() || nextActions.length === 0}
               onClick={() => act.mutate({ id: detail.id, status: "rejected", why: reason })}
             >
-              Reject
-            </Button>
+              {tr("Reject")}</Button>
             {nextActions.map((a) => (
               <Button
                 key={a.status}
@@ -261,6 +259,7 @@ function AiIntakeDialog({
   suppliers: { id: string; company_name: string }[];
   onDone: () => void;
 }) {
+  const { tr } = useI18n();
   const run = useServerFn(extractCatalogDrafts);
   const fileRef = useRef<HTMLInputElement>(null);
   const [supplierId, setSupplierId] = useState("");
@@ -295,7 +294,7 @@ function AiIntakeDialog({
       });
       setResult(res);
       onDone();
-      toast.success(`Extracted ${res.created.length} draft${res.created.length === 1 ? "" : "s"}`);
+      toast.success(lang === "ar" ? `تم تجهيز ${res.created.length} مسودة منتج` : `Extracted ${res.created.length} drafts`);
     } catch (e: any) {
       toast.error(e?.message ?? "Extraction failed");
     } finally {
@@ -307,30 +306,28 @@ function AiIntakeDialog({
     <Dialog open={open} onOpenChange={(o) => { onOpenChange(o); if (!o) reset(); }}>
       <DialogContent className="max-w-xl">
         <DialogHeader>
-          <DialogTitle>AI Bulk Intake</DialogTitle>
+          <DialogTitle>{tr("AI Bulk Intake")}</DialogTitle>
           <DialogDescription>
-            Upload a trader's price list (photo, PDF, CSV or text). The AI extracts product drafts — nothing goes live
-            without passing the full review chain.
-          </DialogDescription>
+            {tr("Upload a trader's price list (photo, PDF, CSV or text). The AI extracts product drafts — nothing goes live without passing the full review chain.")}</DialogDescription>
         </DialogHeader>
 
         {!result ? (
           <div className="space-y-4">
             <div>
-              <Label>Supplier</Label>
+              <Label>{tr("Supplier")}</Label>
               <select
                 className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                 value={supplierId}
                 onChange={(e) => setSupplierId(e.target.value)}
               >
-                <option value="">Choose supplier…</option>
+                <option value="">{tr("Choose supplier…")}</option>
                 {suppliers.map((s) => (
                   <option key={s.id} value={s.id}>{s.company_name}</option>
                 ))}
               </select>
             </div>
             <div>
-              <Label>Price list file</Label>
+              <Label>{tr("Price list file")}</Label>
               <Input
                 ref={fileRef}
                 type="file"
@@ -340,16 +337,16 @@ function AiIntakeDialog({
               />
             </div>
             <div>
-              <Label>Note for reviewers (optional)</Label>
-              <Textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="e.g. WhatsApp list from Hajj Mahmoud, March prices" />
+              <Label>{tr("Note for reviewers (optional)")}</Label>
+              <Textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder={tr("e.g. WhatsApp list from Hajj Mahmoud, March prices")} />
             </div>
           </div>
         ) : (
           <div className="space-y-3 max-h-[50vh] overflow-y-auto">
-            <div className="text-xs text-muted-foreground">Served by: {result.servedByLabel}</div>
+            <div className="text-xs text-muted-foreground">{tr("Served by:")}{result.servedByLabel}</div>
             {result.created.length > 0 && (
               <div>
-                <div className="font-semibold text-sm mb-1">Created drafts ({result.created.length})</div>
+                <div className="font-semibold text-sm mb-1">{tr("Created drafts (")}{result.created.length})</div>
                 <ul className="text-sm space-y-1">
                   {result.created.map((c) => (
                     <li key={c.reference_code} className="rounded-md border border-border px-3 py-1.5">
@@ -361,7 +358,7 @@ function AiIntakeDialog({
             )}
             {result.skipped.length > 0 && (
               <div>
-                <div className="font-semibold text-sm mb-1">Skipped ({result.skipped.length})</div>
+                <div className="font-semibold text-sm mb-1">{tr("Skipped (")}{result.skipped.length})</div>
                 <ul className="text-sm space-y-1 text-muted-foreground">
                   {result.skipped.map((s, i) => (
                     <li key={i}>{s.name} — {s.reason}</li>
@@ -370,8 +367,7 @@ function AiIntakeDialog({
               </div>
             )}
             <p className="text-xs text-muted-foreground">
-              Drafts are in <strong>draft</strong> status. Review them, then move to admin review → send to supplier.
-            </p>
+              {tr("Drafts are in")}<strong>{tr("draft")}</strong> {tr("status. Review them, then move to admin review → send to supplier.")}</p>
           </div>
         )}
 
@@ -379,10 +375,10 @@ function AiIntakeDialog({
           {!result ? (
             <Button onClick={submit} disabled={busy || !supplierId || !file}>
               <Upload className="h-4 w-4 me-1" />
-              {busy ? "Extracting…" : "Extract drafts"}
+              {busy ? tr("Extracting…") : tr("Extract drafts")}
             </Button>
           ) : (
-            <Button variant="outline" onClick={() => { onOpenChange(false); reset(); }}>Close</Button>
+            <Button variant="outline" onClick={() => { onOpenChange(false); reset(); }}>{tr("Close")}</Button>
           )}
         </DialogFooter>
       </DialogContent>

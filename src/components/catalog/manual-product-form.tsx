@@ -68,6 +68,7 @@ export function ManualProductDialog({
   suppliers?: { id: string; company_name: string }[];
   onCreated?: () => void;
 }) {
+  const { tr } = useI18n();
   const qc = useQueryClient();
   const { lang } = useI18n();
   const ar = lang === "ar";
@@ -150,7 +151,7 @@ export function ManualProductDialog({
         <div className="space-y-3 max-h-[60vh] overflow-y-auto pe-1">
           {mode === "admin" && (
             <div>
-              <Label>{ar ? "المورد" : "Supplier"}</Label>
+              <Label>{ar ? "المورد" : tr("Supplier")}</Label>
               <select
                 className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm"
                 value={target}
@@ -165,11 +166,11 @@ export function ManualProductDialog({
           )}
 
           <div>
-            <Label>{ar ? "الاسم (EN)" : "Name (EN)"}</Label>
+            <Label>{ar ? "الاسم (EN)" : tr("Name (EN)")}</Label>
             <Input value={draft.name_en} onChange={(e) => setDraft({ ...draft, name_en: e.target.value })} />
           </div>
           <div>
-            <Label>{ar ? "الاسم (AR)" : "Name (AR)"}</Label>
+            <Label>{ar ? "الاسم (AR)" : tr("Name (AR)")}</Label>
             <Input value={draft.name_ar} onChange={(e) => setDraft({ ...draft, name_ar: e.target.value })} />
           </div>
           <div>
@@ -183,7 +184,7 @@ export function ManualProductDialog({
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <Label>{ar ? "السعر (ج.م)" : "Retail price (EGP)"}</Label>
+              <Label>{ar ? "السعر (ج.م)" : tr("Retail price (EGP)")}</Label>
               <Input type="number" min="0" value={draft.retail_price}
                 onChange={(e) => setDraft({ ...draft, retail_price: e.target.value })} />
             </div>
@@ -196,17 +197,17 @@ export function ManualProductDialog({
 
           <div className="grid grid-cols-3 gap-3">
             <div>
-              <Label>{ar ? "الوحدة" : "Unit"}</Label>
-              <Input placeholder="250g" value={draft.unit}
+              <Label>{ar ? "الوحدة" : tr("Unit")}</Label>
+              <Input placeholder={tr("250g")} value={draft.unit}
                 onChange={(e) => setDraft({ ...draft, unit: e.target.value })} />
             </div>
             <div>
-              <Label>{ar ? "المخزون" : "Stock"}</Label>
+              <Label>{ar ? "المخزون" : tr("Stock")}</Label>
               <Input type="number" min="0" value={draft.stock}
                 onChange={(e) => setDraft({ ...draft, stock: e.target.value })} />
             </div>
             <div>
-              <Label>{ar ? "التصنيف" : "Category"}</Label>
+              <Label>{ar ? "التصنيف" : tr("Category")}</Label>
               <select
                 className="w-full h-10 rounded-md border border-input bg-background px-2 text-sm"
                 value={draft.category_id}
@@ -246,7 +247,7 @@ export function ManualProductDialog({
 
         <DialogFooter>
           <Button variant="ghost" onClick={() => { reset(); onOpenChange(false); }}>
-            {ar ? "إلغاء" : "Cancel"}
+            {ar ? "إلغاء" : tr("Cancel")}
           </Button>
           <Button disabled={submit.isPending || uploading} onClick={() => submit.mutate()}>
             {submit.isPending && <Loader2 className="h-4 w-4 me-1 animate-spin" />}

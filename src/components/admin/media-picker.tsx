@@ -1,3 +1,4 @@
+import { useI18n } from "@/lib/i18n";
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -32,7 +33,7 @@ export function MediaPickerButton({ onPick, label = "Choose image" }: { onPick: 
   return (
     <>
       <Button type="button" variant="outline" size="sm" onClick={() => setOpen(true)}>
-        <ImageIcon className="h-4 w-4 mr-2" /> {label}
+        <ImageIcon className="h-4 w-4 me-2" /> {tr(label)}
       </Button>
       <MediaPickerDialog open={open} onOpenChange={setOpen} onPick={(u) => { onPick(u); setOpen(false); }} />
     </>
@@ -40,18 +41,20 @@ export function MediaPickerButton({ onPick, label = "Choose image" }: { onPick: 
 }
 
 export function MediaPickerDialog({ open, onOpenChange, onPick }: { open: boolean; onOpenChange: (v: boolean) => void; onPick: (url: string) => void }) {
+  const { tr } = useI18n();
   const qc = useQueryClient();
   const { data: items = [] } = useMediaList();
   const [q, setQ] = useState("");
   const [uploading, setUploading] = useState(false);
 
   async function handleFiles(files: FileList | null) {
+  const { tr } = useI18n();
     if (!files || files.length === 0) return;
     setUploading(true);
     for (const f of Array.from(files)) await uploadFile(f);
     setUploading(false);
     qc.invalidateQueries({ queryKey: ["media_library"] });
-    toast.success("Uploaded");
+    toast.success(tr("Uploaded"));
   }
 
   const filtered = (items as any[]).filter((i) => !q || i.name?.toLowerCase().includes(q.toLowerCase()));
@@ -59,14 +62,14 @@ export function MediaPickerDialog({ open, onOpenChange, onPick }: { open: boolea
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-5xl max-h-[90vh] overflow-hidden flex flex-col">
-        <DialogHeader><DialogTitle>Media Library</DialogTitle></DialogHeader>
+        <DialogHeader><DialogTitle>{tr("Media Library")}</DialogTitle></DialogHeader>
         <div className="flex gap-2 items-center">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search media..." className="pl-9" />
+            <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder={tr("Search media...")} className="ps-9" />
           </div>
           <label className="inline-flex items-center gap-2 rounded-md bg-primary text-primary-foreground px-3 py-2 text-sm font-medium cursor-pointer hover:opacity-90">
-            <Upload className="h-4 w-4" /> {uploading ? "Uploading..." : "Upload"}
+            <Upload className="h-4 w-4" /> {uploading ? tr("Uploading...") : tr("Upload")}
             <input type="file" accept="image/*" multiple className="hidden" onChange={(e) => handleFiles(e.target.files)} />
           </label>
         </div>
@@ -77,7 +80,7 @@ export function MediaPickerDialog({ open, onOpenChange, onPick }: { open: boolea
               <span className="absolute inset-x-0 bottom-0 bg-black/60 text-white text-[10px] truncate px-1 py-0.5 opacity-0 group-hover:opacity-100">{m.name}</span>
             </button>
           ))}
-          {filtered.length === 0 && <div className="col-span-full p-8 text-center text-sm text-muted-foreground">No media yet. Upload your first image.</div>}
+          {filtered.length === 0 && <div className="col-span-full p-8 text-center text-sm text-muted-foreground">{tr("No media yet. Upload your first image.")}</div>}
         </div>
       </DialogContent>
     </Dialog>
@@ -85,17 +88,19 @@ export function MediaPickerDialog({ open, onOpenChange, onPick }: { open: boolea
 }
 
 export function MediaGrid() {
+  const { tr } = useI18n();
   const qc = useQueryClient();
   const { data: items = [] } = useMediaList();
   const [uploading, setUploading] = useState(false);
 
   async function handleFiles(files: FileList | null) {
+  const { tr } = useI18n();
     if (!files) return;
     setUploading(true);
     for (const f of Array.from(files)) await uploadFile(f);
     setUploading(false);
     qc.invalidateQueries({ queryKey: ["media_library"] });
-    toast.success("Uploaded");
+    toast.success(tr("Uploaded"));
   }
 
   const del = useMutation({
@@ -103,18 +108,18 @@ export function MediaGrid() {
       await supabase.storage.from(BUCKET).remove([m.path]);
       await supabase.from("media_library").delete().eq("id", m.id);
     },
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["media_library"] }); toast.success("Deleted"); },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["media_library"] }); toast.success(tr("Deleted")); },
   });
 
   return (
     <div className="p-8 max-w-7xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-3xl font-bold">Media Library</h1>
-          <p className="text-muted-foreground mt-1">{items.length} files</p>
+          <h1 className="text-3xl font-bold">{tr("Media Library")}</h1>
+          <p className="text-muted-foreground mt-1">{items.length} {tr("files")}</p>
         </div>
         <label className="inline-flex items-center gap-2 rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-semibold cursor-pointer hover:opacity-90">
-          <Upload className="h-4 w-4" /> {uploading ? "Uploading..." : "Upload files"}
+          <Upload className="h-4 w-4" /> {uploading ? tr("Uploading...") : tr("Upload files")}
           <input type="file" accept="image/*" multiple className="hidden" onChange={(e) => handleFiles(e.target.files)} />
         </label>
       </div>
@@ -123,12 +128,12 @@ export function MediaGrid() {
           <div key={m.id} className="group relative aspect-square rounded-lg border border-border overflow-hidden bg-muted">
             <img src={m.url} alt={m.name} className="h-full w-full object-cover" />
             <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2">
-              <button onClick={() => { navigator.clipboard.writeText(m.url); toast.success("URL copied"); }} className="text-xs text-white underline">Copy URL</button>
-              <button onClick={() => { if (confirm("Delete?")) del.mutate(m); }} className="text-xs text-white flex items-center gap-1"><Trash2 className="h-3 w-3" /> Delete</button>
+              <button onClick={() => { navigator.clipboard.writeText(m.url); toast.success(tr("URL copied")); }} className="text-xs text-white underline">{tr("Copy URL")}</button>
+              <button onClick={() => { if (confirm(tr("Delete?"))) del.mutate(m); }} className="text-xs text-white flex items-center gap-1"><Trash2 className="h-3 w-3" /> {tr("Delete")}</button>
             </div>
           </div>
         ))}
-        {items.length === 0 && <div className="col-span-full p-12 text-center border border-dashed rounded-2xl text-muted-foreground">No media yet. Upload images to start filling your marketplace.</div>}
+        {items.length === 0 && <div className="col-span-full p-12 text-center border border-dashed rounded-2xl text-muted-foreground">{tr("No media yet. Upload images to start filling your marketplace.")}</div>}
       </div>
     </div>
   );

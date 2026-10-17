@@ -1,3 +1,4 @@
+import { useI18n } from "@/lib/i18n";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -20,6 +21,7 @@ function StatCard({ label, value, icon: Icon }: any) {
 }
 
 function Dashboard() {
+  const { tr } = useI18n();
   const { data } = useQuery({
     queryKey: ["admin-stats"],
     queryFn: async () => {
@@ -36,18 +38,18 @@ function Dashboard() {
   return (
     <div className="p-8 max-w-7xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold">Dashboard</h1>
-        <p className="text-muted-foreground mt-1">Overview of your marketplace</p>
+        <h1 className="text-3xl font-bold">{tr("Dashboard")}</h1>
+        <p className="text-muted-foreground mt-1">{tr("Overview of your marketplace")}</p>
       </div>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard label="Products" value={data?.products ?? "—"} icon={Package} />
-        <StatCard label="Suppliers" value={data?.suppliers ?? "—"} icon={Building2} />
-        <StatCard label="Orders" value={data?.orders ?? "—"} icon={ShoppingBag} />
-        <StatCard label="Users" value={data?.users ?? "—"} icon={Users} />
+        <StatCard label={tr("Products")} value={data?.products ?? "—"} icon={Package} />
+        <StatCard label={tr("Suppliers")} value={data?.suppliers ?? "—"} icon={Building2} />
+        <StatCard label={tr("Orders")} value={data?.orders ?? "—"} icon={ShoppingBag} />
+        <StatCard label={tr("Users")} value={data?.users ?? "—"} icon={Users} />
       </div>
       <div className="mt-8 rounded-2xl border border-border bg-card p-6">
-        <div className="flex items-center gap-2 mb-2"><TrendingUp className="h-5 w-5 text-primary" /><h2 className="font-semibold">Welcome to your Control Center</h2></div>
-        <p className="text-sm text-muted-foreground">Use the sidebar to manage products, suppliers, categories, brands, orders, homepage content and more. Every module is fully connected to your Lovable Cloud database.</p>
+        <div className="flex items-center gap-2 mb-2"><TrendingUp className="h-5 w-5 text-primary" /><h2 className="font-semibold">{tr("Welcome to your Control Center")}</h2></div>
+        <p className="text-sm text-muted-foreground">{tr("Use the sidebar to manage products, suppliers, categories, brands, orders, homepage content and more. Every module is fully connected to your Lovable Cloud database.")}</p>
       </div>
     </div>
   );

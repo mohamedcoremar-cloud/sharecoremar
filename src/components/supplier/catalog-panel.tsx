@@ -73,6 +73,7 @@ function toDraft(p: any): Draft {
 }
 
 export function SupplierCatalogPanel({ supplierId }: { supplierId: string }) {
+  const { tr } = useI18n();
   const qc = useQueryClient();
   const { lang } = useI18n();
   const [editing, setEditing] = useState<any>(null);
@@ -184,7 +185,7 @@ export function SupplierCatalogPanel({ supplierId }: { supplierId: string }) {
                     {s.reference_code} · {s.proposed?.retail_price != null ? fmt(s.proposed.retail_price) : "—"}
                   </div>
                 </div>
-                <Button size="sm" onClick={() => setRespondTo(s)}>{ar ? "مراجعة" : "Review"}</Button>
+                <Button size="sm" onClick={() => setRespondTo(s)}>{ar ? "مراجعة" : tr("Review")}</Button>
               </div>
             ))}
           </div>
@@ -198,7 +199,7 @@ export function SupplierCatalogPanel({ supplierId }: { supplierId: string }) {
             <Plus className="h-4 w-4 me-1" /> {ar ? "إضافة منتج" : "Add product"}
           </Button>
         </div>
-        {isLoading && <div>Loading…</div>}
+        {isLoading && <div>{tr("Loading…")}</div>}
         {!isLoading && products.length === 0 && (
           <div className="card-premium p-8 text-center text-muted-foreground">
             {ar ? "لا توجد منتجات مرتبطة بحسابك." : "No products are linked to your account yet."}
@@ -212,7 +213,7 @@ export function SupplierCatalogPanel({ supplierId }: { supplierId: string }) {
                 <div className="min-w-0">
                   <div className="font-semibold truncate">{ar ? p.name_ar : p.name_en}</div>
                   <div className="text-xs text-muted-foreground">
-                    {fmt(p.retail_price)} · {ar ? "المخزون" : "Stock"}: {p.stock ?? 0}
+                    {fmt(p.retail_price)} · {ar ? "المخزون" : tr("Stock")}: {p.stock ?? 0}
                   </div>
                 </div>
                 {open ? (
@@ -281,11 +282,11 @@ export function SupplierCatalogPanel({ supplierId }: { supplierId: string }) {
           </DialogHeader>
           {draft && (
             <div className="space-y-3 max-h-[55vh] overflow-y-auto pe-1">
-              <div><Label>{ar ? "الاسم (EN)" : "Name (EN)"}</Label>
+              <div><Label>{ar ? "الاسم (EN)" : tr("Name (EN)")}</Label>
                 <Input value={draft.name_en} onChange={(e) => setDraft({ ...draft, name_en: e.target.value })} /></div>
-              <div><Label>{ar ? "الاسم (AR)" : "Name (AR)"}</Label>
+              <div><Label>{ar ? "الاسم (AR)" : tr("Name (AR)")}</Label>
                 <Input value={draft.name_ar} onChange={(e) => setDraft({ ...draft, name_ar: e.target.value })} /></div>
-              <div><Label>{ar ? "الوصف" : "Description"}</Label>
+              <div><Label>{ar ? "الوصف" : tr("Description")}</Label>
                 <Textarea value={draft.description} onChange={(e) => setDraft({ ...draft, description: e.target.value })} /></div>
               <div className="grid grid-cols-2 gap-3">
                 <div><Label>{ar ? "السعر" : "Retail price"}</Label>
@@ -294,9 +295,9 @@ export function SupplierCatalogPanel({ supplierId }: { supplierId: string }) {
                   <Input type="number" value={draft.offer_price} onChange={(e) => setDraft({ ...draft, offer_price: e.target.value })} /></div>
               </div>
               <div className="grid grid-cols-2 gap-3">
-                <div><Label>{ar ? "الوحدة" : "Unit"}</Label>
+                <div><Label>{ar ? "الوحدة" : tr("Unit")}</Label>
                   <Input value={draft.unit} onChange={(e) => setDraft({ ...draft, unit: e.target.value })} /></div>
-                <div><Label>{ar ? "المخزون" : "Stock"}</Label>
+                <div><Label>{ar ? "المخزون" : tr("Stock")}</Label>
                   <Input type="number" value={draft.stock} onChange={(e) => setDraft({ ...draft, stock: e.target.value })} /></div>
               </div>
               <label className="flex items-center gap-2 text-sm">
@@ -311,7 +312,7 @@ export function SupplierCatalogPanel({ supplierId }: { supplierId: string }) {
           )}
           <DialogFooter>
             <Button variant="ghost" onClick={() => { setEditing(null); setDraft(null); }}>
-              {ar ? "إلغاء" : "Cancel"}
+              {ar ? "إلغاء" : tr("Cancel")}
             </Button>
             <Button disabled={submit.isPending} onClick={() => submit.mutate()}>
               {ar ? "إرسال للمراجعة" : "Submit for approval"}
@@ -344,7 +345,7 @@ export function SupplierCatalogPanel({ supplierId }: { supplierId: string }) {
               {ar ? "طلب تعديل" : "Request changes"}
             </Button>
             <Button disabled={respond.isPending} onClick={() => respond.mutate({ action: "approve" })}>
-              {ar ? "موافقة" : "Approve"}
+              {ar ? "موافقة" : tr("Approve")}
             </Button>
           </DialogFooter>
         </DialogContent>

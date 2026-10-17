@@ -1,3 +1,4 @@
+import { useI18n } from "@/lib/i18n";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -23,6 +24,7 @@ export const Route = createFileRoute("/admin/reviews")({
 type Filter = "pending" | "approved" | "rejected" | "all";
 
 function AdminReviews() {
+  const { tr, lang } = useI18n();
   const [filter, setFilter] = useState<Filter>("pending");
   const qc = useQueryClient();
 
@@ -55,21 +57,21 @@ function AdminReviews() {
       const { error } = await supabase.rpc("set_review_status", { p_review_id: id, p_status_code: status });
       if (error) throw error;
     },
-    onSuccess: () => { toast.success("Review updated"); qc.invalidateQueries({ queryKey: ["admin-reviews"] }); },
+    onSuccess: () => { toast.success(tr("Review updated")); qc.invalidateQueries({ queryKey: ["admin-reviews"] }); },
     onError: (e: any) => toast.error(e.message ?? "Failed to update review"),
   });
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Reviews</h1>
-        <p className="text-sm text-muted-foreground">Only approved reviews appear publicly and count toward product ratings.</p>
+        <h1 className="text-2xl font-bold">{tr("Reviews")}</h1>
+        <p className="text-sm text-muted-foreground">{tr("Only approved reviews appear publicly and count toward product ratings.")}</p>
       </div>
 
       <div className="flex flex-wrap gap-2">
         {(["pending", "approved", "rejected", "all"] as Filter[]).map((f) => (
           <Button key={f} size="sm" variant={filter === f ? "default" : "outline"} onClick={() => setFilter(f)} className="capitalize">
-            {f}
+            {tr(f)}
           </Button>
         ))}
       </div>
@@ -77,41 +79,39 @@ function AdminReviews() {
       <div className="rounded-xl border border-border overflow-x-auto">
         <table className="w-full text-sm min-w-[720px]">
           <thead className="bg-muted/50">
-            <tr className="text-left">
-              <th className="p-3">Product</th>
-              <th className="p-3">Customer</th>
-              <th className="p-3">Rating</th>
-              <th className="p-3">Comment</th>
-              <th className="p-3">Status</th>
-              <th className="p-3 text-end">Actions</th>
+            <tr className="text-start">
+              <th className="p-3">{tr("Product")}</th>
+              <th className="p-3">{tr("Customer")}</th>
+              <th className="p-3">{tr("Rating")}</th>
+              <th className="p-3">{tr("Comment")}</th>
+              <th className="p-3">{tr("Status")}</th>
+              <th className="p-3 text-end">{tr("Actions")}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
             {isLoading && (
-              <tr><td colSpan={6} className="p-6 text-center text-muted-foreground">Loading…</td></tr>
+              <tr><td colSpan={6} className="p-6 text-center text-muted-foreground">{tr("Loading…")}</td></tr>
             )}
             {!isLoading && rows.length === 0 && (
-              <tr><td colSpan={6} className="p-6 text-center text-muted-foreground">No reviews in this state.</td></tr>
+              <tr><td colSpan={6} className="p-6 text-center text-muted-foreground">{tr("No reviews in this state.")}</td></tr>
             )}
             {rows.map((r: any) => (
               <tr key={r.id}>
-                <td className="p-3 font-medium">{r.product?.name_en ?? "—"}</td>
+                <td className="p-3 font-medium">{lang === "ar" ? r.product?.name_ar || r.product?.name_en || "—" : r.product?.name_en ?? "—"}</td>
                 <td className="p-3">{r.customer_name}</td>
                 <td className="p-3">
                   <span className="inline-flex items-center gap-1"><Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />{r.rating}</span>
                 </td>
                 <td className="p-3 max-w-[280px] truncate text-muted-foreground">{r.comment || "—"}</td>
-                <td className="p-3 capitalize">{r.status?.code}</td>
+                <td className="p-3 capitalize">{tr(r.status?.code ?? "—")}</td>
                 <td className="p-3">
                   <div className="flex justify-end gap-2">
                     <Button size="sm" variant="outline" disabled={r.status?.code === "approved" || moderate.isPending}
                       onClick={() => moderate.mutate({ id: r.id, status: "approved" })}>
-                      <Check className="h-4 w-4 me-1" /> Approve
-                    </Button>
+                      <Check className="h-4 w-4 me-1" /> {tr("Approve")}</Button>
                     <Button size="sm" variant="outline" disabled={r.status?.code === "rejected" || moderate.isPending}
                       onClick={() => moderate.mutate({ id: r.id, status: "rejected" })}>
-                      <X className="h-4 w-4 me-1" /> Reject
-                    </Button>
+                      <X className="h-4 w-4 me-1" /> {tr("Reject")}</Button>
                   </div>
                 </td>
               </tr>
