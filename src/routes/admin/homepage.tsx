@@ -1,3 +1,4 @@
+import { useI18n } from "@/lib/i18n";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -15,6 +16,7 @@ import { GripVertical, Plus, Copy, Trash2, ChevronUp, ChevronDown, Image as Imag
 export const Route = createFileRoute("/admin/homepage")({ component: HomepageCMS });
 
 function HomepageCMS() {
+  const { tr } = useI18n();
   const qc = useQueryClient();
   const { data: sections = [] } = useQuery({
     queryKey: ["cms-homepage"],
@@ -23,8 +25,8 @@ function HomepageCMS() {
 
   return (
     <div className="p-8 max-w-5xl mx-auto">
-      <h1 className="text-3xl font-bold mb-2">Homepage CMS</h1>
-      <p className="text-muted-foreground mb-6">Edit every section of your homepage visually. No JSON required.</p>
+      <h1 className="text-3xl font-bold mb-2">{tr("Homepage CMS")}</h1>
+      <p className="text-muted-foreground mb-6">{tr("Edit every section of your homepage visually. No JSON required.")}</p>
       <div className="space-y-4">
         {sections.map((s: any) => (
           <SectionEditor key={s.id} section={s} onSaved={() => qc.invalidateQueries({ queryKey: ["cms-homepage"] })} />
@@ -43,6 +45,7 @@ const ICON_OPTIONS = [
 ];
 
 function SectionEditor({ section, onSaved }: any) {
+  const { tr } = useI18n();
   const [form, setForm] = useState<any>(section);
   useEffect(() => setForm(section), [section]);
 
@@ -63,7 +66,7 @@ function SectionEditor({ section, onSaved }: any) {
     },
     onSuccess: () => {
       onSaved();
-      toast.success("Section saved");
+      toast.success(tr("Section saved"));
     },
     onError: (e: any) => toast.error(e.message),
   });
@@ -74,18 +77,18 @@ function SectionEditor({ section, onSaved }: any) {
   return (
     <div className="rounded-2xl border border-border bg-card p-5">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="font-semibold uppercase tracking-wide text-xs text-primary">{key}</h3>
+        <h3 className="font-semibold uppercase tracking-wide text-xs text-primary">{tr(key)}</h3>
         <div className="flex items-center gap-2">
-          <Label htmlFor={`active-${section.id}`} className="text-sm">Active</Label>
+          <Label htmlFor={`active-${section.id}`} className="text-sm">{tr("Active")}</Label>
           <Switch id={`active-${section.id}`} checked={!!form.is_active} onCheckedChange={(v) => setForm({ ...form, is_active: v })} />
         </div>
       </div>
 
       <div className="grid gap-3 md:grid-cols-2">
-        <Field label="Title (EN)"><Input value={form.title_en ?? ""} onChange={(e) => setForm({ ...form, title_en: e.target.value })} /></Field>
-        <Field label="Title (AR)"><Input dir="rtl" value={form.title_ar ?? ""} onChange={(e) => setForm({ ...form, title_ar: e.target.value })} /></Field>
-        <Field label="Subtitle (EN)"><Input value={form.subtitle_en ?? ""} onChange={(e) => setForm({ ...form, subtitle_en: e.target.value })} /></Field>
-        <Field label="Subtitle (AR)"><Input dir="rtl" value={form.subtitle_ar ?? ""} onChange={(e) => setForm({ ...form, subtitle_ar: e.target.value })} /></Field>
+        <Field label={tr("Title (EN)")}><Input value={form.title_en ?? ""} onChange={(e) => setForm({ ...form, title_en: e.target.value })} /></Field>
+        <Field label={tr("Title (AR)")}><Input dir="rtl" value={form.title_ar ?? ""} onChange={(e) => setForm({ ...form, title_ar: e.target.value })} /></Field>
+        <Field label={tr("Subtitle (EN)")}><Input value={form.subtitle_en ?? ""} onChange={(e) => setForm({ ...form, subtitle_en: e.target.value })} /></Field>
+        <Field label={tr("Subtitle (AR)")}><Input dir="rtl" value={form.subtitle_ar ?? ""} onChange={(e) => setForm({ ...form, subtitle_ar: e.target.value })} /></Field>
       </div>
 
       <div className="mt-5 border-t pt-5">
@@ -98,9 +101,9 @@ function SectionEditor({ section, onSaved }: any) {
         )}
       </div>
 
-      <div className="mt-5 text-right">
+      <div className="mt-5 text-end">
         <Button onClick={() => save.mutate()} disabled={save.isPending} className="btn-gold">
-          {save.isPending ? "Saving..." : "Save section"}
+          {save.isPending ? tr("Saving...") : tr("Save section")}
         </Button>
       </div>
     </div>
@@ -110,30 +113,32 @@ function SectionEditor({ section, onSaved }: any) {
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <Label className="text-xs mb-1 block">{label}</Label>
+      <Label className="text-xs mb-1 block">{tr(label)}</Label>
       {children}
     </div>
   );
 }
 
 function HeroEditor({ content, setContent }: { content: any; setContent: (p: any) => void }) {
+  const { tr } = useI18n();
   return (
     <div className="grid gap-3 md:grid-cols-2">
-      <Field label="Badge (EN)"><Input value={content.badge_en ?? ""} onChange={(e) => setContent({ badge_en: e.target.value })} /></Field>
-      <Field label="Badge (AR)"><Input dir="rtl" value={content.badge_ar ?? ""} onChange={(e) => setContent({ badge_ar: e.target.value })} /></Field>
-      <Field label="Primary CTA (EN)"><Input value={content.cta_primary_en ?? ""} onChange={(e) => setContent({ cta_primary_en: e.target.value })} /></Field>
-      <Field label="Primary CTA (AR)"><Input dir="rtl" value={content.cta_primary_ar ?? ""} onChange={(e) => setContent({ cta_primary_ar: e.target.value })} /></Field>
-      <Field label="Secondary CTA (EN)"><Input value={content.cta_secondary_en ?? ""} onChange={(e) => setContent({ cta_secondary_en: e.target.value })} /></Field>
-      <Field label="Secondary CTA (AR)"><Input dir="rtl" value={content.cta_secondary_ar ?? ""} onChange={(e) => setContent({ cta_secondary_ar: e.target.value })} /></Field>
+      <Field label={tr("Badge (EN)")}><Input value={content.badge_en ?? ""} onChange={(e) => setContent({ badge_en: e.target.value })} /></Field>
+      <Field label={tr("Badge (AR)")}><Input dir="rtl" value={content.badge_ar ?? ""} onChange={(e) => setContent({ badge_ar: e.target.value })} /></Field>
+      <Field label={tr("Primary CTA (EN)")}><Input value={content.cta_primary_en ?? ""} onChange={(e) => setContent({ cta_primary_en: e.target.value })} /></Field>
+      <Field label={tr("Primary CTA (AR)")}><Input dir="rtl" value={content.cta_primary_ar ?? ""} onChange={(e) => setContent({ cta_primary_ar: e.target.value })} /></Field>
+      <Field label={tr("Secondary CTA (EN)")}><Input value={content.cta_secondary_en ?? ""} onChange={(e) => setContent({ cta_secondary_en: e.target.value })} /></Field>
+      <Field label={tr("Secondary CTA (AR)")}><Input dir="rtl" value={content.cta_secondary_ar ?? ""} onChange={(e) => setContent({ cta_secondary_ar: e.target.value })} /></Field>
     </div>
   );
 }
 
 function CtaSupplierEditor({ content, setContent }: { content: any; setContent: (p: any) => void }) {
+  const { tr } = useI18n();
   return (
     <div className="grid gap-3 md:grid-cols-2">
-      <Field label="Button Label (EN)"><Input value={content.cta_en ?? ""} onChange={(e) => setContent({ cta_en: e.target.value })} /></Field>
-      <Field label="Button Label (AR)"><Input dir="rtl" value={content.cta_ar ?? ""} onChange={(e) => setContent({ cta_ar: e.target.value })} /></Field>
+      <Field label={tr("Button Label (EN)")}><Input value={content.cta_en ?? ""} onChange={(e) => setContent({ cta_en: e.target.value })} /></Field>
+      <Field label={tr("Button Label (AR)")}><Input dir="rtl" value={content.cta_ar ?? ""} onChange={(e) => setContent({ cta_ar: e.target.value })} /></Field>
     </div>
   );
 }
@@ -147,6 +152,7 @@ function ItemsEditor({
   setContent: (p: any) => void;
   itemType: "feature" | "stat";
 }) {
+  const { tr } = useI18n();
   const items: any[] = Array.isArray(content.items) ? content.items : [];
   const setItems = (next: any[]) => setContent({ items: next });
 
@@ -174,10 +180,9 @@ function ItemsEditor({
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
-        <div className="font-semibold text-sm">{itemType === "feature" ? "Features" : "Statistics"}</div>
+        <div className="font-semibold text-sm">{itemType === "feature" ? tr("Features") : tr("Statistics")}</div>
         <Button size="sm" variant="outline" onClick={() => setItems([...items, emptyItem()])}>
-          <Plus className="h-4 w-4 mr-1" /> Add
-        </Button>
+          <Plus className="h-4 w-4 me-1" /> {tr("Add")}</Button>
       </div>
       <div className="space-y-2">
         {items.map((it, i) => (
@@ -193,44 +198,43 @@ function ItemsEditor({
             className="rounded-xl border border-border bg-background p-3"
           >
             <div className="flex items-start gap-2">
-              <div className="pt-2 cursor-grab text-muted-foreground" title="Drag to reorder">
+              <div className="pt-2 cursor-grab text-muted-foreground" title={tr("Drag to reorder")}>
                 <GripVertical className="h-4 w-4" />
               </div>
               <div className="flex-1 grid gap-2 md:grid-cols-3">
                 {itemType === "feature" ? (
                   <>
-                    <Field label="Icon">
+                    <Field label={tr("Icon")}>
                       <Select value={it.icon ?? "sparkles"} onValueChange={(v) => update(i, { icon: v })}>
                         <SelectTrigger><SelectValue /></SelectTrigger>
                         <SelectContent>
-                          {ICON_OPTIONS.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
+                          {ICON_OPTIONS.map((o) => <SelectItem key={o.value} value={o.value}>{tr(o.label)}</SelectItem>)}
                         </SelectContent>
                       </Select>
                     </Field>
-                    <Field label="Title (EN)"><Input value={it.title_en ?? ""} onChange={(e) => update(i, { title_en: e.target.value })} /></Field>
-                    <Field label="Title (AR)"><Input dir="rtl" value={it.title_ar ?? ""} onChange={(e) => update(i, { title_ar: e.target.value })} /></Field>
+                    <Field label={tr("Title (EN)")}><Input value={it.title_en ?? ""} onChange={(e) => update(i, { title_en: e.target.value })} /></Field>
+                    <Field label={tr("Title (AR)")}><Input dir="rtl" value={it.title_ar ?? ""} onChange={(e) => update(i, { title_ar: e.target.value })} /></Field>
                   </>
                 ) : (
                   <>
-                    <Field label="Value"><Input value={it.value ?? ""} onChange={(e) => update(i, { value: e.target.value })} placeholder="500+" /></Field>
-                    <Field label="Label (EN)"><Input value={it.label_en ?? ""} onChange={(e) => update(i, { label_en: e.target.value })} /></Field>
-                    <Field label="Label (AR)"><Input dir="rtl" value={it.label_ar ?? ""} onChange={(e) => update(i, { label_ar: e.target.value })} /></Field>
+                    <Field label={tr("Value")}><Input value={it.value ?? ""} onChange={(e) => update(i, { value: e.target.value })} placeholder="500+" /></Field>
+                    <Field label={tr("Label (EN)")}><Input value={it.label_en ?? ""} onChange={(e) => update(i, { label_en: e.target.value })} /></Field>
+                    <Field label={tr("Label (AR)")}><Input dir="rtl" value={it.label_ar ?? ""} onChange={(e) => update(i, { label_ar: e.target.value })} /></Field>
                   </>
                 )}
               </div>
               <div className="flex flex-col gap-1">
-                <Button size="icon" variant="ghost" onClick={() => move(i, i - 1)} disabled={i === 0} title="Move up"><ChevronUp className="h-4 w-4" /></Button>
-                <Button size="icon" variant="ghost" onClick={() => move(i, i + 1)} disabled={i === items.length - 1} title="Move down"><ChevronDown className="h-4 w-4" /></Button>
-                <Button size="icon" variant="ghost" onClick={() => setItems([...items.slice(0, i + 1), { ...it }, ...items.slice(i + 1)])} title="Duplicate"><Copy className="h-4 w-4" /></Button>
-                <Button size="icon" variant="ghost" onClick={() => setItems(items.filter((_, x) => x !== i))} title="Delete"><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                <Button size="icon" variant="ghost" onClick={() => move(i, i - 1)} disabled={i === 0} title={tr("Move up")}><ChevronUp className="h-4 w-4" /></Button>
+                <Button size="icon" variant="ghost" onClick={() => move(i, i + 1)} disabled={i === items.length - 1} title={tr("Move down")}><ChevronDown className="h-4 w-4" /></Button>
+                <Button size="icon" variant="ghost" onClick={() => setItems([...items.slice(0, i + 1), { ...it }, ...items.slice(i + 1)])} title={tr("Duplicate")}><Copy className="h-4 w-4" /></Button>
+                <Button size="icon" variant="ghost" onClick={() => setItems(items.filter((_, x) => x !== i))} title={tr("Delete")}><Trash2 className="h-4 w-4 text-destructive" /></Button>
               </div>
             </div>
           </div>
         ))}
         {items.length === 0 && (
           <div className="rounded-xl border border-dashed p-6 text-center text-sm text-muted-foreground">
-            No items yet. Click "Add" to create one.
-          </div>
+            {tr("No items yet. Click \"Add\" to create one.")}</div>
         )}
       </div>
     </div>
@@ -242,6 +246,7 @@ function ItemsEditor({
  * so administrators never need to touch raw JSON.
  */
 function GenericJsonEditor({ content, setContent }: { content: any; setContent: (c: any) => void }) {
+  const { tr } = useI18n();
   const entries = Object.entries(content ?? {});
   const set = (k: string, v: any) => setContent({ ...content, [k]: v });
 
@@ -251,7 +256,7 @@ function GenericJsonEditor({ content, setContent }: { content: any; setContent: 
         if (typeof v === "boolean") {
           return (
             <div key={k} className="flex items-center justify-between">
-              <Label className="text-xs">{k}</Label>
+              <Label className="text-xs">{tr(k)}</Label>
               <Switch checked={v} onCheckedChange={(nv) => set(k, nv)} />
             </div>
           );
@@ -261,32 +266,31 @@ function GenericJsonEditor({ content, setContent }: { content: any; setContent: 
           const isLong = v.length > 80 || /description|body|text|copy/i.test(k);
           if (isUrl) {
             return (
-              <Field key={k} label={k}>
+              <Field key={k} label={tr(k)}>
                 <div className="flex gap-2">
                   <Input value={v} onChange={(e) => set(k, e.target.value)} placeholder="https://..." />
-                  <MediaPickerButton onPick={(u) => set(k, u)} label="Pick" />
+                  <MediaPickerButton onPick={(u) => set(k, u)} label={tr("Pick")} />
                 </div>
                 {v && <img src={v} alt="" className="mt-2 h-16 w-16 object-cover rounded border" />}
               </Field>
             );
           }
           if (isLong) {
-            return <Field key={k} label={k}><Textarea rows={3} value={v} onChange={(e) => set(k, e.target.value)} /></Field>;
+            return <Field key={k} label={tr(k)}><Textarea rows={3} value={v} onChange={(e) => set(k, e.target.value)} /></Field>;
           }
-          return <Field key={k} label={k}><Input value={v} onChange={(e) => set(k, e.target.value)} /></Field>;
+          return <Field key={k} label={tr(k)}><Input value={v} onChange={(e) => set(k, e.target.value)} /></Field>;
         }
         if (typeof v === "number") {
-          return <Field key={k} label={k}><Input type="number" value={v} onChange={(e) => set(k, Number(e.target.value))} /></Field>;
+          return <Field key={k} label={tr(k)}><Input type="number" value={v} onChange={(e) => set(k, Number(e.target.value))} /></Field>;
         }
         // Fallback: display read-only note (nested arrays/objects handled by dedicated editors above)
         return (
           <div key={k} className="text-xs text-muted-foreground">
-            <ImageIcon className="inline h-3 w-3 mr-1" />
-            <strong>{k}</strong>: complex value — use a dedicated section editor.
-          </div>
+            <ImageIcon className="inline h-3 w-3 me-1" />
+            <strong>{tr(k)}</strong>{tr(": complex value — use a dedicated section editor.")}</div>
         );
       })}
-      {entries.length === 0 && <div className="text-sm text-muted-foreground">No content fields.</div>}
+      {entries.length === 0 && <div className="text-sm text-muted-foreground">{tr("No content fields.")}</div>}
     </div>
   );
 }

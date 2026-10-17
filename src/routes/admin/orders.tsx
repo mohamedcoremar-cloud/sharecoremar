@@ -1,3 +1,4 @@
+import { useI18n } from "@/lib/i18n";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -16,6 +17,7 @@ const REGULAR_STATUSES = ["pending", "confirmed", "processing", "shipped", "deli
 
 
 function OrdersAdmin() {
+  const { tr } = useI18n();
   const qc = useQueryClient();
   const [tab, setTab] = useState<"review" | "all">("review");
   const [detailOrder, setDetailOrder] = useState<any>(null);
@@ -49,7 +51,7 @@ function OrdersAdmin() {
       if (error) throw error;
       await supabase.from("order_status_history").insert({ order_id: id, status, note: `Status set to ${status}` });
     },
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["admin-orders"] }); toast.success("Updated"); },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["admin-orders"] }); toast.success(tr("Updated")); },
     onError: (e: any) => toast.error(e.message),
   });
 
@@ -68,19 +70,18 @@ function OrdersAdmin() {
   return (
     <div className="p-8 max-w-7xl mx-auto">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold">Orders</h1>
+        <h1 className="text-3xl font-bold">{tr("Orders")}</h1>
         <div className="flex rounded-md border border-border overflow-hidden text-sm">
           <button onClick={() => setTab("review")} className={`px-4 py-2 flex items-center gap-2 ${tab === "review" ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}>
-            <Clock className="h-4 w-4" /> Payment review
-            {reviewQueue.length > 0 && <span className="ml-1 rounded-full bg-amber-500 text-white text-xs px-2">{reviewQueue.length}</span>}
+            <Clock className="h-4 w-4" /> {tr("Payment review")}{reviewQueue.length > 0 && <span className="ml-1 rounded-full bg-amber-500 text-white text-xs px-2">{reviewQueue.length}</span>}
           </button>
-          <button onClick={() => setTab("all")} className={`px-4 py-2 ${tab === "all" ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}>All orders</button>
+          <button onClick={() => setTab("all")} className={`px-4 py-2 ${tab === "all" ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}>{tr("All orders")}</button>
         </div>
       </div>
 
       <div className="relative mb-4 max-w-sm">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search by order number or phone…" className="pl-9" />
+        <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder={tr("Search by order number or phone…")} className="ps-9" />
       </div>
 
 
@@ -97,17 +98,17 @@ function OrdersAdmin() {
             <table className="w-full text-sm">
               <thead className="bg-muted/30 border-b border-border">
                 <tr>
-                  <th className="text-left p-3">Order #</th>
-                  <th className="text-left p-3">Status</th>
-                  <th className="text-left p-3">Payment</th>
-                  <th className="text-left p-3">Total</th>
-                  <th className="text-left p-3">Date</th>
-                  <th className="text-left p-3">Timeline</th>
+                  <th className="text-start p-3">{tr("Order #")}</th>
+                  <th className="text-start p-3">{tr("Status")}</th>
+                  <th className="text-start p-3">{tr("Payment")}</th>
+                  <th className="text-start p-3">{tr("Total")}</th>
+                  <th className="text-start p-3">{tr("Date")}</th>
+                  <th className="text-start p-3">{tr("Timeline")}</th>
                 </tr>
               </thead>
               <tbody>
-                {isLoading ? <tr><td colSpan={6} className="p-8 text-center">Loading…</td></tr>
-                  : rest.length === 0 ? <tr><td colSpan={6} className="p-8 text-center text-muted-foreground">No orders yet</td></tr>
+                {isLoading ? <tr><td colSpan={6} className="p-8 text-center">{tr("Loading…")}</td></tr>
+                  : rest.length === 0 ? <tr><td colSpan={6} className="p-8 text-center text-muted-foreground">{tr("No orders yet")}</td></tr>
                   : rest.map((o: any) => {
                     const pay = (o.payments ?? [])[0];
                     return (
@@ -119,16 +120,15 @@ function OrdersAdmin() {
                         </td>
                         <td className="p-3">
                           <select value={o.status} onChange={(e) => update.mutate({ id: o.id, status: e.target.value })} className="rounded border border-input bg-background px-2 py-1 text-sm">
-                            {REGULAR_STATUSES.map((s) => <option key={s}>{s}</option>)}
+                            {REGULAR_STATUSES.map((s) => <option key={s} value={s}>{tr(s)}</option>)}
                           </select>
                         </td>
-                        <td className="p-3 capitalize">{o.payment_method} · {pay?.status ?? o.payment_status}</td>
+                        <td className="p-3 capitalize">{tr(o.payment_method)} · {tr(pay?.status ?? o.payment_status ?? "—")}</td>
                         <td className="p-3 font-semibold">{fmt(o.total)}</td>
                         <td className="p-3 text-muted-foreground">{new Date(o.created_at).toLocaleDateString()}</td>
                         <td className="p-3">
                           <Button variant="outline" size="sm" onClick={() => setDetailOrder(o)}>
-                            <Eye className="h-4 w-4 mr-1" /> View
-                          </Button>
+                            <Eye className="h-4 w-4 me-1" /> {tr("View")}</Button>
                         </td>
                       </tr>
                     );
@@ -146,11 +146,12 @@ function OrdersAdmin() {
 }
 
 function PaymentReviewList({ orders, isLoading, onDone, onOpen }: { orders: any[]; isLoading: boolean; onDone: () => void; onOpen: (order: any) => void }) {
-  if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading…</div>;
+  const { tr } = useI18n();
+  if (isLoading) return <div className="p-8 text-center text-muted-foreground">{tr("Loading…")}</div>;
   if (orders.length === 0) return (
     <div className="card-premium p-16 text-center">
       <CheckCircle2 className="h-10 w-10 mx-auto text-emerald-500 mb-3" />
-      <p className="text-muted-foreground">No orders awaiting payment review.</p>
+      <p className="text-muted-foreground">{tr("No orders awaiting payment review.")}</p>
     </div>
   );
   return (
@@ -163,6 +164,7 @@ function PaymentReviewList({ orders, isLoading, onDone, onOpen }: { orders: any[
 /** Read-only admin view of one order: items, summary and the full fulfillment timeline
  *  (reuses the same OrderTimeline component as the buyer-facing order page). */
 function OrderDetailDialog({ order, onClose }: { order: any; onClose: () => void }) {
+  const { tr } = useI18n();
   const { data, isLoading } = useQuery({
     queryKey: ["admin-order-detail", order?.id],
     enabled: !!order?.id,
@@ -190,10 +192,10 @@ function OrderDetailDialog({ order, onClose }: { order: any; onClose: () => void
       <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Icon className={`h-5 w-5 ${meta.color}`} /> Order {order.order_number}
+            <Icon className={`h-5 w-5 ${meta.color}`} /> {tr("Order")}{order.order_number}
             {data?.profile?.ref_code && (
-              <span className="ml-2 rounded-md border border-border bg-muted/40 px-2 py-0.5 font-mono text-xs font-normal text-muted-foreground">
-                Customer {data.profile.ref_code}
+              <span className="ms-2 rounded-md border border-border bg-muted/40 px-2 py-0.5 font-mono text-xs font-normal text-muted-foreground">
+                {tr("Customer")}{data.profile.ref_code}
               </span>
             )}
           </DialogTitle>
@@ -201,29 +203,29 @@ function OrderDetailDialog({ order, onClose }: { order: any; onClose: () => void
 
         <div className="grid gap-6 sm:grid-cols-2 text-sm">
           <div className="space-y-1">
-            <div className="text-xs text-muted-foreground">Current status</div>
-            <div className={`font-semibold ${meta.color}`}>{meta.label}</div>
+            <div className="text-xs text-muted-foreground">{tr("Current status")}</div>
+            <div className={`font-semibold ${meta.color}`}>{tr(meta.label)}</div>
             <div className="text-xs text-muted-foreground capitalize">
-              Payment: {order.payment_method} · {pay?.status ?? order.payment_status}
+              {tr("Payment:")}{tr(order.payment_method)} · {tr(pay?.status ?? order.payment_status ?? "—")}
             </div>
-            {pay?.transfer_reference && <div className="text-xs text-muted-foreground">Ref: {pay.transfer_reference}</div>}
+            {pay?.transfer_reference && <div className="text-xs text-muted-foreground">{tr("Ref:")}{pay.transfer_reference}</div>}
             <div className="font-semibold pt-1">{fmt(order.total)}</div>
             <div className="text-xs text-muted-foreground">{new Date(order.created_at).toLocaleString()}</div>
           </div>
           {addr && (
             <div className="space-y-1">
-              <div className="text-xs text-muted-foreground">Delivery to</div>
+              <div className="text-xs text-muted-foreground">{tr("Delivery to")}</div>
               <div>{addr.full_name}</div>
               <div className="text-muted-foreground">{addr.phone}</div>
               <div className="text-muted-foreground">{addr.street}, {addr.city}, {addr.governorate}</div>
-              {order.internal_notes && <div className="text-xs text-muted-foreground">Internal: {order.internal_notes}</div>}
+              {order.internal_notes && <div className="text-xs text-muted-foreground">{tr("Internal:")}{order.internal_notes}</div>}
             </div>
           )}
         </div>
 
         <div className="mt-4">
-          <h3 className="font-bold mb-2">Items</h3>
-          {isLoading ? <div className="text-sm text-muted-foreground">Loading…</div> : (
+          <h3 className="font-bold mb-2">{tr("Items")}</h3>
+          {isLoading ? <div className="text-sm text-muted-foreground">{tr("Loading…")}</div> : (
             <div className="space-y-2">
               {(data?.items ?? []).map((i: any) => (
                 <div key={i.id} className="flex justify-between text-sm">
@@ -236,8 +238,8 @@ function OrderDetailDialog({ order, onClose }: { order: any; onClose: () => void
         </div>
 
         <div className="mt-6">
-          <h3 className="font-bold mb-3">Fulfillment timeline</h3>
-          {isLoading ? <div className="text-sm text-muted-foreground">Loading…</div> : <OrderTimeline history={data?.history ?? []} />}
+          <h3 className="font-bold mb-3">{tr("Fulfillment timeline")}</h3>
+          {isLoading ? <div className="text-sm text-muted-foreground">{tr("Loading…")}</div> : <OrderTimeline history={data?.history ?? []} />}
         </div>
       </DialogContent>
     </Dialog>
@@ -245,6 +247,7 @@ function OrderDetailDialog({ order, onClose }: { order: any; onClose: () => void
 }
 
 function ReviewCard({ order, onDone, onOpen }: { order: any; onDone: () => void; onOpen: (order: any) => void }) {
+  const { tr } = useI18n();
 
   const pay = (order.payments ?? []).find((p: any) => p.status === "pending") ?? (order.payments ?? [])[0];
   const [busy, setBusy] = useState(false);
@@ -253,21 +256,23 @@ function ReviewCard({ order, onDone, onOpen }: { order: any; onDone: () => void;
   const [proofOpen, setProofOpen] = useState(false);
 
   async function approve() {
+  const { tr } = useI18n();
     setBusy(true);
     const { error } = await supabase.rpc("approve_order_payment" as any, { p_order_id: order.id, p_note: null });
     setBusy(false);
     if (error) return toast.error(error.message);
-    toast.success("Payment approved, stock deducted");
+    toast.success(tr("Payment approved, stock deducted"));
     onDone();
   }
 
   async function reject() {
-    if (!reason.trim()) return toast.error("Please enter a reason");
+  const { tr } = useI18n();
+    if (!reason.trim()) return toast.error(tr("Please enter a reason"));
     setBusy(true);
     const { error } = await supabase.rpc("reject_order_payment" as any, { p_order_id: order.id, p_reason: reason.trim() });
     setBusy(false);
     if (error) return toast.error(error.message);
-    toast.success("Payment rejected");
+    toast.success(tr("Payment rejected"));
     setRejectOpen(false);
     onDone();
   }
@@ -277,58 +282,58 @@ function ReviewCard({ order, onDone, onOpen }: { order: any; onDone: () => void;
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <div className="font-mono text-xs text-muted-foreground">{order.order_number}</div>
-          <div className="text-lg font-bold mt-1">{fmt(order.total)} · <span className="capitalize">{order.payment_method}</span></div>
+          <div className="text-lg font-bold mt-1">{fmt(order.total)} · <span className="capitalize">{tr(order.payment_method)}</span></div>
           <div className="text-xs text-muted-foreground">{new Date(order.created_at).toLocaleString()}</div>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={() => onOpen(order)}><Eye className="h-4 w-4 mr-1" /> View</Button>
+          <Button variant="outline" onClick={() => onOpen(order)}><Eye className="h-4 w-4 me-1" /> {tr("View")}</Button>
 
-          <Button variant="outline" onClick={() => setRejectOpen(true)} disabled={busy}><XCircle className="h-4 w-4 mr-1" /> Reject</Button>
-          <Button className="btn-gold" onClick={approve} disabled={busy}><CheckCircle2 className="h-4 w-4 mr-1" /> {busy ? "Working…" : "Approve"}</Button>
+          <Button variant="outline" onClick={() => setRejectOpen(true)} disabled={busy}><XCircle className="h-4 w-4 me-1" /> {tr("Reject")}</Button>
+          <Button className="btn-gold" onClick={approve} disabled={busy}><CheckCircle2 className="h-4 w-4 me-1" /> {busy ? tr("Working…") : tr("Approve")}</Button>
         </div>
       </div>
 
       <div className="grid gap-4 mt-4 sm:grid-cols-3 text-sm">
         <div>
-          <div className="text-xs text-muted-foreground mb-1">Transfer reference</div>
+          <div className="text-xs text-muted-foreground mb-1">{tr("Transfer reference")}</div>
           <div className="font-mono">{pay?.transfer_reference ?? "—"}</div>
         </div>
         <div>
-          <div className="text-xs text-muted-foreground mb-1">Amount</div>
+          <div className="text-xs text-muted-foreground mb-1">{tr("Amount")}</div>
           <div className="font-semibold">{fmt(pay?.amount ?? order.total)} {pay?.currency ?? "EGP"}</div>
         </div>
         <div>
-          <div className="text-xs text-muted-foreground mb-1">Submitted</div>
+          <div className="text-xs text-muted-foreground mb-1">{tr("Submitted")}</div>
           <div>{pay?.transferred_at ? new Date(pay.transferred_at).toLocaleString() : "—"}</div>
         </div>
       </div>
 
       {pay?.proof_url ? (
         <div className="mt-4">
-          <div className="text-xs text-muted-foreground mb-2">Proof of transfer</div>
+          <div className="text-xs text-muted-foreground mb-2">{tr("Proof of transfer")}</div>
           <button onClick={() => setProofOpen(true)} className="block">
-            <img src={pay.proof_url} alt="proof" className="h-32 rounded-lg border border-border hover:border-primary object-cover" />
+            <img src={pay.proof_url} alt={tr("proof")} className="h-32 rounded-lg border border-border hover:border-primary object-cover" />
           </button>
         </div>
       ) : (
-        <div className="mt-4 text-xs text-destructive">No proof uploaded.</div>
+        <div className="mt-4 text-xs text-destructive">{tr("No proof uploaded.")}</div>
       )}
 
       <Dialog open={proofOpen} onOpenChange={setProofOpen}>
         <DialogContent className="max-w-3xl">
-          <DialogHeader><DialogTitle>Proof of transfer — {order.order_number}</DialogTitle></DialogHeader>
-          {pay?.proof_url && <img src={pay.proof_url} alt="proof" className="w-full rounded-lg" />}
+          <DialogHeader><DialogTitle>{tr("Proof of transfer —")}{order.order_number}</DialogTitle></DialogHeader>
+          {pay?.proof_url && <img src={pay.proof_url} alt={tr("proof")} className="w-full rounded-lg" />}
         </DialogContent>
       </Dialog>
 
       <Dialog open={rejectOpen} onOpenChange={setRejectOpen}>
         <DialogContent>
-          <DialogHeader><DialogTitle>Reject payment</DialogTitle></DialogHeader>
-          <p className="text-sm text-muted-foreground">The customer will be asked to re-upload a valid proof.</p>
-          <textarea value={reason} onChange={(e) => setReason(e.target.value)} rows={3} placeholder="Reason (e.g. amount mismatch, unclear screenshot)" className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm" />
+          <DialogHeader><DialogTitle>{tr("Reject payment")}</DialogTitle></DialogHeader>
+          <p className="text-sm text-muted-foreground">{tr("The customer will be asked to re-upload a valid proof.")}</p>
+          <textarea value={reason} onChange={(e) => setReason(e.target.value)} rows={3} placeholder={tr("Reason (e.g. amount mismatch, unclear screenshot)")} className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm" />
           <DialogFooter>
-            <Button variant="outline" onClick={() => setRejectOpen(false)}>Cancel</Button>
-            <Button variant="destructive" onClick={reject} disabled={busy}>Reject payment</Button>
+            <Button variant="outline" onClick={() => setRejectOpen(false)}>{tr("Cancel")}</Button>
+            <Button variant="destructive" onClick={reject} disabled={busy}>{tr("Reject payment")}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

@@ -33,6 +33,7 @@ export const Route = createFileRoute("/supplier")({
 });
 
 function Shell({ title, children }: { title: string; children: React.ReactNode }) {
+  const { tr } = useI18n();
   const { signOut } = useAuth();
   const { lang, setLang } = useI18n();
   return (
@@ -41,13 +42,13 @@ function Shell({ title, children }: { title: string; children: React.ReactNode }
         <div className="mx-auto max-w-5xl px-4 h-16 flex items-center justify-between">
           <div>
             <div className="font-bold">Share CoreMar</div>
-            <div className="text-[10px] uppercase tracking-wider text-primary">Supplier Portal</div>
+            <div className="text-[10px] uppercase tracking-wider text-primary">{tr("Supplier Portal")}</div>
           </div>
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="sm" onClick={() => setLang(lang === "en" ? "ar" : "en")}>
               <Globe className="h-4 w-4 me-1" /> {lang === "en" ? "العربية" : "English"}
             </Button>
-            <Button variant="ghost" size="sm" onClick={() => signOut()}><LogOut className="h-4 w-4 me-1" /> Sign out</Button>
+            <Button variant="ghost" size="sm" onClick={() => signOut()}><LogOut className="h-4 w-4 me-1" /> {tr("Sign out")}</Button>
           </div>
         </div>
       </header>
@@ -60,18 +61,20 @@ function Shell({ title, children }: { title: string; children: React.ReactNode }
 }
 
 function Denied({ title, body }: { title: string; body: string }) {
+  const { tr } = useI18n();
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="text-center max-w-md">
         <h1 className="text-2xl font-bold mb-2">{title}</h1>
         <p className="text-muted-foreground mb-6">{body}</p>
-        <Button asChild><Link to="/">Go home</Link></Button>
+        <Button asChild><Link to="/">{tr("Go home")}</Link></Button>
       </div>
     </div>
   );
 }
 
 function SupplierGate() {
+  const { tr } = useI18n();
   const { user, loading } = useAuth();
   const { data: link, isLoading } = useQuery({
     queryKey: ["supplier-link", user?.id],
@@ -87,19 +90,20 @@ function SupplierGate() {
     },
   });
 
-  if (loading || (user && isLoading)) return <div className="min-h-screen flex items-center justify-center">Loading…</div>;
-  if (!user) return <Denied title="Sign in required" body="Please sign in with your supplier account to continue." />;
-  if (!link || !link.is_active) return <Denied title="Access Denied" body="This account is not linked to an active supplier." />;
+  if (loading || (user && isLoading)) return <div className="min-h-screen flex items-center justify-center">{tr("Loading…")}</div>;
+  if (!user) return <Denied title={tr("Sign in required")} body="Please sign in with your supplier account to continue." />;
+  if (!link || !link.is_active) return <Denied title={tr("Access Denied")} body="This account is not linked to an active supplier." />;
 
   return <SupplierPortal supplierId={link.supplier_id} companyName={(link as any).suppliers?.company_name ?? ""} />;
 }
 
 function SupplierPortal({ supplierId, companyName }: { supplierId: string; companyName: string }) {
+  const { tr } = useI18n();
   const { lang } = useI18n();
   const [tab, setTab] = useState<"orders" | "catalog">("orders");
   const ar = lang === "ar";
   const tabs = [
-    { key: "orders" as const, label: ar ? "الطلبات" : "Orders" },
+    { key: "orders" as const, label: ar ? "الطلبات" : tr("Orders") },
     { key: "catalog" as const, label: ar ? "منتجاتي" : "My Catalog" },
   ];
 
@@ -124,6 +128,7 @@ function SupplierPortal({ supplierId, companyName }: { supplierId: string; compa
 }
 
 function SupplierOrders({ supplierId, companyName }: { supplierId: string; companyName: string }) {
+  const { tr } = useI18n();
   const qc = useQueryClient();
   const { lang } = useI18n();
   const [etaFor, setEtaFor] = useState<string | null>(null);
@@ -175,14 +180,14 @@ function SupplierOrders({ supplierId, companyName }: { supplierId: string; compa
       qc.invalidateQueries({ queryKey: ["supplier-orders", supplierId] });
       setEtaFor(null);
       setEta("");
-      toast.success(lang === "ar" ? "تم التحديث" : "Updated");
+      toast.success(lang === "ar" ? "تم التحديث" : tr("Updated"));
     },
     onError: (e: any) => toast.error(e.message),
   });
 
   return (
     <>
-      {isLoading && <div>Loading…</div>}
+      {isLoading && <div>{tr("Loading…")}</div>}
       {!isLoading && orders.length === 0 && (
         <div className="card-premium p-8 text-center text-muted-foreground">
           {lang === "ar" ? "لا توجد طلبات في قائمتك حاليًا." : "No orders in your queue yet."}
@@ -251,7 +256,7 @@ function SupplierOrders({ supplierId, companyName }: { supplierId: string; compa
                           <ChefHat className="h-4 w-4 me-1" /> {lang === "ar" ? "جاري التجهيز" : "Start preparing"}
                         </Button>
                         <Button variant="ghost" onClick={() => { setEtaFor(null); setEta(""); }}>
-                          {lang === "ar" ? "إلغاء" : "Cancel"}
+                          {lang === "ar" ? "إلغاء" : tr("Cancel")}
                         </Button>
                       </div>
                     </div>

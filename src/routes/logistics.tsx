@@ -32,6 +32,7 @@ export const Route = createFileRoute("/logistics")({
 });
 
 function Shell({ title, children }: { title: string; children: React.ReactNode }) {
+  const { tr } = useI18n();
   const { signOut } = useAuth();
   const { lang, setLang } = useI18n();
   return (
@@ -40,13 +41,13 @@ function Shell({ title, children }: { title: string; children: React.ReactNode }
         <div className="mx-auto max-w-5xl px-4 h-16 flex items-center justify-between">
           <div>
             <div className="font-bold">Share CoreMar</div>
-            <div className="text-[10px] uppercase tracking-wider text-primary">Logistics Portal</div>
+            <div className="text-[10px] uppercase tracking-wider text-primary">{tr("Logistics Portal")}</div>
           </div>
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="sm" onClick={() => setLang(lang === "en" ? "ar" : "en")}>
               <Globe className="h-4 w-4 me-1" /> {lang === "en" ? "العربية" : "English"}
             </Button>
-            <Button variant="ghost" size="sm" onClick={() => signOut()}><LogOut className="h-4 w-4 me-1" /> Sign out</Button>
+            <Button variant="ghost" size="sm" onClick={() => signOut()}><LogOut className="h-4 w-4 me-1" /> {tr("Sign out")}</Button>
           </div>
         </div>
       </header>
@@ -59,18 +60,20 @@ function Shell({ title, children }: { title: string; children: React.ReactNode }
 }
 
 function Denied({ title, body }: { title: string; body: string }) {
+  const { tr } = useI18n();
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="text-center max-w-md">
         <h1 className="text-2xl font-bold mb-2">{title}</h1>
         <p className="text-muted-foreground mb-6">{body}</p>
-        <Button asChild><Link to="/">Go home</Link></Button>
+        <Button asChild><Link to="/">{tr("Go home")}</Link></Button>
       </div>
     </div>
   );
 }
 
 function LogisticsGate() {
+  const { tr } = useI18n();
   const { user, loading } = useAuth();
   const { data: link, isLoading } = useQuery({
     queryKey: ["logistics-link", user?.id],
@@ -86,14 +89,15 @@ function LogisticsGate() {
     },
   });
 
-  if (loading || (user && isLoading)) return <div className="min-h-screen flex items-center justify-center">Loading…</div>;
-  if (!user) return <Denied title="Sign in required" body="Please sign in with your logistics account to continue." />;
-  if (!link || !link.is_active) return <Denied title="Access Denied" body="This account is not linked to an active delivery partner." />;
+  if (loading || (user && isLoading)) return <div className="min-h-screen flex items-center justify-center">{tr("Loading…")}</div>;
+  if (!user) return <Denied title={tr("Sign in required")} body="Please sign in with your logistics account to continue." />;
+  if (!link || !link.is_active) return <Denied title={tr("Access Denied")} body="This account is not linked to an active delivery partner." />;
 
   return <LogisticsOrders partnerId={link.delivery_partner_id} partner={(link as any).delivery_partners} />;
 }
 
 function LogisticsOrders({ partnerId, partner }: { partnerId: string; partner: any }) {
+  const { tr } = useI18n();
   const qc = useQueryClient();
   const { lang } = useI18n();
   const [form, setForm] = useState<Record<string, any>>({});
@@ -148,7 +152,7 @@ function LogisticsOrders({ partnerId, partner }: { partnerId: string; partner: a
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["logistics-orders", partnerId] });
       setOpenFor(null);
-      toast.success(lang === "ar" ? "تم التحديث" : "Updated");
+      toast.success(lang === "ar" ? "تم التحديث" : tr("Updated"));
     },
     onError: (e: any) => toast.error(e.message),
   });
@@ -158,7 +162,7 @@ function LogisticsOrders({ partnerId, partner }: { partnerId: string; partner: a
 
   return (
     <Shell title={lang === "ar" ? `الطلبات الجاهزة — ${partner?.name_ar ?? ""}` : `Ready Orders — ${partner?.name_en ?? ""}`}>
-      {isLoading && <div>Loading…</div>}
+      {isLoading && <div>{tr("Loading…")}</div>}
       {!isLoading && orders.length === 0 && (
         <div className="card-premium p-8 text-center text-muted-foreground">
           {lang === "ar" ? "لا توجد طلبات جاهزة حاليًا." : "No ready orders right now."}
@@ -263,7 +267,7 @@ function LogisticsOrders({ partnerId, partner }: { partnerId: string; partner: a
                         >
                           <Navigation className="h-4 w-4 me-1" /> {lang === "ar" ? "في الطريق" : "In transit"}
                         </Button>
-                        <Button variant="ghost" onClick={() => setOpenFor(null)}>{lang === "ar" ? "إلغاء" : "Cancel"}</Button>
+                        <Button variant="ghost" onClick={() => setOpenFor(null)}>{lang === "ar" ? "إلغاء" : tr("Cancel")}</Button>
                       </div>
                     </div>
                   ) : (
@@ -283,7 +287,7 @@ function LogisticsOrders({ partnerId, partner }: { partnerId: string; partner: a
                   )}
                   <Button disabled={advance.isPending}
                     onClick={() => advance.mutate({ orderId: o.id, stage: "delivered" })}>
-                    <Home className="h-4 w-4 me-1" /> {lang === "ar" ? "تم التسليم" : "Delivered"}
+                    <Home className="h-4 w-4 me-1" /> {lang === "ar" ? "تم التسليم" : tr("Delivered")}
                   </Button>
                 </div>
               )}

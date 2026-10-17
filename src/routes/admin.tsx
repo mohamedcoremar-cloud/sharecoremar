@@ -17,6 +17,7 @@ export const Route = createFileRoute("/admin")({
 });
 
 function useMenu() {
+  const { tr } = useI18n();
   const { t } = useI18n();
   return [
     { to: "/admin", label: t("admin.dashboard"), icon: LayoutDashboard, exact: true },
@@ -25,17 +26,17 @@ function useMenu() {
     { to: "/admin/brands", label: t("admin.brands"), icon: BadgeCheck },
     { to: "/admin/suppliers", label: t("admin.suppliers"), icon: Building2 },
     { to: "/admin/orders", label: t("admin.orders"), icon: ShoppingBag },
-    { to: "/admin/submissions", label: "Catalog Submissions", icon: ClipboardCheck },
-    { to: "/admin/deliveries", label: "Deliveries", icon: Truck },
-    { to: "/admin/logistics-partners", label: "Logistics Partners", icon: Truck },
-    { to: "/admin/reviews", label: "Reviews", icon: Star },
+    { to: "/admin/submissions", label: tr("Catalog Submissions"), icon: ClipboardCheck },
+    { to: "/admin/deliveries", label: tr("Deliveries"), icon: Truck },
+    { to: "/admin/logistics-partners", label: tr("Logistics Partners"), icon: Truck },
+    { to: "/admin/reviews", label: tr("Reviews"), icon: Star },
     { to: "/admin/users", label: t("admin.users"), icon: Users },
     { to: "/admin/homepage", label: t("admin.homepage"), icon: Layers },
     { to: "/admin/banners", label: t("admin.banners"), icon: ImageIcon },
     { to: "/admin/media", label: t("admin.media"), icon: ImageIcon },
-    { to: "/admin/pages", label: "Pages", icon: FileText },
-    { to: "/admin/payments", label: "Payment Methods", icon: CreditCard },
-    { to: "/admin/ai-agents", label: "AI Agents", icon: Bot },
+    { to: "/admin/pages", label: tr("Pages"), icon: FileText },
+    { to: "/admin/payments", label: tr("Payment Methods"), icon: CreditCard },
+    { to: "/admin/ai-agents", label: tr("AI Agents"), icon: Bot },
     { to: "/admin/settings", label: t("admin.settings"), icon: Settings },
   ] as const;
 }
@@ -49,21 +50,22 @@ function AdminShell() {
 }
 
 function AdminShellInner() {
+  const { tr } = useI18n();
   const { user, loading, isAdmin, signOut } = useAuth();
   const { t, lang, setLang } = useI18n();
   const MENU = useMenu();
   const location = useLocation();
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center bg-sidebar text-sidebar-foreground">Loading…</div>;
+    return <div className="min-h-screen flex items-center justify-center bg-sidebar text-sidebar-foreground">{tr("Loading…")}</div>;
   }
   if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-sidebar text-sidebar-foreground p-4">
         <div className="text-center max-w-md">
-          <h1 className="text-2xl font-bold mb-2">Admin Access Required</h1>
-          <p className="text-sidebar-foreground/70 mb-6">Please sign in to continue.</p>
-          <Link to="/auth" className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-primary-foreground font-medium">Sign in</Link>
+          <h1 className="text-2xl font-bold mb-2">{tr("Admin Access Required")}</h1>
+          <p className="text-sidebar-foreground/70 mb-6">{tr("Please sign in to continue.")}</p>
+          <Link to="/auth" className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-primary-foreground font-medium">{tr("Sign in")}</Link>
         </div>
       </div>
     );
@@ -72,9 +74,9 @@ function AdminShellInner() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-sidebar text-sidebar-foreground p-4">
         <div className="text-center max-w-md">
-          <h1 className="text-2xl font-bold mb-2">Access Denied</h1>
-          <p className="text-sidebar-foreground/70 mb-6">Your account doesn't have admin privileges.</p>
-          <Link to="/" className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-primary-foreground font-medium">Go home</Link>
+          <h1 className="text-2xl font-bold mb-2">{tr("Access Denied")}</h1>
+          <p className="text-sidebar-foreground/70 mb-6">{tr("Your account doesn't have admin privileges.")}</p>
+          <Link to="/" className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-primary-foreground font-medium">{tr("Go home")}</Link>
         </div>
       </div>
     );
@@ -87,7 +89,7 @@ function AdminShellInner() {
           <img src={logoIcon} alt="" className="h-9 w-9 rounded-lg" />
           <div>
             <div className="font-bold text-sm">Share CoreMar</div>
-            <div className="text-[10px] uppercase tracking-wider text-primary">Admin</div>
+            <div className="text-[10px] uppercase tracking-wider text-primary">{tr("Admin")}</div>
           </div>
         </Link>
         <nav className="flex-1 overflow-y-auto p-3 space-y-1">

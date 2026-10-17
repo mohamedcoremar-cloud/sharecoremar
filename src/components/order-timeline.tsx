@@ -1,3 +1,4 @@
+import { useI18n } from "@/lib/i18n";
 import { CheckCircle2, Package, Truck, Home, Clock, XCircle } from "lucide-react";
 import { STAGE_META } from "@/lib/fulfillment";
 
@@ -24,9 +25,10 @@ export function statusMeta(code?: string | null) {
 
 /** Read-only fulfillment timeline rendered from order_status_history rows. */
 export function OrderTimeline({ history }: { history: any[] }) {
+  const { tr } = useI18n();
   return (
     <div className="space-y-3">
-      {history.length === 0 && <div className="text-sm text-muted-foreground">No updates yet.</div>}
+      {history.length === 0 && <div className="text-sm text-muted-foreground">{tr("No updates yet.")}</div>}
       {history.map((h: any) => {
         const m = statusMeta(h.status);
         const I = m.icon;
@@ -37,20 +39,19 @@ export function OrderTimeline({ history }: { history: any[] }) {
               <div className="font-medium text-sm">
                 {m.label}
                 {h.is_internal && (
-                  <span className="ml-2 rounded bg-muted px-1.5 py-0.5 text-[10px] uppercase text-muted-foreground">
-                    internal
-                  </span>
+                  <span className="ms-2 rounded bg-muted px-1.5 py-0.5 text-[10px] uppercase text-muted-foreground">
+                    {tr("internal")}</span>
                 )}
               </div>
               {h.supplier_ready_eta && (
-                <div className="text-xs text-muted-foreground">Ready in: {h.supplier_ready_eta}</div>
+                <div className="text-xs text-muted-foreground">{tr("Ready in:")}{h.supplier_ready_eta}</div>
               )}
               {h.logistics_delivery_eta && (
-                <div className="text-xs text-muted-foreground">Delivery timeframe: {h.logistics_delivery_eta}</div>
+                <div className="text-xs text-muted-foreground">{tr("Delivery timeframe:")}{h.logistics_delivery_eta}</div>
               )}
               {h.driver_name && (
                 <div className="text-xs text-muted-foreground">
-                  Driver: {h.driver_name}
+                  {tr("Driver:")}{h.driver_name}
                   {h.driver_phone ? ` · ${h.driver_phone}` : ""}
                   {h.vehicle_info ? ` · ${h.vehicle_info}` : ""}
                 </div>

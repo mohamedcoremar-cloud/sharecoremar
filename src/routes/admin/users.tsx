@@ -1,3 +1,4 @@
+import { useI18n } from "@/lib/i18n";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -11,6 +12,7 @@ export const Route = createFileRoute("/admin/users")({ component: UsersAdmin });
 const ROLES = ["super_admin", "admin", "supplier", "logistics_partner", "business_buyer", "personal_buyer"];
 
 function UsersAdmin() {
+  const { tr } = useI18n();
   const qc = useQueryClient();
   const [q, setQ] = useState("");
   const { data: users = [] } = useQuery({
@@ -37,7 +39,7 @@ function UsersAdmin() {
         if (error) throw error;
       }
     },
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["admin-users"] }); toast.success("Updated"); },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["admin-users"] }); toast.success(tr("Updated")); },
     onError: (e: any) => toast.error(e.message),
   });
 
@@ -51,40 +53,40 @@ function UsersAdmin() {
 
   return (
     <div className="p-8 max-w-7xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6">Users & Roles</h1>
+      <h1 className="text-3xl font-bold mb-6">{tr("Users & Roles")}</h1>
       <div className="relative mb-4 max-w-sm">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search by code, email, name or phone…" className="pl-9" />
+        <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder={tr("Search by code, email, name or phone…")} className="ps-9" />
       </div>
       <div className="rounded-2xl border border-border bg-card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-muted/30 border-b border-border">
               <tr>
-                <th className="text-left p-3">Code</th>
-                <th className="text-left p-3">Email</th>
-                <th className="text-left p-3">Name</th>
-                <th className="text-left p-3">Type</th>
-                <th className="text-left p-3">Roles</th>
+                <th className="text-start p-3">{tr("Code")}</th>
+                <th className="text-start p-3">{tr("Email")}</th>
+                <th className="text-start p-3">{tr("Name")}</th>
+                <th className="text-start p-3">{tr("Type")}</th>
+                <th className="text-start p-3">{tr("Roles")}</th>
               </tr>
             </thead>
             <tbody>
               {filtered.length === 0 && (
-                <tr><td colSpan={5} className="p-8 text-center text-muted-foreground">No matching accounts</td></tr>
+                <tr><td colSpan={5} className="p-8 text-center text-muted-foreground">{tr("No matching accounts")}</td></tr>
               )}
               {filtered.map((u: any) => (
                 <tr key={u.id} className="border-b border-border last:border-0">
                   <td className="p-3 font-mono text-xs">{u.ref_code ?? "—"}</td>
                   <td className="p-3 font-medium">{u.email}</td>
                   <td className="p-3">{u.full_name ?? "—"}</td>
-                  <td className="p-3">{u.account_type}</td>
+                  <td className="p-3">{tr(u.account_type ?? "—")}</td>
                   <td className="p-3">
                     <div className="flex flex-wrap gap-1">
                       {ROLES.map((r) => {
                         const has = u.roles.includes(r);
                         return (
                           <button key={r} onClick={() => toggleRole.mutate({ userId: u.id, role: r, has })} className={`text-[11px] px-2 py-1 rounded-md border transition-colors ${has ? "bg-primary text-primary-foreground border-primary" : "bg-transparent border-border hover:border-primary"}`}>
-                            {r}
+                            {tr(r)}
                           </button>
                         );
                       })}
