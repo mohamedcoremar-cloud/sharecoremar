@@ -1,8 +1,9 @@
+import { backofficeHead } from "@/lib/backoffice-head";
 import { createFileRoute } from "@tanstack/react-router";
 import { CrudPage } from "@/components/admin/crud-page";
 import { ProvisionAccountButton } from "@/components/admin/provision-account-button";
 
-export const Route = createFileRoute("/admin/logistics-partners")({
+export const Route = createFileRoute("/admin/logistics-partners")({ head: () => backofficeHead("Logistics Partners"),
   component: () => (
     <CrudPage
       title="Logistics Partners"

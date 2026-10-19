@@ -1,3 +1,4 @@
+import { backofficeHead } from "@/lib/backoffice-head";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -10,7 +11,7 @@ import { fmt } from "@/lib/currency";
 import { deliveryIcon, DELIVERY_TRANSITIONS } from "@/lib/delivery";
 import { Truck } from "lucide-react";
 
-export const Route = createFileRoute("/admin/deliveries")({ component: DeliveriesAdmin });
+export const Route = createFileRoute("/admin/deliveries")({ head: () => backofficeHead("Deliveries"), component: DeliveriesAdmin });
 
 function DeliveriesAdmin() {
   const { tr } = useI18n();

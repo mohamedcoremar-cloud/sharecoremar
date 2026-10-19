@@ -25,7 +25,7 @@ export function statusMeta(code?: string | null) {
 
 /** Read-only fulfillment timeline rendered from order_status_history rows. */
 export function OrderTimeline({ history }: { history: any[] }) {
-  const { tr } = useI18n();
+  const { tr, lang } = useI18n();
   return (
     <div className="space-y-3">
       {history.length === 0 && <div className="text-sm text-muted-foreground">{tr("No updates yet.")}</div>}
@@ -37,7 +37,7 @@ export function OrderTimeline({ history }: { history: any[] }) {
             <I className={`h-5 w-5 mt-0.5 ${m.color}`} />
             <div className="flex-1">
               <div className="font-medium text-sm">
-                {m.label}
+                {lang === "ar" && STAGE_META[h.status] ? STAGE_META[h.status].ar : tr(m.label)}
                 {h.is_internal && (
                   <span className="ms-2 rounded bg-muted px-1.5 py-0.5 text-[10px] uppercase text-muted-foreground">
                     {tr("internal")}</span>

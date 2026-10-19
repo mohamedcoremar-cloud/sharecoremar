@@ -1,3 +1,4 @@
+import { backofficeHead } from "@/lib/backoffice-head";
 import { useI18n } from "@/lib/i18n";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -11,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { fmt } from "@/lib/currency";
 import { OrderTimeline, statusMeta } from "@/components/order-timeline";
 
-export const Route = createFileRoute("/admin/orders")({ component: OrdersAdmin });
+export const Route = createFileRoute("/admin/orders")({ head: () => backofficeHead("Orders"), component: OrdersAdmin });
 
 const REGULAR_STATUSES = ["pending", "confirmed", "processing", "shipped", "delivered", "cancelled", "refunded"];
 

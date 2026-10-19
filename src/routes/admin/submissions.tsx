@@ -1,3 +1,4 @@
+import { backofficeHead } from "@/lib/backoffice-head";
 import { useI18n } from "@/lib/i18n";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useRef, useState } from "react";
@@ -18,7 +19,7 @@ import { Search, Eye, Sparkles, Upload, Plus } from "lucide-react";
 import { StatusBadge } from "@/components/supplier/catalog-panel";
 import { ManualProductDialog } from "@/components/catalog/manual-product-form";
 
-export const Route = createFileRoute("/admin/submissions")({ component: SubmissionsAdmin });
+export const Route = createFileRoute("/admin/submissions")({ head: () => backofficeHead("Catalog Submissions"), component: SubmissionsAdmin });
 
 const OPEN_CODES = ["draft", "admin_review", "sent_to_supplier", "supplier_approved", "pending_final_approval"];
 
@@ -83,7 +84,8 @@ function SubmissionsAdmin() {
         String(r.suppliers?.company_name ?? "").toLowerCase().includes(ql) ||
         String(r.proposed?.name_ar ?? "").toLowerCase().includes(ql) ||
         String(r.proposed?.name_en ?? "").toLowerCase().includes(ql) ||
-        String(r.products?.name_en ?? "").toLowerCase().includes(ql),
+        String(r.products?.name_en ?? "").toLowerCase().includes(ql) ||
+        String(r.products?.name_ar ?? "").toLowerCase().includes(ql),
       );
   }, [rows, tab, q]);
 
@@ -119,7 +121,7 @@ function SubmissionsAdmin() {
               onClick={() => setTab(t)}
               className={`px-4 py-2 text-sm font-medium capitalize ${tab === t ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
             >
-              {t}
+              {tr(t)}
             </button>
           ))}
         </div>
@@ -152,7 +154,7 @@ function SubmissionsAdmin() {
                 {r.reference_code} · {r.kind === "edit" ? tr("Edit") : tr("New product")}
               </div>
               <div className="text-xs text-muted-foreground truncate">
-                {r.suppliers?.company_name ?? "—"} · {r.products?.name_en ?? r.proposed?.name_en ?? "—"}
+                {r.suppliers?.company_name ?? "—"} · {lang === "ar" ? r.products?.name_ar || r.proposed?.name_ar || r.products?.name_en || r.proposed?.name_en || "—" : r.products?.name_en ?? r.proposed?.name_en ?? "—"}
               </div>
             </div>
             <div className="flex items-center gap-4">
@@ -186,7 +188,7 @@ function SubmissionsAdmin() {
                 <div className="rounded-lg border border-border p-3 text-sm">
                   <div className="font-semibold mb-1">{tr("Current live values")}</div>
                   <div className="text-muted-foreground">
-                    {detail.products.name_en} · {fmt(detail.products.retail_price)}
+                    {lang === "ar" ? detail.products.name_ar || detail.products.name_en : detail.products.name_en} · {fmt(detail.products.retail_price)}
                   </div>
                 </div>
               )}
@@ -259,7 +261,7 @@ function AiIntakeDialog({
   suppliers: { id: string; company_name: string }[];
   onDone: () => void;
 }) {
-  const { tr } = useI18n();
+  const { tr, lang } = useI18n();
   const run = useServerFn(extractCatalogDrafts);
   const fileRef = useRef<HTMLInputElement>(null);
   const [supplierId, setSupplierId] = useState("");

@@ -1,7 +1,8 @@
+import { backofficeHead } from "@/lib/backoffice-head";
 import { createFileRoute } from "@tanstack/react-router";
 import { CrudPage } from "@/components/admin/crud-page";
 
-export const Route = createFileRoute("/admin/categories")({
+export const Route = createFileRoute("/admin/categories")({ head: () => backofficeHead("Categories"),
   component: () => (
     <CrudPage
       title="Categories"

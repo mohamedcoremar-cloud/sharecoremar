@@ -1,16 +1,17 @@
+import { backofficeHead } from "@/lib/backoffice-head";
 import { useI18n } from "@/lib/i18n";
 import { createFileRoute } from "@tanstack/react-router";
 import { CrudPage } from "@/components/admin/crud-page";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
-export const Route = createFileRoute("/admin/products")({ component: ProductsAdmin });
+export const Route = createFileRoute("/admin/products")({ head: () => backofficeHead("Products"), component: ProductsAdmin });
 
 function ProductsAdmin() {
-  const { tr } = useI18n();
+  const { tr, lang } = useI18n();
   const { data: categories = [] } = useQuery({
     queryKey: ["all-categories"],
-    queryFn: async () => (await supabase.from("categories").select("id, name_en").order("name_en")).data ?? [],
+    queryFn: async () => (await supabase.from("categories").select("id, name_en, name_ar").order("name_en")).data ?? [],
   });
   const { data: brands = [] } = useQuery({
     queryKey: ["all-brands"],
@@ -29,7 +30,7 @@ function ProductsAdmin() {
       columns={[
         { key: "name_en", label: tr("Name") },
         { key: "sku", label: tr("SKU") },
-        { key: "retail_price", label: tr("Price"), render: (r) => `${Number(r.retail_price).toFixed(2)} EGP` },
+        { key: "retail_price", label: tr("Price"), render: (r) => `${Number(r.retail_price).toFixed(2)} ${lang === "ar" ? "ج.م" : "EGP"}` },
         { key: "stock", label: tr("Stock") },
         { key: "is_active", label: tr("Active"), render: (r) => r.is_active ? "✓" : "—" },
         { key: "is_featured", label: tr("Featured"), render: (r) => r.is_featured ? "✓" : "—" },
@@ -40,7 +41,7 @@ function ProductsAdmin() {
         { name: "slug", label: tr("Slug"), required: true },
         { name: "sku", label: tr("SKU") },
         { name: "barcode", label: tr("Barcode") },
-        { name: "category_id", label: tr("Category"), type: "select", options: categories.map((c: any) => ({ value: c.id, label: c.name_en })) },
+        { name: "category_id", label: tr("Category"), type: "select", options: categories.map((c: any) => ({ value: c.id, label: lang === "ar" ? c.name_ar || c.name_en : c.name_en })) },
         { name: "brand_id", label: tr("Brand"), type: "select", options: brands.map((b: any) => ({ value: b.id, label: b.name })) },
         { name: "supplier_id", label: tr("Supplier"), type: "select", options: suppliers.map((s: any) => ({ value: s.id, label: s.company_name })) },
         { name: "description", label: tr("Description"), type: "textarea" },

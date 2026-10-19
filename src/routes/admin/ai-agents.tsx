@@ -1,9 +1,10 @@
+import { backofficeHead } from "@/lib/backoffice-head";
 import { useI18n } from "@/lib/i18n";
 import { createFileRoute } from "@tanstack/react-router";
 import { CrudPage } from "@/components/admin/crud-page";
 import { Info } from "lucide-react";
 
-export const Route = createFileRoute("/admin/ai-agents")({ component: AiAgentsPage });
+export const Route = createFileRoute("/admin/ai-agents")({ head: () => backofficeHead("AI Agents"), component: AiAgentsPage });
 
 function AiAgentsPage() {
   const { tr } = useI18n();

@@ -82,7 +82,7 @@ function LogisticsGate() {
       const { data } = await supabase
         .from("delivery_partner_users")
         .select("delivery_partner_id, is_active, delivery_partners(name_en, name_ar)")
-        .eq("user_id", user!.id)
+        .eq("user_id", user?.id ?? "")
         .is("deleted_at", null)
         .maybeSingle();
       return data;
@@ -90,8 +90,8 @@ function LogisticsGate() {
   });
 
   if (loading || (user && isLoading)) return <div className="min-h-screen flex items-center justify-center">{tr("Loading…")}</div>;
-  if (!user) return <Denied title={tr("Sign in required")} body="Please sign in with your logistics account to continue." />;
-  if (!link || !link.is_active) return <Denied title={tr("Access Denied")} body="This account is not linked to an active delivery partner." />;
+  if (!user) return <Denied title={tr("Sign in required")} body={tr("Please sign in with your logistics account to continue.")} />;
+  if (!link || !link.is_active) return <Denied title={tr("Access Denied")} body={tr("This account is not linked to an active delivery partner.")} />;
 
   return <LogisticsOrders partnerId={link.delivery_partner_id} partner={(link as any).delivery_partners} />;
 }

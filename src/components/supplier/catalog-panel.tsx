@@ -12,6 +12,7 @@ import {
 import { fmt } from "@/lib/currency";
 import { Pencil, Clock, CheckCircle2, XCircle, Send, Plus } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
+import { ProposedDetails } from "@/components/catalog/proposed-details";
 import { ManualProductDialog } from "@/components/catalog/manual-product-form";
 
 export type SubmissionRow = {
@@ -153,8 +154,9 @@ export function SupplierCatalogPanel({ supplierId }: { supplierId: string }) {
 
   const respond = useMutation({
     mutationFn: async ({ action }: { action: "approve" | "changes" }) => {
+      if (!respondTo) return;
       const { error } = await supabase.rpc("supplier_respond_submission", {
-        p_submission_id: respondTo!.id,
+        p_submission_id: respondTo?.id ?? "",
         p_action: action,
         p_note: action === "changes" ? note : undefined,
       });
@@ -213,14 +215,14 @@ export function SupplierCatalogPanel({ supplierId }: { supplierId: string }) {
                 <div className="min-w-0">
                   <div className="font-semibold truncate">{ar ? p.name_ar : p.name_en}</div>
                   <div className="text-xs text-muted-foreground">
-                    {fmt(p.retail_price)} · {ar ? "المخزون" : tr("Stock")}: {p.stock ?? 0}
+                    {fmt(p.retail_price)} · {ar ? "المخزون المتاح" : tr("Stock")}: {p.stock ?? 0}
                   </div>
                 </div>
                 {open ? (
                   <StatusBadge
-                    code={open.catalog_submission_statuses!.code}
-                    labelEn={open.catalog_submission_statuses!.label_en}
-                    labelAr={open.catalog_submission_statuses!.label_ar}
+                    code={open.catalog_submission_statuses?.code ?? "draft"}
+                    labelEn={open.catalog_submission_statuses?.label_en ?? "Draft"}
+                    labelAr={open.catalog_submission_statuses?.label_ar ?? "مسودة"}
                   />
                 ) : (
                   <Button size="sm" variant="outline" onClick={() => { setEditing(p); setDraft(toDraft(p)); }}>
@@ -256,9 +258,7 @@ export function SupplierCatalogPanel({ supplierId }: { supplierId: string }) {
                     />
                   )}
                 </div>
-                <pre className="mt-3 text-xs bg-muted/50 rounded-lg p-3 overflow-x-auto">
-                  {JSON.stringify(s.proposed, null, 2)}
-                </pre>
+                <ProposedDetails proposed={s.proposed} />
                 {s.reason && (
                   <div className="mt-2 text-sm text-destructive">
                     {ar ? "السبب" : "Reason"}: {s.reason}
@@ -282,9 +282,9 @@ export function SupplierCatalogPanel({ supplierId }: { supplierId: string }) {
           </DialogHeader>
           {draft && (
             <div className="space-y-3 max-h-[55vh] overflow-y-auto pe-1">
-              <div><Label>{ar ? "الاسم (EN)" : tr("Name (EN)")}</Label>
+              <div><Label>{ar ? "اسم المنتج بالإنجليزي" : tr("Name (EN)")}</Label>
                 <Input value={draft.name_en} onChange={(e) => setDraft({ ...draft, name_en: e.target.value })} /></div>
-              <div><Label>{ar ? "الاسم (AR)" : tr("Name (AR)")}</Label>
+              <div><Label>{ar ? "اسم المنتج بالعربي" : tr("Name (AR)")}</Label>
                 <Input value={draft.name_ar} onChange={(e) => setDraft({ ...draft, name_ar: e.target.value })} /></div>
               <div><Label>{ar ? "الوصف" : tr("Description")}</Label>
                 <Textarea value={draft.description} onChange={(e) => setDraft({ ...draft, description: e.target.value })} /></div>
@@ -295,9 +295,9 @@ export function SupplierCatalogPanel({ supplierId }: { supplierId: string }) {
                   <Input type="number" value={draft.offer_price} onChange={(e) => setDraft({ ...draft, offer_price: e.target.value })} /></div>
               </div>
               <div className="grid grid-cols-2 gap-3">
-                <div><Label>{ar ? "الوحدة" : tr("Unit")}</Label>
+                <div><Label>{ar ? "وحدة البيع" : tr("Unit")}</Label>
                   <Input value={draft.unit} onChange={(e) => setDraft({ ...draft, unit: e.target.value })} /></div>
-                <div><Label>{ar ? "المخزون" : tr("Stock")}</Label>
+                <div><Label>{ar ? "المخزون المتاح" : tr("Stock")}</Label>
                   <Input type="number" value={draft.stock} onChange={(e) => setDraft({ ...draft, stock: e.target.value })} /></div>
               </div>
               <label className="flex items-center gap-2 text-sm">
@@ -306,7 +306,7 @@ export function SupplierCatalogPanel({ supplierId }: { supplierId: string }) {
                   checked={draft.is_offer}
                   onChange={(e) => setDraft({ ...draft, is_offer: e.target.checked })}
                 />
-                {ar ? "تشغيل العرض" : "Mark as on offer"}
+                {ar ? "المنتج عليه عرض" : "Mark as on offer"}
               </label>
             </div>
           )}
@@ -329,9 +329,7 @@ export function SupplierCatalogPanel({ supplierId }: { supplierId: string }) {
               {ar ? "راجع البيانات المقترحة ثم وافق أو اطلب تعديلًا." : "Review the proposed details, then approve or request changes."}
             </DialogDescription>
           </DialogHeader>
-          <pre className="text-xs bg-muted/50 rounded-lg p-3 overflow-x-auto max-h-64">
-            {JSON.stringify(respondTo?.proposed ?? {}, null, 2)}
-          </pre>
+          <ProposedDetails proposed={respondTo?.proposed ?? {}} />
           <div>
             <Label>{ar ? "ملاحظات (مطلوبة لطلب التعديل)" : "Notes (required to request changes)"}</Label>
             <Textarea value={note} onChange={(e) => setNote(e.target.value)} />

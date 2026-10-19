@@ -29,6 +29,7 @@ export async function uploadFile(file: File): Promise<{ id: string | null; url: 
 }
 
 export function MediaPickerButton({ onPick, label = "Choose image" }: { onPick: (url: string) => void; label?: string }) {
+  const { tr } = useI18n();
   const [open, setOpen] = useState(false);
   return (
     <>
@@ -77,7 +78,7 @@ export function MediaPickerDialog({ open, onOpenChange, onPick }: { open: boolea
           {filtered.map((m: any) => (
             <button key={m.id} type="button" onClick={() => onPick(m.url)} className="group relative aspect-square rounded-lg border border-border overflow-hidden hover:ring-2 hover:ring-primary">
               <img src={m.url} alt={m.name} className="h-full w-full object-cover" />
-              <span className="absolute inset-x-0 bottom-0 bg-black/60 text-white text-[10px] truncate px-1 py-0.5 opacity-0 group-hover:opacity-100">{m.name}</span>
+              <span className="absolute inset-x-0 bottom-0 bg-sidebar/80 text-sidebar-foreground text-[10px] truncate px-1 py-0.5 opacity-0 group-hover:opacity-100">{m.name}</span>
             </button>
           ))}
           {filtered.length === 0 && <div className="col-span-full p-8 text-center text-sm text-muted-foreground">{tr("No media yet. Upload your first image.")}</div>}
@@ -127,9 +128,9 @@ export function MediaGrid() {
         {(items as any[]).map((m) => (
           <div key={m.id} className="group relative aspect-square rounded-lg border border-border overflow-hidden bg-muted">
             <img src={m.url} alt={m.name} className="h-full w-full object-cover" />
-            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2">
-              <button onClick={() => { navigator.clipboard.writeText(m.url); toast.success(tr("URL copied")); }} className="text-xs text-white underline">{tr("Copy URL")}</button>
-              <button onClick={() => { if (confirm(tr("Delete?"))) del.mutate(m); }} className="text-xs text-white flex items-center gap-1"><Trash2 className="h-3 w-3" /> {tr("Delete")}</button>
+            <div className="absolute inset-0 bg-sidebar/80 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2">
+              <button onClick={() => { navigator.clipboard.writeText(m.url); toast.success(tr("URL copied")); }} className="text-xs text-sidebar-foreground underline">{tr("Copy URL")}</button>
+              <button onClick={() => { if (confirm(tr("Delete?"))) del.mutate(m); }} className="text-xs text-sidebar-foreground flex items-center gap-1"><Trash2 className="h-3 w-3" /> {tr("Delete")}</button>
             </div>
           </div>
         ))}
