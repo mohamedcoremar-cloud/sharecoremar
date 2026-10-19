@@ -1,7 +1,8 @@
+import { backofficeHead } from "@/lib/backoffice-head";
 import { createFileRoute } from "@tanstack/react-router";
 import { CrudPage } from "@/components/admin/crud-page";
 
-export const Route = createFileRoute("/admin/payments")({
+export const Route = createFileRoute("/admin/payments")({ head: () => backofficeHead("Payments"),
   component: () => (
     <CrudPage
       title="Payment Methods"

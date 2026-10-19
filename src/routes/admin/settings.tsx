@@ -1,7 +1,8 @@
+import { backofficeHead } from "@/lib/backoffice-head";
 import { useI18n } from "@/lib/i18n";
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/admin/settings")({
+export const Route = createFileRoute("/admin/settings")({ head: () => backofficeHead("Settings"),
   component: SettingsAdmin,
 });
 

@@ -1,3 +1,4 @@
+import { backofficeHead } from "@/lib/backoffice-head";
 import { useI18n } from "@/lib/i18n";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -7,7 +8,7 @@ import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
-export const Route = createFileRoute("/admin/users")({ component: UsersAdmin });
+export const Route = createFileRoute("/admin/users")({ head: () => backofficeHead("Users"), component: UsersAdmin });
 
 const ROLES = ["super_admin", "admin", "supplier", "logistics_partner", "business_buyer", "personal_buyer"];
 

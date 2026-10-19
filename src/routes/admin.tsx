@@ -1,3 +1,4 @@
+import { backofficeHead } from "@/lib/backoffice-head";
 import { createFileRoute, Outlet, Link, useLocation } from "@tanstack/react-router";
 import { AuthProvider, useAuth } from "@/lib/auth-context";
 import { I18nProvider, useI18n } from "@/lib/i18n";
@@ -8,7 +9,7 @@ import {
 } from "lucide-react";
 import logoIcon from "@/assets/logo-icon.png";
 
-export const Route = createFileRoute("/admin")({
+export const Route = createFileRoute("/admin")({ head: () => backofficeHead("Administration"),
   component: () => (
     <AuthProvider>
       <AdminShell />

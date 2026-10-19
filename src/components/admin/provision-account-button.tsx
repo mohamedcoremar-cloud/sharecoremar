@@ -59,7 +59,7 @@ export function ProvisionAccountButton({ entityType, row }: Props) {
               <div className="rounded-lg border border-border p-3 space-y-1 font-mono text-xs">
                 <div>{tr("Email:")}{result.email}</div>
                 {result.password && <div>{tr("Password:")}{result.password}</div>}
-                <div>{tr("Role:")}{result.role}</div>
+                <div>{tr("Role:")}{tr(result.role)}</div>
               </div>
             </div>
           ) : (

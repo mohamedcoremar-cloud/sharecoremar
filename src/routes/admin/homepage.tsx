@@ -1,3 +1,4 @@
+import { backofficeHead } from "@/lib/backoffice-head";
 import { useI18n } from "@/lib/i18n";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -13,7 +14,7 @@ import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import { GripVertical, Plus, Copy, Trash2, ChevronUp, ChevronDown, Image as ImageIcon } from "lucide-react";
 
-export const Route = createFileRoute("/admin/homepage")({ component: HomepageCMS });
+export const Route = createFileRoute("/admin/homepage")({ head: () => backofficeHead("Homepage Content"), component: HomepageCMS });
 
 function HomepageCMS() {
   const { tr } = useI18n();

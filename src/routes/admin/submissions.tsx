@@ -1,3 +1,4 @@
+import { backofficeHead } from "@/lib/backoffice-head";
 import { useI18n } from "@/lib/i18n";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useRef, useState } from "react";
@@ -18,7 +19,7 @@ import { Search, Eye, Sparkles, Upload, Plus } from "lucide-react";
 import { StatusBadge } from "@/components/supplier/catalog-panel";
 import { ManualProductDialog } from "@/components/catalog/manual-product-form";
 
-export const Route = createFileRoute("/admin/submissions")({ component: SubmissionsAdmin });
+export const Route = createFileRoute("/admin/submissions")({ head: () => backofficeHead("Catalog Submissions"), component: SubmissionsAdmin });
 
 const OPEN_CODES = ["draft", "admin_review", "sent_to_supplier", "supplier_approved", "pending_final_approval"];
 
@@ -120,7 +121,7 @@ function SubmissionsAdmin() {
               onClick={() => setTab(t)}
               className={`px-4 py-2 text-sm font-medium capitalize ${tab === t ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
             >
-              {t}
+              {tr(t)}
             </button>
           ))}
         </div>
