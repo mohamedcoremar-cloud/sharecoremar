@@ -237,7 +237,7 @@ export function CrudPage({ title, table, columns, fields, orderBy = "created_at"
               ) : filtered.map((row: any) => (
                 <tr key={row.id} className="border-b border-border last:border-0 hover:bg-muted/20">
                   <td className="p-3"><Checkbox checked={selected.has(row.id)} onCheckedChange={() => toggleOne(row.id)} /></td>
-                  {columns.map((c) => <td key={c.key} className="p-3">{c.render ? (typeof c.render(row) === "string" ? tr(c.render(row)) : c.render(row)) : tr(String(lang === "ar" && ["name_en", "title_en"].includes(c.key) && ["Name", "Title"].includes(c.label) ? row[c.key.replace("_en", "_ar")] || row[c.key] || "—" : row[c.key] ?? "—"))}</td>)}
+                  {columns.map((c) => <td key={c.key} className="p-3">{c.render ? (typeof c.render(row) === "string" ? tr(c.render(row)) : c.render(row)) : tr(String(lang === "ar" && ["name_en", "title_en"].includes(c.key) && ["Name", "Title", "Title (EN)", tr("Name"), tr("Title"), tr("Title (EN)")].includes(c.label) ? row[c.key.replace("_en", "_ar")] || row[c.key] || "—" : row[c.key] ?? "—"))}</td>)}
                   <td className="p-3">
                     <div className="flex gap-1 justify-end">
                       {rowActions?.(row)}

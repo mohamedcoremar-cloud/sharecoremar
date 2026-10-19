@@ -334,9 +334,14 @@ function AiIntakeDialog({
                 ref={fileRef}
                 type="file"
                 accept="image/png,image/jpeg,image/webp,application/pdf,text/plain,text/csv,application/json"
-                className="mt-1"
+                className="hidden"
+                aria-label={tr("Price list file")}
                 onChange={(e) => setFile(e.target.files?.[0] ?? null)}
               />
+              <div className="mt-1 flex min-w-0 items-center gap-3">
+                <Button type="button" variant="outline" onClick={() => fileRef.current?.click()}><Upload className="h-4 w-4 me-2" />{tr("Choose file")}</Button>
+                <span className="truncate text-sm text-muted-foreground">{file?.name ?? tr("No file chosen")}</span>
+              </div>
             </div>
             <div>
               <Label>{tr("Note for reviewers (optional)")}</Label>

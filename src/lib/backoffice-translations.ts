@@ -1,5 +1,14 @@
 // Shared trader-friendly presentation vocabulary; stored codes remain unchanged.
 export const BACKOFFICE_AR: Record<string, string> = {
+  "Choose file": "اختار ملف",
+  "No file chosen": "لم يتم اختيار ملف",
+  "Egypt": "مصر",
+  "Cairo": "القاهرة",
+  "International": "عالمي",
+  "market_intelligence": "دراسة السوق",
+  "logistics_fulfillment": "التوصيل وتنفيذ الطلبات",
+  "conversational_support": "خدمة العملاء",
+  "merchandising_inventory": "المنتجات والمخزون",
   "AI Agents": "مساعدين الذكاء الاصطناعي",
   "AI Bulk Intake": "رفع قائمة منتجات بالذكاء الاصطناعي",
   "AI note:": "ملاحظة الذكاء الاصطناعي:",
