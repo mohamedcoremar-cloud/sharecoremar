@@ -40,7 +40,7 @@ interface Props {
 }
 
 export function CrudPage({ title, table, columns, fields, orderBy = "created_at", defaultValues = {}, searchKeys = ["name", "name_en", "slug", "title_en"], hasActive = true, activeKey = "is_active", rowActions, selectColumns = "*" }: Props) {
-  const { tr } = useI18n();
+  const { tr, lang } = useI18n();
   const { t } = useI18n();
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
@@ -66,7 +66,7 @@ export function CrudPage({ title, table, columns, fields, orderBy = "created_at"
       if (filter === "active" && !r[activeKey]) return false;
       if (filter === "inactive" && r[activeKey]) return false;
       if (!ql) return true;
-      return searchKeys.some((k) => String(r[k] ?? "").toLowerCase().includes(ql));
+      return [...searchKeys, "name_ar", "title_ar", "company_name"].some((k) => String(r[k] ?? "").toLowerCase().includes(ql));
     });
   }, [rows, q, filter, searchKeys, activeKey]);
 
@@ -151,7 +151,7 @@ export function CrudPage({ title, table, columns, fields, orderBy = "created_at"
                 <div key={f.name}>
                   <Label>{tr(f.label)}{f.required && <span className="text-destructive"> *</span>}</Label>
                   {f.type === "textarea" ? (
-                    <Textarea value={form[f.name] ?? ""} onChange={(e) => setForm({ ...form, [f.name]: e.target.value })} required={f.required} rows={3} />
+                    <Textarea value={form[f.name] ?? ""} onChange={(e) => setForm({ ...form, [f.name]: e.target.value })} dir={f.name.endsWith("_en") ? "ltr" : f.name.endsWith("_ar") ? "rtl" : undefined} required={f.required} rows={3} />
                   ) : f.type === "switch" ? (
                     <div className="pt-2"><Switch checked={!!form[f.name]} onCheckedChange={(v) => setForm({ ...form, [f.name]: v })} /></div>
                   ) : f.type === "select" ? (
@@ -178,7 +178,7 @@ export function CrudPage({ title, table, columns, fields, orderBy = "created_at"
                       <MediaPickerButton onPick={(url) => setForm({ ...form, [f.name]: [...(form[f.name] ?? []), url] })} label={tr("Add image")} />
                     </div>
                   ) : (
-                    <Input type={f.type === "number" ? "number" : "text"} step="0.01" value={form[f.name] ?? ""} onChange={(e) => setForm({ ...form, [f.name]: e.target.value })} required={f.required} placeholder={f.placeholder ? tr(f.placeholder) : undefined} />
+                    <Input dir={f.name.endsWith("_en") || ["slug", "email", "barcode", "sku"].includes(f.name) ? "ltr" : f.name.endsWith("_ar") ? "rtl" : undefined} type={f.type === "number" ? "number" : "text"} step="0.01" value={form[f.name] ?? ""} onChange={(e) => setForm({ ...form, [f.name]: e.target.value })} required={f.required} placeholder={f.placeholder ? tr(f.placeholder) : undefined} />
                   )}
                 </div>
               ))}
@@ -237,7 +237,7 @@ export function CrudPage({ title, table, columns, fields, orderBy = "created_at"
               ) : filtered.map((row: any) => (
                 <tr key={row.id} className="border-b border-border last:border-0 hover:bg-muted/20">
                   <td className="p-3"><Checkbox checked={selected.has(row.id)} onCheckedChange={() => toggleOne(row.id)} /></td>
-                  {columns.map((c) => <td key={c.key} className="p-3">{c.render ? c.render(row) : tr(String(row[c.key] ?? "—"))}</td>)}
+                  {columns.map((c) => <td key={c.key} className="p-3">{c.render ? (typeof c.render(row) === "string" ? tr(c.render(row)) : c.render(row)) : tr(String(lang === "ar" && ["name_en", "title_en"].includes(c.key) && ["Name", "Title"].includes(c.label) ? row[c.key.replace("_en", "_ar")] || row[c.key] || "—" : row[c.key] ?? "—"))}</td>)}
                   <td className="p-3">
                     <div className="flex gap-1 justify-end">
                       {rowActions?.(row)}

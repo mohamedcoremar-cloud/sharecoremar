@@ -84,7 +84,7 @@ function AdminShellInner() {
 
   return (
     <div className="dark min-h-screen bg-background text-foreground flex">
-      <aside className="w-64 shrink-0 bg-sidebar text-sidebar-foreground border-r border-sidebar-border flex flex-col">
+      <aside className="w-64 shrink-0 bg-sidebar text-sidebar-foreground border-e border-sidebar-border flex flex-col">
         <Link to="/" className="flex items-center gap-2 px-5 h-16 border-b border-sidebar-border">
           <img src={logoIcon} alt="" className="h-9 w-9 rounded-lg" />
           <div>
@@ -116,7 +116,7 @@ function AdminShellInner() {
           </button>
         </div>
       </aside>
-      <main className="flex-1 overflow-x-auto"><Outlet /></main>
+      <main className="min-w-0 flex-1 overflow-x-auto"><Outlet /></main>
     </div>
   );
 }

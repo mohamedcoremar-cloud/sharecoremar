@@ -83,7 +83,7 @@ function SupplierGate() {
       const { data } = await supabase
         .from("supplier_users")
         .select("supplier_id, is_active, suppliers(company_name, brand_name)")
-        .eq("user_id", user!.id)
+        .eq("user_id", user?.id ?? "")
         .is("deleted_at", null)
         .maybeSingle();
       return data;
@@ -91,8 +91,8 @@ function SupplierGate() {
   });
 
   if (loading || (user && isLoading)) return <div className="min-h-screen flex items-center justify-center">{tr("Loading…")}</div>;
-  if (!user) return <Denied title={tr("Sign in required")} body="Please sign in with your supplier account to continue." />;
-  if (!link || !link.is_active) return <Denied title={tr("Access Denied")} body="This account is not linked to an active supplier." />;
+  if (!user) return <Denied title={tr("Sign in required")} body={tr("Please sign in with your supplier account to continue.")} />;
+  if (!link || !link.is_active) return <Denied title={tr("Access Denied")} body={tr("This account is not linked to an active supplier.")} />;
 
   return <SupplierPortal supplierId={link.supplier_id} companyName={(link as any).suppliers?.company_name ?? ""} />;
 }

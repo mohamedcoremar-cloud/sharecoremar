@@ -111,6 +111,7 @@ function SectionEditor({ section, onSaved }: any) {
 }
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  const { tr } = useI18n();
   return (
     <div>
       <Label className="text-xs mb-1 block">{tr(label)}</Label>
@@ -152,7 +153,7 @@ function ItemsEditor({
   setContent: (p: any) => void;
   itemType: "feature" | "stat";
 }) {
-  const { tr } = useI18n();
+  const { tr, dir } = useI18n();
   const items: any[] = Array.isArray(content.items) ? content.items : [];
   const setItems = (next: any[]) => setContent({ items: next });
 
@@ -205,7 +206,7 @@ function ItemsEditor({
                 {itemType === "feature" ? (
                   <>
                     <Field label={tr("Icon")}>
-                      <Select value={it.icon ?? "sparkles"} onValueChange={(v) => update(i, { icon: v })}>
+                      <Select dir={dir} value={it.icon ?? "sparkles"} onValueChange={(v) => update(i, { icon: v })}>
                         <SelectTrigger><SelectValue /></SelectTrigger>
                         <SelectContent>
                           {ICON_OPTIONS.map((o) => <SelectItem key={o.value} value={o.value}>{tr(o.label)}</SelectItem>)}

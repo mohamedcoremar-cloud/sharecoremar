@@ -111,7 +111,7 @@ export function ManualProductDialog({
         return data;
       }
       const sup = target || supplierId;
-      if (!sup) throw new Error(ar ? "اختر الموردين" : "Select a supplier");
+      if (!sup) throw new Error(ar ? "اختار المورد" : "Select a supplier");
       const { data, error } = await supabase.rpc("admin_create_submission_draft", {
         p_supplier_id: sup,
         p_proposed: proposed,
@@ -157,7 +157,7 @@ export function ManualProductDialog({
                 value={target}
                 onChange={(e) => setTarget(e.target.value)}
               >
-                <option value="">{ar ? "اختر موردًا" : "Select a supplier"}</option>
+                <option value="">{ar ? "اختار المورد" : "Select a supplier"}</option>
                 {(suppliers ?? []).map((s) => (
                   <option key={s.id} value={s.id}>{s.company_name}</option>
                 ))}
@@ -166,11 +166,11 @@ export function ManualProductDialog({
           )}
 
           <div>
-            <Label>{ar ? "الاسم (EN)" : tr("Name (EN)")}</Label>
+            <Label>{ar ? "اسم المنتج بالإنجليزي" : tr("Name (EN)")}</Label>
             <Input value={draft.name_en} onChange={(e) => setDraft({ ...draft, name_en: e.target.value })} />
           </div>
           <div>
-            <Label>{ar ? "الاسم (AR)" : tr("Name (AR)")}</Label>
+            <Label>{ar ? "اسم المنتج بالعربي" : tr("Name (AR)")}</Label>
             <Input value={draft.name_ar} onChange={(e) => setDraft({ ...draft, name_ar: e.target.value })} />
           </div>
           <div>
@@ -184,7 +184,7 @@ export function ManualProductDialog({
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <Label>{ar ? "السعر (ج.م)" : tr("Retail price (EGP)")}</Label>
+              <Label>{ar ? "سعر البيع (ج.م)" : tr("Retail price (EGP)")}</Label>
               <Input type="number" min="0" value={draft.retail_price}
                 onChange={(e) => setDraft({ ...draft, retail_price: e.target.value })} />
             </div>
@@ -197,17 +197,17 @@ export function ManualProductDialog({
 
           <div className="grid grid-cols-3 gap-3">
             <div>
-              <Label>{ar ? "الوحدة" : tr("Unit")}</Label>
+              <Label>{ar ? "وحدة البيع" : tr("Unit")}</Label>
               <Input placeholder={tr("250g")} value={draft.unit}
                 onChange={(e) => setDraft({ ...draft, unit: e.target.value })} />
             </div>
             <div>
-              <Label>{ar ? "المخزون" : tr("Stock")}</Label>
+              <Label>{ar ? "المخزون المتاح" : tr("Stock")}</Label>
               <Input type="number" min="0" value={draft.stock}
                 onChange={(e) => setDraft({ ...draft, stock: e.target.value })} />
             </div>
             <div>
-              <Label>{ar ? "التصنيف" : tr("Category")}</Label>
+              <Label>{ar ? "قسم المنتج" : tr("Category")}</Label>
               <select
                 className="w-full h-10 rounded-md border border-input bg-background px-2 text-sm"
                 value={draft.category_id}
@@ -224,7 +224,7 @@ export function ManualProductDialog({
           <label className="flex items-center gap-2 text-sm">
             <input type="checkbox" checked={draft.is_offer}
               onChange={(e) => setDraft({ ...draft, is_offer: e.target.checked })} />
-            {ar ? "تشغيل العرض" : "Mark as on offer"}
+            {ar ? "المنتج عليه عرض" : "Mark as on offer"}
           </label>
 
           <div>
